@@ -1,0 +1,45 @@
+{
+  "name": "project-starter",
+  "private": true,
+  "workspaces": [
+    "api",
+    "client"
+  ],
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "scripts": {
+    "dev": "concurrently -k \"npm run dev -w api\" \"npm run dev -w client\"",
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "npm run test --workspaces --if-present",
+    "generate": "npm run openapi -w api && npm run generate -w client",
+    "docker-build": "npm run docker-build -w api && npm run docker-build -w client",
+    "docker:dev": "docker compose -f docker-compose-dev.yml up --build",
+    "docker:prod": "docker compose -f docker-compose.yml up -d --build",
+    "test:e2e": "npm run test:e2e -w api",
+    "test:integration": "npm run test:integration -w api",
+    "docker:down": "docker compose -f docker-compose-dev.yml down",
+    "docker:logs": "docker compose -f docker-compose-dev.yml logs -f",
+    "docker:prod:down": "docker compose -f docker-compose.yml down",
+    "docker:prod:logs": "docker compose -f docker-compose.yml logs -f"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0",
+    "eslint": "^9.39.0",
+    "@eslint/js": "^9.39.0",
+    "typescript-eslint": "^8.57.0",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "prettier": "^3.8.0"
+  },
+  "overrides": {
+    "multer": "^2.3.0",
+    "@esbuild-kit/core-utils": {
+      "esbuild": "^0.25.12"
+    },
+    "js-yaml@>=4 <5": "^4.3.2"
+  }
+}
