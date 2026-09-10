@@ -37,6 +37,7 @@ import {
 } from '@/lib/auth.constants';
 import { queryClient } from '@/lib/query';
 import { useSession, useUi } from '@/lib/store';
+
 const ERROR_AUTO_HIDE_DURATION_MS = 6000;
 
 function Root() {
@@ -56,6 +57,7 @@ function Root() {
     </>
   );
 }
+
 const root = createRootRoute({
   component: Root,
   notFoundComponent: () => (
@@ -71,6 +73,7 @@ const root = createRootRoute({
   ),
   pendingComponent: LoadingState,
 });
+
 function Login() {
   const [registerMode, setRegisterMode] = useState(false);
   const {
@@ -136,18 +139,22 @@ function Login() {
     </Container>
   );
 }
+
 const loginRoute = createRoute({
   getParentRoute: () => root,
   path: '/login',
   component: Login,
 });
+
 function Layout() {
   const [confirm, setConfirm] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const token = useSession((state) => state.accessToken);
   const navigate = useNavigate();
   useEffect(() => {
-    if (!token) void navigate({ to: '/login' });
+    if (!token) {
+      void navigate({ to: '/login' });
+    }
   }, [token, navigate]);
   return (
     <>
@@ -187,6 +194,7 @@ function Layout() {
     </>
   );
 }
+
 const protectedRoute = createRoute({
   getParentRoute: () => root,
   id: 'authenticated',
@@ -201,16 +209,23 @@ const protectedRoute = createRoute({
   },
   component: Layout,
 });
+
 function Dashboard() {
   const me = useQuery(getMeQueryOptions());
-  if (me.isPending) return <LoadingState />;
-  if (me.isError)
+
+  if (me.isPending) {
+    return <LoadingState />;
+  }
+
+  if (me.isError) {
     return (
       <ErrorState
         message="Unable to load your account"
         retry={() => void me.refetch()}
       />
     );
+  }
+
   const columns = [
     { accessorKey: 'email', header: 'Email' },
     { accessorKey: 'id', header: 'User ID' },
@@ -236,6 +251,7 @@ function Dashboard() {
     </Stack>
   );
 }
+
 const index = createRoute({
   getParentRoute: () => protectedRoute,
   path: '/',

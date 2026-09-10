@@ -6,6 +6,7 @@ import { AuthController } from './auth.controller.js';
 import { AuthGuard } from './auth.guard.js';
 import { AuthService } from './auth.service.js';
 import { UsersRepository } from './users.repository.js';
+
 @Module({
   imports: [JwtModule.register({})],
   controllers: [AuthController],

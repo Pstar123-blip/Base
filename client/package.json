@@ -9,7 +9,7 @@
     "lint": "eslint src",
     "preview": "vite preview",
     "typecheck": "tsc -b",
-    "format": "prettier --write src",
+    "format": "eslint . --fix && prettier --write src",
     "generate": "orval --config orval.config.ts",
     "test": "vitest run",
     "docker-build": "docker build -f Dockerfile -t starter-client .."

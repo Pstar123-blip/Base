@@ -26,6 +26,7 @@ import {
 import { useState } from 'react';
 
 import { EmptyState } from './states';
+
 type Props<T> = {
   data: T[];
   columns: ColumnDef<T>[];
@@ -36,6 +37,7 @@ type Props<T> = {
     rowCount: number;
   };
 };
+
 export function DataTable<T>({
   data,
   columns,

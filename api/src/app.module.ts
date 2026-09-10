@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module.js';
 import { HttpLoggerInterceptor } from './common/http-logger.interceptor.js';
 import { validateEnv } from './config.js';
 import { DatabaseModule } from './database/database.module.js';
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, validate: validateEnv }),

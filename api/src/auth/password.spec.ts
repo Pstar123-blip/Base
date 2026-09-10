@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { hashPassword, verifyPassword } from './password.js';
+
 describe('password storage', () => {
   it('salts hashes and rejects incorrect passwords', async () => {
     const first = await hashPassword('a long password');

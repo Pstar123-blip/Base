@@ -5,6 +5,7 @@ import {
   CircularProgress,
   Typography,
 } from '@mui/material';
+
 export function LoadingState() {
   return (
     <Box role="status" sx={{ p: 4, textAlign: 'center' }}>
@@ -13,6 +14,7 @@ export function LoadingState() {
     </Box>
   );
 }
+
 export function ErrorState({
   message = 'Something went wrong',
   retry,
@@ -29,6 +31,7 @@ export function ErrorState({
     </Alert>
   );
 }
+
 export function EmptyState({
   message = 'No results found',
 }: {

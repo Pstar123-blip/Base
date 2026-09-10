@@ -12,6 +12,7 @@ import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import type { Request } from 'express';
 
+import { ENV_KEYS } from '../envKeys.constants.js';
 import {
   ACCESS_TOKEN_KIND,
   JWT_AUDIENCE,
@@ -19,6 +20,7 @@ import {
 } from './auth.constants.js';
 import type { UserDto } from './auth.dto.js';
 import { UsersRepository } from './users.repository.js';
+
 const PUBLIC_METADATA_KEY = 'public';
 const PERMISSIONS_METADATA_KEY = 'permissions';
 
@@ -37,32 +39,48 @@ export class AuthGuard implements CanActivate {
     private readonly config: ConfigService,
     private readonly users: UsersRepository,
   ) {}
+
   async canActivate(context: ExecutionContext) {
     if (
       this.reflector.getAllAndOverride<boolean>(PUBLIC_METADATA_KEY, [
         context.getHandler(),
         context.getClass(),
       ])
-    )
+    ) {
       return true;
+    }
+
     const request = context
       .switchToHttp()
       .getRequest<Request & { user?: UserDto }>();
     const token = request.headers.authorization?.match(/^Bearer (.+)$/)?.[1];
-    if (!token) throw new UnauthorizedException();
+
+    if (!token) {
+      throw new UnauthorizedException();
+    }
+
     let claims: { sub: string; kind: string };
+
     try {
       claims = await this.jwt.verifyAsync(token, {
-        secret: this.config.getOrThrow<string>('JWT_ACCESS_SECRET'),
+        secret: this.config.getOrThrow<string>(ENV_KEYS.JWT_ACCESS_SECRET),
         issuer: JWT_ISSUER,
         audience: JWT_AUDIENCE,
       });
     } catch {
       throw new UnauthorizedException();
     }
-    if (claims.kind !== ACCESS_TOKEN_KIND) throw new UnauthorizedException();
+
+    if (claims.kind !== ACCESS_TOKEN_KIND) {
+      throw new UnauthorizedException();
+    }
+
     const user = await this.users.byId(claims.sub);
-    if (!user) throw new UnauthorizedException();
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
     request.user = {
       id: user.id,
       email: user.email,
@@ -73,8 +91,13 @@ export class AuthGuard implements CanActivate {
         context.getHandler(),
         context.getClass(),
       ]) ?? [];
-    if (!required.every((permission) => user.permissions.includes(permission)))
+
+    if (
+      !required.every((permission) => user.permissions.includes(permission))
+    ) {
       throw new ForbiddenException();
+    }
+
     return true;
   }
 }

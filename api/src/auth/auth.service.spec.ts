@@ -3,6 +3,7 @@ import { type JwtService } from '@nestjs/jwt';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { Database } from '../database/database.module.js';
+import { ENV_KEYS } from '../envKeys.constants.js';
 import { AuthService } from './auth.service.js';
 import type { UsersRepository } from './users.repository.js';
 
@@ -29,12 +30,13 @@ function fixture() {
     database as unknown as Database,
     jwt as unknown as JwtService,
     new ConfigService({
-      JWT_ACCESS_SECRET: 'a'.repeat(32),
-      JWT_REFRESH_SECRET: 'b'.repeat(32),
+      [ENV_KEYS.JWT_ACCESS_SECRET]: 'a'.repeat(32),
+      [ENV_KEYS.JWT_REFRESH_SECRET]: 'b'.repeat(32),
     }),
   );
   return { service, returning, values, users, jwt };
 }
+
 describe('refresh rotation', () => {
   it('consumes the session and stores only a hash of the replacement', async () => {
     const { service, returning, values } = fixture();

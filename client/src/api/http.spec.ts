@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 const mocks = vi.hoisted(() => ({
   post: vi.fn(),
   request: vi.fn(),
@@ -20,6 +21,7 @@ vi.mock('axios', () => ({
 }));
 import { useSession } from '../lib/store';
 import { refreshSession, request } from './http';
+
 describe('API transport', () => {
   beforeEach(() => {
     vi.clearAllMocks();

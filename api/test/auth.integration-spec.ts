@@ -8,6 +8,8 @@ import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
+import { ENV_KEYS } from '../src/envKeys.constants.js';
+
 describe('PostgreSQL authentication lifecycle', () => {
   let app: NestExpressApplication;
   let database: import('../src/database/database.module.js').Database;
@@ -15,10 +17,11 @@ describe('PostgreSQL authentication lifecycle', () => {
   const password = 'integration-test-password';
   const origin = 'http://localhost:5173';
   beforeAll(async () => {
-    process.env.DATABASE_URL = process.env.TEST_DATABASE_URL;
-    process.env.CLIENT_ORIGIN = origin;
-    process.env.JWT_ACCESS_SECRET = 'a'.repeat(32);
-    process.env.JWT_REFRESH_SECRET = 'b'.repeat(32);
+    process.env[ENV_KEYS.DATABASE_URL] =
+      process.env[ENV_KEYS.TEST_DATABASE_URL];
+    process.env[ENV_KEYS.CLIENT_ORIGIN] = origin;
+    process.env[ENV_KEYS.JWT_ACCESS_SECRET] = 'a'.repeat(32);
+    process.env[ENV_KEYS.JWT_REFRESH_SECRET] = 'b'.repeat(32);
     const appPath = '../dist/app.module.js',
       setupPath = '../dist/setup.js',
       dbPath = '../dist/database/database.module.js';
@@ -40,8 +43,10 @@ describe('PostgreSQL authentication lifecycle', () => {
     await app.init();
   });
   afterAll(async () => {
-    if (database)
+    if (database) {
       await database.pool.query('DELETE FROM users WHERE email = $1', [email]);
+    }
+
     await app?.close();
   });
   it('registers, authenticates, rotates once, logs out and blocks soft-deleted accounts', async () => {

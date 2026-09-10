@@ -1,6 +1,6 @@
 # Full-stack starter
 
-A strict TypeScript npm workspace with NestJS/Express, PostgreSQL/Drizzle, and React/Vite. Node 24 and Docker Compose are recommended.
+A strict TypeScript npm workspace orchestrated by Turborepo with NestJS/Express, PostgreSQL/Drizzle, and React/Vite. Node 24 and Docker Compose are recommended.
 
 ## Start
 
@@ -8,7 +8,6 @@ A strict TypeScript npm workspace with NestJS/Express, PostgreSQL/Drizzle, and R
 npm ci
 cp api/.env.example api/.env
 cp client/.env.example client/.env
-cp .env.example .env
 npm run docker:dev
 ```
 
@@ -16,19 +15,19 @@ Open http://localhost:5173 and create an account. API documentation is at http:/
 
 ## Development environment
 
-Use three env files: root `.env` for Compose/database settings, `api/.env` for backend settings, and `client/.env` for frontend settings. Copy the examples once; real env files are Git-ignored and excluded from Docker builds.
+Use two env files: `api/.env` for backend and PostgreSQL settings, and `client/.env` for frontend settings. Copy the examples once; real env files are Git-ignored and excluded from Docker builds.
 
-Development Compose loads all service environment settings through `env_file`, with no inline environment overrides: PostgreSQL uses root `.env`, the API and migration service use `api/.env`, and Vite uses `client/.env`.
+Development Compose loads all service environment settings through `env_file`, with no inline environment overrides: PostgreSQL, the API and migration service use `api/.env`, and Vite uses `client/.env`.
 
 The env files use Docker service addresses directly: API DATABASE_URL connects to `db:5432`, and client API_PROXY_TARGET is `http://api:3000`. Browser-facing values remain `CLIENT_ORIGIN=http://localhost:5173` and `VITE_API_URL=/api`. Keep API PORT=3000 aligned with the Compose port mapping and proxy target.
 
-Keep POSTGRES_USER, POSTGRES_PASSWORD and POSTGRES_DB in root `.env` consistent with DATABASE_URL in `api/.env`. PostgreSQL initialization settings apply only to a new database volume; changing credentials for an existing database requires updating PostgreSQL itself.
+Keep POSTGRES_USER, POSTGRES_PASSWORD and POSTGRES_DB consistent with DATABASE_URL in `api/.env`. PostgreSQL initialization settings apply only to a new database volume; changing credentials for an existing database requires updating PostgreSQL itself.
 
 Only VITE_ variables are exposed to browser code. Running the API or Vite directly on the host requires changing the Docker service addresses to localhost. Database commands run inside Docker by default; to apply migrations manually, use `docker compose -f docker-compose-dev.yml run --rm migrate`.
 
 After editing an env file, rerun `npm run docker:dev` to recreate affected containers; restarting an existing container does not reload its environment. Restart host-run processes after editing their environment.
 
-Production uses the same env-file paths with deployment-specific contents: root `.env` for PostgreSQL and `api/.env` for the API and migrations. Neither Compose file overrides environment values. The production client is static nginx output; VITE_ values are build-time configuration, so passing `client/.env` to nginx would not configure the compiled client.
+Production uses the same env-file paths with deployment-specific contents: `api/.env` for PostgreSQL, the API and migrations. Neither Compose file overrides environment values. The production client is static nginx output; VITE_ values are build-time configuration, so passing `client/.env` to nginx would not configure the compiled client.
 
 ## Commands
 
@@ -47,6 +46,22 @@ Production uses the same env-file paths with deployment-specific contents: root 
 | `npm run docker:prod`                                       | Start production Compose                                                           |
 
 Each workspace also exposes its own lint, format and typecheck scripts. Both workspaces expose Docker build scripts. Use `@/` aliases within applications. Nest constructor dependencies and validated DTOs need runtime imports; the API disables the type-import autofix rule to preserve decorator metadata. API ESM imports include `.js`; the build rewrites aliases for Node.
+
+## Editor formatting
+
+Install the recommended VS Code extensions, ESLint (`dbaeumer.vscode-eslint`) and Prettier (`esbenp.prettier-vscode`). Workspace settings apply ESLint fixes and Prettier formatting on save. ESLint requires braces around control-flow bodies and blank lines between definitions, class members, and blocks. Prettier handles indentation and layout.
+
+Run `npm run format` to apply the same rules throughout the repository. CI checks the rules with `npm run lint` and `npm run format:check`.
+
+## Turborepo
+
+Root `dev`, `build`, `typecheck`, `lint`, `test`, `generate`, `test:e2e`, `test:integration`, and `docker-build` commands run through Turborepo. `npm run dev` starts both applications on the host; configure localhost addresses as described above. Compose and repository-wide formatting commands remain direct commands.
+
+`turbo.json` defines the task graph. API builds cache `dist/`; typechecks, lint and unit tests cache successful results. Shared TypeScript/ESLint configuration invalidates caches. Client builds run uncached because Vite loads local environment files that Turbo does not track. Local cache files live in `.turbo/` and are ignored by Git and Docker.
+
+Generation runs API OpenAPI export before client generation. Generation, end-to-end tests, database integration tests, and Docker builds always execute; development tasks are persistent and uncached. `TEST_DATABASE_URL` is explicitly passed through for integration tests.
+
+Use `npm run build -- --filter=api` to build only the API, or `npx turbo run build --dry` to inspect the task graph. Workspace commands such as `npm run build -w api` still work directly. See the [Turborepo task configuration documentation](https://turborepo.com/docs/crafting-your-repository/configuring-tasks).
 
 ## API conventions
 
@@ -70,7 +85,7 @@ Generate contracts after changing API DTOs. Commit `api/openapi.json` and `clien
 
 `npm run docker:down` and `npm run docker:logs` target development; use `docker:prod:down` and `docker:prod:logs` for production.
 
-On the deployment host, copy root `.env.example` to `.env` and `api/.env.example` to `api/.env`. Set database credentials in root `.env`. In `api/.env`, set NODE_ENV=production, PORT=3000, a matching DATABASE_URL, independent random JWT secrets, and CLIENT_ORIGIN to the public HTTPS origin. These files belong to that deployment; do not reuse the development values for production. Run `npm run docker:prod`. Put a TLS-terminating ingress in front of port 8080. nginx serves the SPA and proxies /api to the private API. PostgreSQL is not exposed by production Compose. Migrations run as a one-off service before startup; back up the database and review migrations before deploying schema changes.
+On the deployment host, copy `api/.env.example` to `api/.env`. Set PostgreSQL credentials in `api/.env`. In `api/.env`, set NODE_ENV=production, PORT=3000, a matching DATABASE_URL, independent random JWT secrets, and CLIENT_ORIGIN to the public HTTPS origin. These files belong to that deployment; do not reuse the development values for production. Run `npm run docker:prod`. Put a TLS-terminating ingress in front of port 8080. nginx serves the SPA and proxies /api to the private API. PostgreSQL is not exposed by production Compose. Migrations run as a one-off service before startup; back up the database and review migrations before deploying schema changes.
 
 For a fork, rename workspace/image names, choose a license, customize the theme and application identity, decide whether public registration is appropriate, and configure backups and monitoring. Add distributed rate limiting at your ingress before exposing authentication publicly.
 

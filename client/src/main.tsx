@@ -7,6 +7,7 @@ import { createRoot } from 'react-dom/client';
 import { queryClient } from '@/lib/query';
 import { theme } from '@/lib/theme';
 import { router } from '@/router';
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ThemeProvider theme={theme}>

@@ -5,3 +5,4 @@
 api/drizzle
 client/src/api/generated
 api/openapi.json
+**/.turbo

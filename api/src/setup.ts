@@ -9,6 +9,8 @@ import type { NextFunction, Request, Response } from 'express';
 import helmet from 'helmet';
 
 import { requestContext } from './common/logger.js';
+import { ENV_KEYS } from './envKeys.constants.js';
+
 export function setup(app: NestExpressApplication) {
   app.setGlobalPrefix('api');
   app.use(helmet());
@@ -18,7 +20,7 @@ export function setup(app: NestExpressApplication) {
     const start = Date.now();
     res.setHeader('x-request-id', requestId);
     res.once('finish', () => {
-      if (!res.locals.httpLoggerAttached)
+      if (!res.locals.httpLoggerAttached) {
         new Logger('http').log({
           message: 'HTTP request completed',
           requestId,
@@ -27,11 +29,12 @@ export function setup(app: NestExpressApplication) {
           statusCode: res.statusCode,
           durationMs: Date.now() - start,
         });
+      }
     });
     requestContext.run({ requestId }, next);
   });
   app.enableCors({
-    origin: app.get(ConfigService).getOrThrow<string>('CLIENT_ORIGIN'),
+    origin: app.get(ConfigService).getOrThrow<string>(ENV_KEYS.CLIENT_ORIGIN),
     credentials: true,
   });
   app.useGlobalPipes(

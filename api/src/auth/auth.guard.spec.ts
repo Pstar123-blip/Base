@@ -4,6 +4,7 @@ import type { Reflector } from '@nestjs/core';
 import type { JwtService } from '@nestjs/jwt';
 import { describe, expect, it, vi } from 'vitest';
 
+import { ENV_KEYS } from '../envKeys.constants.js';
 import { AuthGuard } from './auth.guard.js';
 import type { UsersRepository } from './users.repository.js';
 
@@ -39,11 +40,12 @@ function fixture(
   const guard = new AuthGuard(
     reflector as unknown as Reflector,
     jwt as unknown as JwtService,
-    new ConfigService({ JWT_ACCESS_SECRET: 'a'.repeat(32) }),
+    new ConfigService({ [ENV_KEYS.JWT_ACCESS_SECRET]: 'a'.repeat(32) }),
     users as unknown as UsersRepository,
   );
   return { guard, context, request, jwt, users };
 }
+
 describe('authorization', () => {
   it('allows public endpoints without parsing credentials', async () => {
     const { guard, context, jwt } = fixture([], [], true);

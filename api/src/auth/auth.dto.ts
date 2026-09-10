@@ -12,6 +12,7 @@ export class CredentialsDto {
   @IsEmail()
   @MaxLength(MAX_EMAIL_LENGTH)
   email!: string;
+
   @ApiProperty({
     minLength: MIN_PASSWORD_LENGTH,
     maxLength: MAX_PASSWORD_LENGTH,
@@ -21,11 +22,15 @@ export class CredentialsDto {
   @MaxLength(MAX_PASSWORD_LENGTH)
   password!: string;
 }
+
 export class UserDto {
   @ApiProperty() id!: string;
+
   @ApiProperty() email!: string;
+
   @ApiProperty({ type: [String] }) permissions!: string[];
 }
+
 export class TokenDto {
   @ApiProperty() accessToken!: string;
 }

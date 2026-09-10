@@ -11,6 +11,7 @@ import { and, eq, gt } from 'drizzle-orm';
 
 import { Database } from '../database/database.module.js';
 import { sessions } from '../database/schema.js';
+import { ENV_KEYS } from '../envKeys.constants.js';
 import {
   ACCESS_TOKEN_KIND,
   ACCESS_TOKEN_TTL_SECONDS,
@@ -22,6 +23,7 @@ import {
 } from './auth.constants.js';
 import { hashPassword, verifyPassword } from './password.js';
 import { UsersRepository } from './users.repository.js';
+
 const digest = (value: string) =>
   createHash('sha256').update(value).digest('hex');
 @Injectable()
@@ -32,26 +34,36 @@ export class AuthService {
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
   ) {}
+
   async register(email: string, password: string) {
     const user = await this.users.create(
       email.toLowerCase().trim(),
       await hashPassword(password),
     );
-    if (!user) throw new ConflictException('Account already exists');
+
+    if (!user) {
+      throw new ConflictException('Account already exists');
+    }
+
     return this.issue(user.id);
   }
+
   async login(email: string, password: string) {
     const user = await this.users.byEmail(email.toLowerCase().trim());
-    if (!user || !(await verifyPassword(password, user.passwordHash)))
+
+    if (!user || !(await verifyPassword(password, user.passwordHash))) {
       throw new UnauthorizedException('Invalid credentials');
+    }
+
     return this.issue(user.id);
   }
+
   private async issue(userId: string) {
     const id = randomUUID();
     const refreshToken = await this.jwt.signAsync(
       { sub: userId, sid: id, kind: REFRESH_TOKEN_KIND },
       {
-        secret: this.config.getOrThrow<string>('JWT_REFRESH_SECRET'),
+        secret: this.config.getOrThrow<string>(ENV_KEYS.JWT_REFRESH_SECRET),
         expiresIn: REFRESH_TOKEN_TTL_SECONDS,
         issuer: JWT_ISSUER,
         audience: JWT_AUDIENCE,
@@ -66,7 +78,7 @@ export class AuthService {
     const accessToken = await this.jwt.signAsync(
       { sub: userId, kind: ACCESS_TOKEN_KIND },
       {
-        secret: this.config.getOrThrow<string>('JWT_ACCESS_SECRET'),
+        secret: this.config.getOrThrow<string>(ENV_KEYS.JWT_ACCESS_SECRET),
         expiresIn: ACCESS_TOKEN_TTL_SECONDS,
         issuer: JWT_ISSUER,
         audience: JWT_AUDIENCE,
@@ -74,22 +86,27 @@ export class AuthService {
     );
     return { accessToken, refreshToken };
   }
+
   async refresh(token: string) {
     let claims: { sub: string; sid: string; kind: string };
+
     try {
       claims = await this.jwt.verifyAsync(token, {
-        secret: this.config.getOrThrow<string>('JWT_REFRESH_SECRET'),
+        secret: this.config.getOrThrow<string>(ENV_KEYS.JWT_REFRESH_SECRET),
         issuer: JWT_ISSUER,
         audience: JWT_AUDIENCE,
       });
     } catch {
       throw new UnauthorizedException();
     }
+
     if (
       claims.kind !== REFRESH_TOKEN_KIND ||
       !(await this.users.byId(claims.sub))
-    )
+    ) {
       throw new UnauthorizedException();
+    }
+
     const consumed = await this.database.db
       .delete(sessions)
       .where(
@@ -100,9 +117,14 @@ export class AuthService {
         ),
       )
       .returning();
-    if (!consumed.length) throw new UnauthorizedException();
+
+    if (!consumed.length) {
+      throw new UnauthorizedException();
+    }
+
     return this.issue(claims.sub);
   }
+
   async logout(token: string) {
     await this.database.db
       .delete(sessions)

@@ -4,13 +4,17 @@ import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+
+import { ENV_KEYS } from '../src/envKeys.constants.js';
+
 describe('HTTP boundary', () => {
   let app: NestExpressApplication;
   beforeAll(async () => {
-    process.env.DATABASE_URL = 'postgres://unused:unused@localhost/unused';
-    process.env.CLIENT_ORIGIN = 'http://localhost:5173';
-    process.env.JWT_ACCESS_SECRET = 'a'.repeat(32);
-    process.env.JWT_REFRESH_SECRET = 'b'.repeat(32);
+    process.env[ENV_KEYS.DATABASE_URL] =
+      'postgres://unused:unused@localhost/unused';
+    process.env[ENV_KEYS.CLIENT_ORIGIN] = 'http://localhost:5173';
+    process.env[ENV_KEYS.JWT_ACCESS_SECRET] = 'a'.repeat(32);
+    process.env[ENV_KEYS.JWT_REFRESH_SECRET] = 'b'.repeat(32);
     const modulePath = '../dist/app.module.js';
     const { AppModule } = (await import(
       modulePath

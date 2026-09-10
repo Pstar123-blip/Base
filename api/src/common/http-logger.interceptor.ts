@@ -6,9 +6,11 @@ import {
   type NestInterceptor,
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
+
 @Injectable()
 export class HttpLoggerInterceptor implements NestInterceptor {
   private readonly logger = new Logger('http');
+
   intercept(context: ExecutionContext, next: CallHandler) {
     const req = context.switchToHttp().getRequest<Request>();
     const res = context.switchToHttp().getResponse<Response>();
