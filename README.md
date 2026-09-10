@@ -27,7 +27,7 @@ Only VITE_ variables are exposed to browser code. Running the API or Vite direct
 
 After editing an env file, rerun `npm run docker:dev` to recreate affected containers; restarting an existing container does not reload its environment. Restart host-run processes after editing their environment.
 
-Production uses the same env-file paths with deployment-specific contents: `api/.env` for PostgreSQL, the API and migrations. Neither Compose file overrides environment values. The production client is static nginx output; VITE_ values are build-time configuration, so passing `client/.env` to nginx would not configure the compiled client.
+Production loads `api/.env` for PostgreSQL, the API and migrations. The client uses `serve` through its preview script to serve the compiled build on port 8080 with SPA fallback. VITE_ values remain build-time configuration; the static server does not load `client/.env` or proxy API requests. Route `/api` to the API through your deployment ingress.
 
 ## Commands
 
@@ -85,7 +85,7 @@ Generate contracts after changing API DTOs. Commit `api/openapi.json` and `clien
 
 `npm run docker:down` and `npm run docker:logs` target development; use `docker:prod:down` and `docker:prod:logs` for production.
 
-On the deployment host, copy `api/.env.example` to `api/.env`. Set PostgreSQL credentials in `api/.env`. In `api/.env`, set NODE_ENV=production, PORT=3000, a matching DATABASE_URL, independent random JWT secrets, and CLIENT_ORIGIN to the public HTTPS origin. These files belong to that deployment; do not reuse the development values for production. Run `npm run docker:prod`. Put a TLS-terminating ingress in front of port 8080. nginx serves the SPA and proxies /api to the private API. PostgreSQL is not exposed by production Compose. Migrations run as a one-off service before startup; back up the database and review migrations before deploying schema changes.
+On the deployment host, copy `api/.env.example` to `api/.env`. Set PostgreSQL credentials in `api/.env`. In `api/.env`, set NODE_ENV=production, PORT=3000, a matching DATABASE_URL, independent random JWT secrets, and CLIENT_ORIGIN to the public HTTPS origin. These files belong to that deployment; do not reuse the development values for production. Run `npm run docker:prod`. Configure a TLS-terminating ingress to route `/api` to the API at host port 3000 and all other paths to the client at port 8080. The API port is bound to host loopback for the ingress; an ingress on the Compose network can use `api:3000` and `client:8080` directly. `serve` handles static assets and SPA routes. PostgreSQL is not exposed by production Compose. Migrations run as a one-off service before startup; back up the database and review migrations before deploying schema changes.
 
 For a fork, rename workspace/image names, choose a license, customize the theme and application identity, decide whether public registration is appropriate, and configure backups and monitoring. Add distributed rate limiting at your ingress before exposing authentication publicly.
 

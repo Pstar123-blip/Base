@@ -19,6 +19,7 @@ services:
     build: { context: ., dockerfile: api/Dockerfile, target: production }
     restart: unless-stopped
     env_file: ./api/.env
+    ports: ['127.0.0.1:3000:3000']
     healthcheck:
       test:
         [
