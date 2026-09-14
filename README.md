@@ -21,7 +21,7 @@ Development Compose loads all service environment settings through `env_file`, w
 
 The env files use Docker service addresses directly: API DATABASE_URL connects to `db:5432`, and client API_PROXY_TARGET is `http://api:3000`. Browser-facing values remain `CLIENT_ORIGIN=http://localhost:5173` and `VITE_API_URL=/api`. Keep API PORT=3000 aligned with the Compose port mapping and proxy target.
 
-Keep POSTGRES_USER, POSTGRES_PASSWORD and POSTGRES_DB consistent with DATABASE_URL in `api/.env`. PostgreSQL initialization settings apply only to a new database volume; changing credentials for an existing database requires updating PostgreSQL itself.
+Keep POSTGRES_USER, POSTGRES_PASSWORD and POSTGRES_DB in the Docker Compose files consistent with DATABASE_URL in `api/.env`. PostgreSQL initialization settings apply only to a new database volume; changing credentials for an existing database requires updating PostgreSQL itself.
 
 Only VITE_ variables are exposed to browser code. Running the API or Vite directly on the host requires changing the Docker service addresses to localhost. Database commands run inside Docker by default; to apply migrations manually, use `docker compose -f docker-compose-dev.yml run --rm migrate`.
 
