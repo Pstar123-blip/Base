@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { and, eq, gt } from 'drizzle-orm';
 
 import { Database } from '../database/database.module.js';
-import { sessions } from '../database/schema.js';
+import { sessions } from './sessions.schema.js';
 
 @Injectable()
 export class SessionsRepository {

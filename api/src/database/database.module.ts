@@ -8,8 +8,9 @@ import { ConfigService } from '@nestjs/config';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 
+import { sessions } from '../auth/sessions.schema.js';
+import { users } from '../auth/users.schema.js';
 import { ENV_KEYS } from '../envKeys.constants.js';
-import { sessions, users } from './schema.js';
 
 @Injectable()
 export class Database implements OnModuleDestroy {
