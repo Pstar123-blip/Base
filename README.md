@@ -75,7 +75,7 @@ Winston handles Nest application logs and HTTP logs through the nest-winston ada
 
 ## Client conventions
 
-Material UI's centralized theme and CssBaseline wrap TanStack Router and Query. The route tree separates login from the authenticated layout and supplies pending, error and 404 views. Zustand holds ephemeral session/UI state; Query owns server state; React Hook Form owns forms.
+Material UI's centralized theme and CssBaseline wrap TanStack Router and Query. The home route automatically restores a session or obtains a token from the mock ADFS adapter in `client/src/lib/adfs.ts` and exchanges it with the project API. It shows a signing-in view while authentication runs and redirects failures to `/auth-error`, where users can retry. Sign-out opens `/signed-out` to avoid immediately signing in again. The legacy `/login` URL redirects home. The route tree also supplies error and 404 views. Zustand holds ephemeral session/UI state; Query owns server state; React Hook Form owns forms.
 
 Generate contracts after changing API DTOs. Commit `api/openapi.json` and `client/src/api/generated`; do not edit generated files. Generated hooks use the central Axios mutator, including AbortSignal cancellation. Query defaults avoid retries for 4xx errors, retry transient failures twice, and report errors centrally. Mutations do not retry automatically. In mutation `onSuccess`, invalidate the affected generated query key (for example `queryClient.invalidateQueries({queryKey: getMeQueryKey()})`). Parameterized keys must include filters and pagination; use generated key helpers where available.
 
@@ -91,7 +91,7 @@ For a fork, rename workspace/image names, choose a license, customize the theme 
 
 Patched transitive dependency overrides are recorded at the root for Multer, js-yaml 4.x and Drizzle Kit’s older esbuild helper. Reassess them when upgrading those parent packages; generation, builds and tests cover the overrides.
 
-ADFS is intentionally an extension point, not a configured provider. A real integration needs tenant metadata, client credentials, callback URLs and an identity-to-local-user mapping. Implement the authorization-code flow with PKCE in a separate auth provider module; map identities to local users and reuse application session issuance. Do not put identity-provider secrets in Vite environment variables.
+`POST /api/auth/login` accepts `{ "adfsToken": "..." }` and returns `{ accessToken, user }` with a refresh cookie. This is a mock ADFS implementation: any nonblank token signs in as the shared `mock.adfs@example.com` user, created on first login. Tokens are not verified with ADFS; replace this stub before using real authentication. Registration still accepts email/password. A real integration needs tenant metadata, client credentials, callback URLs and an identity-to-local-user mapping. Implement the authorization-code flow with PKCE in a separate auth provider module; map identities to local users and reuse application session issuance. Do not put identity-provider secrets in Vite environment variables.
 
 ## Testing
 

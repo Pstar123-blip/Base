@@ -50,6 +50,16 @@ describe('HTTP boundary', () => {
       .send({ email: 'invalid', password: 'short', unexpected: true })
       .expect(400);
   });
+  it.each([undefined, '', '   ', 123])(
+    'rejects missing or blank ADFS tokens: %s',
+    async (adfsToken) => {
+      await request(app.getHttpServer())
+        .post('/api/auth/login')
+        .set('Origin', 'http://localhost:5173')
+        .send({ adfsToken })
+        .expect(400);
+    },
+  );
   it('rejects cross-origin session requests', async () => {
     await request(app.getHttpServer())
       .post('/api/auth/refresh')

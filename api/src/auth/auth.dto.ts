@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  Matches,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 import {
   MAX_EMAIL_LENGTH,
@@ -33,4 +39,17 @@ export class UserDto {
 
 export class TokenDto {
   @ApiProperty() accessToken!: string;
+}
+
+export class AdfsLoginDto {
+  @ApiProperty({
+    description: 'ADFS token (mock: any nonblank value is accepted)',
+  })
+  @IsString()
+  @Matches(/\S/, { message: 'adfsToken must not be blank' })
+  adfsToken!: string;
+}
+
+export class LoginResponseDto extends TokenDto {
+  @ApiProperty({ type: UserDto }) user!: UserDto;
 }

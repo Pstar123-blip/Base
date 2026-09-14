@@ -45,6 +45,9 @@ describe('PostgreSQL authentication lifecycle', () => {
   afterAll(async () => {
     if (database) {
       await database.pool.query('DELETE FROM users WHERE email = $1', [email]);
+      await database.pool.query('DELETE FROM users WHERE email = $1', [
+        'mock.adfs@example.com',
+      ]);
     }
 
     await app?.close();
@@ -80,8 +83,8 @@ describe('PostgreSQL authentication lifecycle', () => {
     await agent
       .post('/api/auth/login')
       .set('Origin', origin)
-      .send({ email, password: 'incorrect-password' })
-      .expect(401);
+      .send({ adfsToken: '   ' })
+      .expect(400);
     await agent
       .get('/api/auth/me')
       .set('Authorization', 'Bearer tampered')
@@ -104,11 +107,13 @@ describe('PostgreSQL authentication lifecycle', () => {
     const login = await agent
       .post('/api/auth/login')
       .set('Origin', origin)
-      .send({ email, password })
+      .send({ adfsToken: 'integration-adfs-token' })
       .expect(200);
+    expect(login.body.user.email).toBe('mock.adfs@example.com');
+    expect(login.body.user.passwordHash).toBeUndefined();
     await database.pool.query(
-      'UPDATE users SET deleted_at = now(), updated_at = now() WHERE email = $1',
-      [email],
+      'UPDATE users SET deleted_at = now(), updated_at = now() WHERE id = $1',
+      [login.body.user.id],
     );
     await agent
       .get('/api/auth/me')

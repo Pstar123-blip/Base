@@ -62,7 +62,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CredentialsDto"
+                "$ref": "#/components/schemas/AdfsLoginDto"
               }
             }
           }
@@ -73,7 +73,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TokenDto"
+                  "$ref": "#/components/schemas/LoginResponseDto"
                 }
               }
             }
@@ -203,6 +203,18 @@
           "accessToken"
         ]
       },
+      "AdfsLoginDto": {
+        "type": "object",
+        "properties": {
+          "adfsToken": {
+            "type": "string",
+            "description": "ADFS token (mock: any nonblank value is accepted)"
+          }
+        },
+        "required": [
+          "adfsToken"
+        ]
+      },
       "UserDto": {
         "type": "object",
         "properties": {
@@ -223,6 +235,21 @@
           "id",
           "email",
           "permissions"
+        ]
+      },
+      "LoginResponseDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserDto"
+          }
+        },
+        "required": [
+          "accessToken",
+          "user"
         ]
       }
     }

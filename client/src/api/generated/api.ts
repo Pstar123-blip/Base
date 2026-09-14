@@ -24,8 +24,10 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AdfsLoginDto,
   CredentialsDto,
   HealthDto,
+  LoginResponseDto,
   TokenDto,
   UserDto
 } from './model';
@@ -202,15 +204,15 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     }
 
 export const login = (
-    credentialsDto: CredentialsDto,
+    adfsLoginDto: AdfsLoginDto,
  options?: SecondParameter<typeof request>,signal?: AbortSignal
 ) => {
 
 
-      return request<TokenDto>(
+      return request<LoginResponseDto>(
       {url: `/api/auth/login`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: credentialsDto, signal
+      data: adfsLoginDto, signal
     },
       options);
     }
@@ -248,9 +250,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type LoginMutationResult = NonNullable<Awaited<ReturnType<typeof login>>>
-    export type LoginMutationBody = CredentialsDto
+    export type LoginMutationBody = AdfsLoginDto
     export type LoginMutationError = unknown
-    export type LoginMutationVariables = {data: CredentialsDto}
+    export type LoginMutationVariables = {data: AdfsLoginDto}
 
     export const useLogin = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof login>>, TError,LoginMutationVariables, TContext>, request?: SecondParameter<typeof request>}

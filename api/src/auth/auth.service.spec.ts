@@ -16,7 +16,11 @@ function fixture() {
       insert: vi.fn(() => ({ values })),
     },
   };
-  const users = { byId: vi.fn().mockResolvedValue({ id: 'user-id' }) };
+  const users = {
+    byId: vi.fn().mockResolvedValue({ id: 'user-id' }),
+    byEmail: vi.fn(),
+    create: vi.fn(),
+  };
   const jwt = {
     verifyAsync: vi.fn().mockResolvedValue({
       sub: 'user-id',
@@ -75,5 +79,44 @@ describe('refresh rotation', () => {
     users.byId.mockResolvedValue(undefined);
     await expect(service.refresh('token')).rejects.toThrow();
     expect(returning).not.toHaveBeenCalled();
+  });
+});
+
+describe('mock ADFS login', () => {
+  const user = {
+    id: 'mock-id',
+    email: 'mock.adfs@example.com',
+    permissions: [],
+    passwordHash: 'private',
+  };
+
+  it('creates a mock account and returns its public profile with session tokens', async () => {
+    const { service, users, values } = fixture();
+    users.create.mockResolvedValue(user);
+    expect(await service.login('opaque-adfs-token')).toEqual({
+      accessToken: 'new-token',
+      refreshToken: 'new-token',
+      user: { id: user.id, email: user.email, permissions: [] },
+    });
+    expect(users.create).toHaveBeenCalledWith(user.email, expect.any(String));
+    expect(values).toHaveBeenCalledWith(
+      expect.objectContaining({ userId: user.id }),
+    );
+  });
+
+  it('reuses the mock account for subsequent tokens', async () => {
+    const { service, users } = fixture();
+    users.byEmail.mockResolvedValue(user);
+    await service.login('another-token');
+    expect(users.create).not.toHaveBeenCalled();
+  });
+
+  it('rejects blank tokens without creating a session', async () => {
+    const { service, values, users } = fixture();
+    await expect(service.login('   ')).rejects.toThrow(
+      'ADFS token is required',
+    );
+    expect(users.byEmail).not.toHaveBeenCalled();
+    expect(values).not.toHaveBeenCalled();
   });
 });

@@ -21,7 +21,7 @@ import {
   REFRESH_TOKEN_TTL_MS,
   REFRESH_TOKEN_TTL_SECONDS,
 } from './auth.constants.js';
-import { hashPassword, verifyPassword } from './password.js';
+import { hashPassword } from './password.js';
 import { UsersRepository } from './users.repository.js';
 
 const digest = (value: string) =>
@@ -48,14 +48,26 @@ export class AuthService {
     return this.issue(user.id);
   }
 
-  async login(email: string, password: string) {
-    const user = await this.users.byEmail(email.toLowerCase().trim());
-
-    if (!user || !(await verifyPassword(password, user.passwordHash))) {
-      throw new UnauthorizedException('Invalid credentials');
+  // Placeholder identity provider: replace with ADFS verification and identity mapping.
+  async login(adfsToken: string) {
+    if (!adfsToken?.trim()) {
+      throw new UnauthorizedException('ADFS token is required');
     }
 
-    return this.issue(user.id);
+    const email = 'mock.adfs@example.com';
+    const user =
+      (await this.users.byEmail(email)) ??
+      (await this.users.create(email, await hashPassword(randomUUID()))) ??
+      (await this.users.byEmail(email));
+
+    if (!user) {
+      throw new UnauthorizedException('Mock account is unavailable');
+    }
+
+    return {
+      ...(await this.issue(user.id)),
+      user: { id: user.id, email: user.email, permissions: user.permissions },
+    };
   }
 
   private async issue(userId: string) {

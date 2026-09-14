@@ -15,7 +15,13 @@ import type { CookieOptions, Request, Response } from 'express';
 
 import { ENV_KEYS } from '../envKeys.constants.js';
 import { REFRESH_COOKIE_NAME, REFRESH_TOKEN_TTL_MS } from './auth.constants.js';
-import { CredentialsDto, TokenDto, UserDto } from './auth.dto.js';
+import {
+  AdfsLoginDto,
+  CredentialsDto,
+  LoginResponseDto,
+  TokenDto,
+  UserDto,
+} from './auth.dto.js';
 import { Public, User } from './auth.guard.js';
 import { AuthService } from './auth.service.js';
 
@@ -72,14 +78,15 @@ export class AuthController {
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({ type: TokenDto })
+  @ApiOkResponse({ type: LoginResponseDto })
   async login(
-    @Body() dto: CredentialsDto,
+    @Body() dto: AdfsLoginDto,
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
     this.validateOrigin(req);
-    return this.respond(res, await this.auth.login(dto.email, dto.password));
+    const result = await this.auth.login(dto.adfsToken);
+    return { ...this.respond(res, result), user: result.user };
   }
 
   @Public()
