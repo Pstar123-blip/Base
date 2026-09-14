@@ -3,7 +3,7 @@ import { PassThrough } from 'node:stream';
 import { describe, expect, it } from 'vitest';
 import { transports } from 'winston';
 
-import { createAppLogger, requestContext } from './logger.js';
+import { createAppLogger } from './logger.js';
 
 function capture(level = 'info') {
   const stream = new PassThrough();
@@ -19,27 +19,24 @@ function capture(level = 'info') {
 }
 
 describe('ECS logging', () => {
-  it('emits structured HTTP fields with a timestamp and request ID', () => {
+  it('emits structured HTTP fields with a timestamp', () => {
     const { logger, records } = capture();
-    requestContext.run({ requestId: 'request-1' }, () => {
-      logger.log(
-        {
-          message: 'HTTP request completed',
-          method: 'GET',
-          path: '/api/health',
-          statusCode: 200,
-          durationMs: 12,
-        },
-        'http',
-      );
-    });
+    logger.log(
+      {
+        message: 'HTTP request completed',
+        method: 'GET',
+        path: '/api/health',
+        statusCode: 200,
+        durationMs: 12,
+      },
+      'http',
+    );
     expect(records).toEqual([
       expect.objectContaining({
         '@timestamp': expect.any(String),
         'ecs.version': expect.any(String),
         'log.level': 'info',
         'service.name': 'api',
-        'http.request.id': 'request-1',
         'log.logger': 'http',
         message: 'HTTP request completed',
         'http.request.method': 'GET',
@@ -56,7 +53,6 @@ describe('ECS logging', () => {
       'timestamp',
       'level',
       'service',
-      'requestId',
       'context',
       'method',
       'path',
@@ -65,30 +61,6 @@ describe('ECS logging', () => {
     ]) {
       expect(records[0]).not.toHaveProperty(key);
     }
-  });
-
-  it('isolates concurrent request contexts and handles logs outside requests', async () => {
-    const { logger, records } = capture();
-    await Promise.all(
-      ['first', 'second'].map((requestId) =>
-        requestContext.run({ requestId }, async () => {
-          await Promise.resolve();
-          logger.log(requestId);
-        }),
-      ),
-    );
-    logger.log('startup');
-    expect(records.map((record) => record['http.request.id'])).toEqual([
-      'first',
-      'second',
-      undefined,
-    ]);
-  });
-
-  it('retains explicit request IDs for completion callbacks', () => {
-    const { logger, records } = capture();
-    logger.log({ message: 'completed', requestId: 'finished-request' }, 'http');
-    expect(records[0]?.['http.request.id']).toBe('finished-request');
   });
 
   it('preserves error stacks, supports fatal, and filters debug logs', () => {

@@ -1,10 +1,6 @@
-import { AsyncLocalStorage } from 'node:async_hooks';
-
 import { ecsFormat } from '@elastic/ecs-winston-format';
 import { WinstonModule } from 'nest-winston';
 import { format, type LoggerOptions, transports } from 'winston';
-
-export const requestContext = new AsyncLocalStorage<{ requestId: string }>();
 
 export function createAppLogger(
   options: Pick<LoggerOptions, 'level' | 'transports'> = {},
@@ -25,9 +21,6 @@ export function createAppLogger(
     format: format.combine(
       format.errors({ stack: true }),
       format((info) => {
-        const requestId =
-          info.requestId ?? requestContext.getStore()?.requestId;
-        if (requestId) info['http.request.id'] = requestId;
         if (info.context) info['log.logger'] = info.context;
         if (info.method !== undefined)
           info['http.request.method'] = info.method;
@@ -52,7 +45,6 @@ export function createAppLogger(
         }
 
         for (const key of [
-          'requestId',
           'context',
           'method',
           'path',

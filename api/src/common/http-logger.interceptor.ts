@@ -19,7 +19,6 @@ export class HttpLoggerInterceptor implements NestInterceptor {
     res.once('finish', () =>
       this.logger.log({
         message: 'HTTP request completed',
-        requestId: res.getHeader('x-request-id'),
         method: req.method,
         path: req.path,
         statusCode: res.statusCode,

@@ -1,5 +1,3 @@
-import { randomUUID } from 'node:crypto';
-
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { NestExpressApplication } from '@nestjs/platform-express';
@@ -8,7 +6,6 @@ import cookieParser from 'cookie-parser';
 import type { NextFunction, Request, Response } from 'express';
 import helmet from 'helmet';
 
-import { requestContext } from './common/logger.js';
 import { ENV_KEYS } from './envKeys.constants.js';
 
 export function setup(app: NestExpressApplication) {
@@ -16,14 +13,11 @@ export function setup(app: NestExpressApplication) {
   app.use(helmet());
   app.use(cookieParser());
   app.use((req: Request, res: Response, next: NextFunction) => {
-    const requestId = randomUUID();
     const start = Date.now();
-    res.setHeader('x-request-id', requestId);
     res.once('finish', () => {
       if (!res.locals.httpLoggerAttached) {
         new Logger('http').log({
           message: 'HTTP request completed',
-          requestId,
           method: req.method,
           path: req.path,
           statusCode: res.statusCode,
@@ -31,7 +25,7 @@ export function setup(app: NestExpressApplication) {
         });
       }
     });
-    requestContext.run({ requestId }, next);
+    next();
   });
   app.enableCors({
     origin: app.get(ConfigService).getOrThrow<string>(ENV_KEYS.CLIENT_ORIGIN),

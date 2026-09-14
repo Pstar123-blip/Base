@@ -37,7 +37,6 @@ describe('HTTP boundary', () => {
       .get('/api/health')
       .expect(200);
     expect(response.body).toEqual({ status: 'ok' });
-    expect(response.headers['x-request-id']).toBeTruthy();
     expect(response.headers['x-content-type-options']).toBe('nosniff');
   });
   it('protects private routes', async () => {
