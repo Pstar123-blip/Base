@@ -18,28 +18,53 @@ function capture(level = 'info') {
   return { logger, records };
 }
 
-describe('Winston logging', () => {
+describe('ECS logging', () => {
   it('emits structured HTTP fields with a timestamp and request ID', () => {
     const { logger, records } = capture();
     requestContext.run({ requestId: 'request-1' }, () => {
       logger.log(
-        { message: 'HTTP request completed', method: 'GET', statusCode: 200 },
+        {
+          message: 'HTTP request completed',
+          method: 'GET',
+          path: '/api/health',
+          statusCode: 200,
+          durationMs: 12,
+        },
         'http',
       );
     });
     expect(records).toEqual([
       expect.objectContaining({
-        timestamp: expect.any(String),
-        level: 'info',
-        service: 'api',
-        requestId: 'request-1',
-        context: 'http',
+        '@timestamp': expect.any(String),
+        'ecs.version': expect.any(String),
+        'log.level': 'info',
+        'service.name': 'api',
+        'http.request.id': 'request-1',
+        'log.logger': 'http',
         message: 'HTTP request completed',
-        method: 'GET',
-        statusCode: 200,
+        'http.request.method': 'GET',
+        'url.path': '/api/health',
+        'http.response.status_code': 200,
+        'event.duration': 12_000_000,
       }),
     ]);
-    expect(Number.isNaN(Date.parse(String(records[0]?.timestamp)))).toBe(false);
+    expect(Number.isNaN(Date.parse(String(records[0]?.['@timestamp'])))).toBe(
+      false,
+    );
+
+    for (const key of [
+      'timestamp',
+      'level',
+      'service',
+      'requestId',
+      'context',
+      'method',
+      'path',
+      'statusCode',
+      'durationMs',
+    ]) {
+      expect(records[0]).not.toHaveProperty(key);
+    }
   });
 
   it('isolates concurrent request contexts and handles logs outside requests', async () => {
@@ -53,17 +78,17 @@ describe('Winston logging', () => {
       ),
     );
     logger.log('startup');
-    expect(records.map(({ requestId }) => requestId)).toEqual([
+    expect(records.map((record) => record['http.request.id'])).toEqual([
       'first',
       'second',
-      null,
+      undefined,
     ]);
   });
 
   it('retains explicit request IDs for completion callbacks', () => {
     const { logger, records } = capture();
     logger.log({ message: 'completed', requestId: 'finished-request' }, 'http');
-    expect(records[0]?.requestId).toBe('finished-request');
+    expect(records[0]?.['http.request.id']).toBe('finished-request');
   });
 
   it('preserves error stacks, supports fatal, and filters debug logs', () => {
@@ -74,15 +99,36 @@ describe('Winston logging', () => {
     logger.debug?.('filtered');
     expect(records).toHaveLength(2);
     expect(records[0]).toMatchObject({
-      level: 'error',
+      'log.level': 'error',
       message: error.message,
-      context: 'database',
-      stack: [error.stack],
+      'log.logger': 'database',
+      error: {
+        type: 'Error',
+        message: error.message,
+        stack_trace: error.stack,
+      },
     });
     expect(records[1]).toMatchObject({
-      level: 'fatal',
+      'log.level': 'fatal',
       message: 'cannot start',
-      context: 'bootstrap',
+      'log.logger': 'bootstrap',
     });
+  });
+
+  it('formats string errors with Nest stack traces', () => {
+    const { logger, records } = capture();
+    logger.error(
+      'request failed',
+      'Error: request failed\n    at handler',
+      'http',
+    );
+    expect(records[0]).toMatchObject({
+      'log.level': 'error',
+      error: {
+        message: 'request failed',
+        stack_trace: 'Error: request failed\n    at handler',
+      },
+    });
+    expect(records[0]).not.toHaveProperty('stack');
   });
 });
