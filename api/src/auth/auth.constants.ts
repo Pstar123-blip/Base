@@ -2,8 +2,8 @@ const SECONDS_PER_MINUTE = 60;
 const SECONDS_PER_DAY = 24 * 60 * SECONDS_PER_MINUTE;
 const MILLISECONDS_PER_SECOND = 1000;
 
-export const JWT_ISSUER = 'starter-api';
-export const JWT_AUDIENCE = 'starter-client';
+export const JWT_ISSUER = 'api';
+export const JWT_AUDIENCE = 'client';
 export const ACCESS_TOKEN_KIND = 'access';
 export const REFRESH_TOKEN_KIND = 'refresh';
 export const ACCESS_TOKEN_TTL_SECONDS = 15 * SECONDS_PER_MINUTE;

@@ -22,7 +22,7 @@ export function Layout() {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Project starter
+            Project
           </Typography>
           <Button color="inherit" onClick={() => setConfirm(true)}>
             Sign out

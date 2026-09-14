@@ -12,7 +12,7 @@
     "format": "eslint . --fix && prettier --write src",
     "generate": "orval --config orval.config.ts",
     "test": "vitest run",
-    "docker-build": "docker build -f Dockerfile -t starter-client .."
+    "docker-build": "docker build -f Dockerfile -t client .."
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

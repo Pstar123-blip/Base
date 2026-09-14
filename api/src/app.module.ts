@@ -13,8 +13,6 @@ import { DatabaseModule } from './database/database.module.js';
     DatabaseModule,
     AuthModule,
   ],
-  providers: [
-    { provide: APP_INTERCEPTOR, useClass: HttpLoggerInterceptor },
-  ],
+  providers: [{ provide: APP_INTERCEPTOR, useClass: HttpLoggerInterceptor }],
 })
 export class AppModule {}

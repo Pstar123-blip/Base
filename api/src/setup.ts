@@ -42,7 +42,7 @@ export function setup(app: NestExpressApplication) {
   return SwaggerModule.createDocument(
     app,
     new DocumentBuilder()
-      .setTitle('Starter API')
+      .setTitle('API')
       .setVersion('1.0')
       .addBearerAuth()
       .build(),

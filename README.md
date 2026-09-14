@@ -1,4 +1,4 @@
-# Full-stack starter
+# Full-stack app
 
 A strict TypeScript npm workspace orchestrated by Turborepo with NestJS/Express, PostgreSQL/Drizzle, and React/Vite. Node 24 and Docker Compose are recommended.
 

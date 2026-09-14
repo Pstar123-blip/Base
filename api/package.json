@@ -25,7 +25,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
-    "docker-build": "docker build -f Dockerfile -t starter-api ..",
+    "docker-build": "docker build -f Dockerfile -t api ..",
     "test:integration": "npm run build && vitest run --config vitest.config.integration.ts"
   },
   "dependencies": {
