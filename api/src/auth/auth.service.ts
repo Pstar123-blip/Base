@@ -1,10 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto';
 
-import {
-  ConflictException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { and, eq, gt } from 'drizzle-orm';
@@ -12,16 +8,17 @@ import { and, eq, gt } from 'drizzle-orm';
 import { Database } from '../database/database.module.js';
 import { sessions } from '../database/schema.js';
 import { ENV_KEYS } from '../envKeys.constants.js';
+import { AdfsService } from './adfs.service.js';
 import {
   ACCESS_TOKEN_KIND,
   ACCESS_TOKEN_TTL_SECONDS,
   JWT_AUDIENCE,
   JWT_ISSUER,
+  MAX_USERNAME_LENGTH,
   REFRESH_TOKEN_KIND,
   REFRESH_TOKEN_TTL_MS,
   REFRESH_TOKEN_TTL_SECONDS,
 } from './auth.constants.js';
-import { hashPassword } from './password.js';
 import { UsersRepository } from './users.repository.js';
 
 const digest = (value: string) =>
@@ -33,40 +30,36 @@ export class AuthService {
     private readonly database: Database,
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
+    private readonly adfs: AdfsService,
   ) {}
 
-  async register(email: string, password: string) {
-    const user = await this.users.create(
-      email.toLowerCase().trim(),
-      await hashPassword(password),
-    );
-
-    if (!user) {
-      throw new ConflictException('Account already exists');
-    }
-
-    return this.issue(user.id);
-  }
-
-  // Placeholder identity provider: replace with ADFS verification and identity mapping.
   async login(adfsToken: string) {
     if (!adfsToken?.trim()) {
       throw new UnauthorizedException('ADFS token is required');
     }
 
-    const email = 'mock.adfs@example.com';
+    const { username } = await this.adfs.getUser(adfsToken);
+
+    if (
+      typeof username !== 'string' ||
+      !username.trim() ||
+      username.length > MAX_USERNAME_LENGTH
+    ) {
+      throw new UnauthorizedException('ADFS user must have a unique username');
+    }
+
     const user =
-      (await this.users.byEmail(email)) ??
-      (await this.users.create(email, await hashPassword(randomUUID()))) ??
-      (await this.users.byEmail(email));
+      (await this.users.byUsername(username)) ??
+      (await this.users.create(username)) ??
+      (await this.users.byUsername(username));
 
     if (!user) {
-      throw new UnauthorizedException('Mock account is unavailable');
+      throw new UnauthorizedException('Account is unavailable');
     }
 
     return {
       ...(await this.issue(user.id)),
-      user: { id: user.id, email: user.email, permissions: user.permissions },
+      user: { id: user.id, username: user.username },
     };
   }
 

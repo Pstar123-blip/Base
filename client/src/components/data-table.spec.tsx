@@ -10,10 +10,10 @@ describe('DataTable', () => {
     render(
       <DataTable
         data={[
-          { id: '1', email: 'alice@example.com' },
-          { id: '2', email: 'bob@example.com' },
+          { id: '1', username: 'alice' },
+          { id: '2', username: 'bob' },
         ]}
-        columns={[{ accessorKey: 'email', header: 'Email' }]}
+        columns={[{ accessorKey: 'username', header: 'Username' }]}
         getRowId={(row) => row.id}
       />,
     );
@@ -24,17 +24,17 @@ describe('DataTable', () => {
     fireEvent.change(screen.getByLabelText('Filter rows'), {
       target: { value: 'bob' },
     });
-    expect(screen.queryByText('alice@example.com')).toBeNull();
-    expect(screen.getByText('bob@example.com')).toBeTruthy();
-    fireEvent.click(screen.getByLabelText('email'));
-    expect(screen.queryByText('bob@example.com')).toBeNull();
+    expect(screen.queryByText('alice')).toBeNull();
+    expect(screen.getByText('bob')).toBeTruthy();
+    fireEvent.click(screen.getByLabelText('username'));
+    expect(screen.queryByText('bob')).toBeNull();
   });
   it('reports remote page changes without slicing the loaded page again', () => {
     const changes: unknown[] = [];
     render(
       <DataTable
-        data={[{ id: '11', email: 'page-two@example.com' }]}
-        columns={[{ accessorKey: 'email', header: 'Email' }]}
+        data={[{ id: '11', username: 'page-two' }]}
+        columns={[{ accessorKey: 'username', header: 'Username' }]}
         getRowId={(row) => row.id}
         serverPagination={{
           state: { pageIndex: 1, pageSize: 10 },
@@ -43,7 +43,7 @@ describe('DataTable', () => {
         }}
       />,
     );
-    expect(screen.getByText('page-two@example.com')).toBeTruthy();
+    expect(screen.getByText('page-two')).toBeTruthy();
     fireEvent.click(screen.getByLabelText('Go to next page'));
     expect(changes).toHaveLength(1);
   });

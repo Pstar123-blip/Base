@@ -8,12 +8,12 @@ import { users } from '../database/schema.js';
 export class UsersRepository {
   constructor(private readonly database: Database) {}
 
-  async byEmail(email: string) {
+  async byUsername(username: string) {
     return (
       await this.database.db
         .select()
         .from(users)
-        .where(and(eq(users.email, email), isNull(users.deletedAt)))
+        .where(and(eq(users.username, username), isNull(users.deletedAt)))
         .limit(1)
     )[0];
   }
@@ -28,11 +28,11 @@ export class UsersRepository {
     )[0];
   }
 
-  async create(email: string, passwordHash: string) {
+  async create(username: string) {
     return (
       await this.database.db
         .insert(users)
-        .values({ email, passwordHash })
+        .values({ username })
         .onConflictDoNothing()
         .returning()
     )[0];

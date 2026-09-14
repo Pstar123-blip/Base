@@ -201,7 +201,7 @@ function Dashboard() {
   }
 
   const columns = [
-    { accessorKey: 'email', header: 'Email' },
+    { accessorKey: 'username', header: 'Username' },
     { accessorKey: 'id', header: 'User ID' },
   ];
   return (

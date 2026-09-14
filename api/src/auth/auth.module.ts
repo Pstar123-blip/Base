@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 
+import { AdfsService } from './adfs.service.js';
 import { AuthController } from './auth.controller.js';
 import { AuthGuard } from './auth.guard.js';
 import { AuthService } from './auth.service.js';
@@ -12,6 +13,7 @@ import { UsersRepository } from './users.repository.js';
   controllers: [AuthController],
   providers: [
     AuthService,
+    AdfsService,
     UsersRepository,
     { provide: APP_GUARD, useClass: AuthGuard },
   ],

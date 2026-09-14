@@ -25,7 +25,6 @@ import type {
 
 import type {
   AdfsLoginDto,
-  CredentialsDto,
   HealthDto,
   LoginResponseDto,
   TokenDto,
@@ -140,68 +139,6 @@ export function useHealth<TData = Awaited<ReturnType<typeof health>>, TError = u
 
 
 
-
-export const register = (
-    credentialsDto: CredentialsDto,
- options?: SecondParameter<typeof request>,signal?: AbortSignal
-) => {
-
-
-      return request<TokenDto>(
-      {url: `/api/auth/register`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: credentialsDto, signal
-    },
-      options);
-    }
-
-
-
-
-export const getRegisterMutationKey = () => ['register'] as const;
-
-export const getRegisterMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof register>>, TError,RegisterMutationVariables, TContext>, request?: SecondParameter<typeof request>}
-): UseMutationOptions<Awaited<ReturnType<typeof register>>, TError,RegisterMutationVariables, TContext> => {
-
-const mutationKey = getRegisterMutationKey();
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof register>>, RegisterMutationVariables> = (props) => {
-          const {data} = props ?? {};
-
-          return  register(data,requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type RegisterMutationResult = NonNullable<Awaited<ReturnType<typeof register>>>
-    export type RegisterMutationBody = CredentialsDto
-    export type RegisterMutationError = unknown
-    export type RegisterMutationVariables = {data: CredentialsDto}
-
-    export const useRegister = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof register>>, TError,RegisterMutationVariables, TContext>, request?: SecondParameter<typeof request>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof register>>,
-        TError,
-        RegisterMutationVariables,
-        TContext
-      > => {
-      return useMutation(getRegisterMutationOptions(options), queryClient);
-    }
 
 export const login = (
     adfsLoginDto: AdfsLoginDto,

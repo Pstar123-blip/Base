@@ -8,18 +8,12 @@ import { ENV_KEYS } from '../envKeys.constants.js';
 import { AuthGuard } from './auth.guard.js';
 import type { UsersRepository } from './users.repository.js';
 
-function fixture(
-  permissions: string[] = [],
-  required: string[] = [],
-  isPublic = false,
-) {
+function fixture(isPublic = false) {
   const request: { headers: { authorization: string }; user?: unknown } = {
     headers: { authorization: 'Bearer valid-token' },
   };
   const reflector = {
-    getAllAndOverride: vi.fn((key: string) =>
-      key === 'public' ? isPublic : required,
-    ),
+    getAllAndOverride: vi.fn(() => isPublic),
   };
   const jwt = {
     verifyAsync: vi.fn().mockResolvedValue({ sub: 'user-id', kind: 'access' }),
@@ -27,9 +21,8 @@ function fixture(
   const users = {
     byId: vi.fn().mockResolvedValue({
       id: 'user-id',
-      email: 'user@example.com',
-      passwordHash: 'secret',
-      permissions,
+      username: 'user',
+      createdAt: new Date(),
     }),
   };
   const context = {
@@ -48,24 +41,16 @@ function fixture(
 
 describe('authorization', () => {
   it('allows public endpoints without parsing credentials', async () => {
-    const { guard, context, jwt } = fixture([], [], true);
+    const { guard, context, jwt } = fixture(true);
     expect(await guard.canActivate(context)).toBe(true);
     expect(jwt.verifyAsync).not.toHaveBeenCalled();
   });
-  it('requires every declared permission', async () => {
-    const { guard, context } = fixture(
-      ['users:read'],
-      ['users:read', 'users:write'],
-    );
-    await expect(guard.canActivate(context)).rejects.toThrow('Forbidden');
-  });
-  it('returns a safe user DTO when current permissions allow access', async () => {
-    const { guard, context, request } = fixture(['users:read'], ['users:read']);
+  it('returns a safe user DTO for an authenticated user', async () => {
+    const { guard, context, request } = fixture();
     expect(await guard.canActivate(context)).toBe(true);
     expect(request.user).toEqual({
       id: 'user-id',
-      email: 'user@example.com',
-      permissions: ['users:read'],
+      username: 'user',
     });
   });
   it('rejects refresh tokens used as access credentials', async () => {

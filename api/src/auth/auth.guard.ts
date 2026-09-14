@@ -2,7 +2,6 @@ import {
   type CanActivate,
   createParamDecorator,
   type ExecutionContext,
-  ForbiddenException,
   Injectable,
   SetMetadata,
   UnauthorizedException,
@@ -22,11 +21,8 @@ import type { UserDto } from './auth.dto.js';
 import { UsersRepository } from './users.repository.js';
 
 const PUBLIC_METADATA_KEY = 'public';
-const PERMISSIONS_METADATA_KEY = 'permissions';
 
 export const Public = () => SetMetadata(PUBLIC_METADATA_KEY, true);
-export const Permissions = (...permissions: string[]) =>
-  SetMetadata(PERMISSIONS_METADATA_KEY, permissions);
 export const User = createParamDecorator(
   (_data: unknown, context: ExecutionContext) =>
     context.switchToHttp().getRequest<Request & { user: UserDto }>().user,
@@ -83,21 +79,8 @@ export class AuthGuard implements CanActivate {
 
     request.user = {
       id: user.id,
-      email: user.email,
-      permissions: user.permissions,
+      username: user.username,
     };
-    const required =
-      this.reflector.getAllAndOverride<string[]>(PERMISSIONS_METADATA_KEY, [
-        context.getHandler(),
-        context.getClass(),
-      ]) ?? [];
-
-    if (
-      !required.every((permission) => user.permissions.includes(permission))
-    ) {
-      throw new ForbiddenException();
-    }
-
     return true;
   }
 }

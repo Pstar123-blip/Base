@@ -47,7 +47,7 @@ describe('HTTP boundary', () => {
     await request(app.getHttpServer())
       .post('/api/auth/login')
       .set('Origin', 'http://localhost:5173')
-      .send({ email: 'invalid', password: 'short', unexpected: true })
+      .send({ adfsToken: 'token', unexpected: true })
       .expect(400);
   });
   it.each([undefined, '', '   ', 123])(

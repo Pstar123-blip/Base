@@ -17,7 +17,6 @@ import { ENV_KEYS } from '../envKeys.constants.js';
 import { REFRESH_COOKIE_NAME, REFRESH_TOKEN_TTL_MS } from './auth.constants.js';
 import {
   AdfsLoginDto,
-  CredentialsDto,
   LoginResponseDto,
   TokenDto,
   UserDto,
@@ -60,19 +59,6 @@ export class AuthController {
       maxAge: REFRESH_TOKEN_TTL_MS,
     });
     return { accessToken: tokens.accessToken };
-  }
-
-  @Public()
-  @Post('register')
-  @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({ type: TokenDto })
-  async register(
-    @Body() dto: CredentialsDto,
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    this.validateOrigin(req);
-    return this.respond(res, await this.auth.register(dto.email, dto.password));
   }
 
   @Public()

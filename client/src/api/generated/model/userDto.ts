@@ -7,6 +7,5 @@
 
 export interface UserDto {
   id: string;
-  email: string;
-  permissions: string[];
+  username: string;
 }
