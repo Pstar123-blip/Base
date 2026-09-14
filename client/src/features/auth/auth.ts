@@ -2,7 +2,7 @@ import axios from 'axios';
 
 import { login } from '@/api/generated/api';
 import { refreshSession } from '@/api/http';
-import { adfsService } from '@/lib/adfs';
+import { adfsService } from '@/features/auth/adfs';
 import { queryClient } from '@/lib/query';
 import { useSession } from '@/lib/store';
 

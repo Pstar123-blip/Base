@@ -6,7 +6,6 @@
  */
 
 export * from './adfsLoginDto';
-export * from './credentialsDto';
 export * from './healthDto';
 export * from './loginResponseDto';
 export * from './tokenDto';

@@ -4,9 +4,9 @@ import { RouterProvider } from '@tanstack/react-router';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
+import { router } from '@/app/router';
 import { queryClient } from '@/lib/query';
 import { theme } from '@/lib/theme';
-import { router } from '@/router';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

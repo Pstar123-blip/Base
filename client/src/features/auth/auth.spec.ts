@@ -11,12 +11,14 @@ vi.mock('@/api/generated/api', () => ({ login: mocks.login }));
 vi.mock('@/api/http', () => ({
   refreshSession: mocks.refresh,
 }));
-vi.mock('@/lib/adfs', () => ({ adfsService: { getToken: mocks.getToken } }));
+vi.mock('@/features/auth/adfs', () => ({
+  adfsService: { getToken: mocks.getToken },
+}));
 vi.mock('@/lib/query', () => ({
   queryClient: { cancelQueries: mocks.cancel, clear: mocks.clear },
 }));
 
-import { ensureSession } from '@/lib/auth';
+import { ensureSession } from '@/features/auth/auth';
 import { useSession } from '@/lib/store';
 
 beforeEach(() => {
