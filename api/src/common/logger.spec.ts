@@ -1,6 +1,6 @@
 import { PassThrough } from 'node:stream';
 
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@jest/globals';
 import { transports } from 'winston';
 
 import { createAppLogger } from './logger.js';

@@ -1,8 +1,8 @@
+import { describe, expect, it, jest } from '@jest/globals';
 import type { ExecutionContext } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { Reflector } from '@nestjs/core';
 import type { JwtService } from '@nestjs/jwt';
-import { describe, expect, it, vi } from 'vitest';
 
 import { ENV_KEYS } from '../envKeys.constants.js';
 import { AuthGuard } from './auth.guard.js';
@@ -13,17 +13,21 @@ function fixture(isPublic = false) {
     headers: { authorization: 'Bearer valid-token' },
   };
   const reflector = {
-    getAllAndOverride: vi.fn(() => isPublic),
+    getAllAndOverride: jest.fn(() => isPublic),
   };
   const jwt = {
-    verifyAsync: vi.fn().mockResolvedValue({ sub: 'user-id', kind: 'access' }),
+    verifyAsync: jest
+      .fn<(...args: unknown[]) => Promise<unknown>>()
+      .mockResolvedValue({ sub: 'user-id', kind: 'access' }),
   };
   const users = {
-    byId: vi.fn().mockResolvedValue({
-      id: 'user-id',
-      username: 'user',
-      createdAt: new Date(),
-    }),
+    byId: jest
+      .fn<(...args: unknown[]) => Promise<unknown>>()
+      .mockResolvedValue({
+        id: 'user-id',
+        username: 'user',
+        createdAt: new Date(),
+      }),
   };
   const context = {
     getHandler: () => () => {},

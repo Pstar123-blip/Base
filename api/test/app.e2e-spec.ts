@@ -1,9 +1,9 @@
 import 'reflect-metadata';
 
+import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import request from 'supertest';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { ENV_KEYS } from '../src/envKeys.constants.js';
 

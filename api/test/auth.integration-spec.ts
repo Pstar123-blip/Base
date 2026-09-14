@@ -2,11 +2,11 @@ import 'reflect-metadata';
 
 import { randomUUID } from 'node:crypto';
 
+import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import request from 'supertest';
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { ENV_KEYS } from '../src/envKeys.constants.js';
 
@@ -40,7 +40,7 @@ describe('PostgreSQL authentication lifecycle', () => {
     const { AdfsService } = (await import(
       adfsPath
     )) as typeof import('../src/auth/adfs.service.js');
-    vi.spyOn(app.get(AdfsService), 'getUser').mockResolvedValue({ username });
+    jest.spyOn(app.get(AdfsService), 'getUser').mockResolvedValue({ username });
     setup(app);
     database = app.get(Database);
     await migrate(database.db, { migrationsFolder: 'drizzle' });

@@ -1,6 +1,6 @@
+import { describe, expect, it, jest } from '@jest/globals';
 import { ConfigService } from '@nestjs/config';
 import { type JwtService } from '@nestjs/jwt';
-import { describe, expect, it, vi } from 'vitest';
 
 import { ENV_KEYS } from '../envKeys.constants.js';
 import type { AdfsService } from './adfs.service.js';
@@ -10,25 +10,39 @@ import type { UsersRepository } from './users.repository.js';
 
 function fixture() {
   const sessions = {
-    consume: vi.fn().mockResolvedValue(true),
-    create: vi.fn().mockResolvedValue(undefined),
-    deleteByTokenHash: vi.fn().mockResolvedValue(undefined),
+    consume: jest
+      .fn<(...args: unknown[]) => Promise<unknown>>()
+      .mockResolvedValue(true),
+    create: jest
+      .fn<(...args: unknown[]) => Promise<unknown>>()
+      .mockResolvedValue(undefined),
+    deleteByTokenHash: jest
+      .fn<(...args: unknown[]) => Promise<unknown>>()
+      .mockResolvedValue(undefined),
   };
   const users = {
-    byId: vi.fn().mockResolvedValue({ id: 'user-id' }),
-    byUsername: vi.fn(),
-    create: vi.fn(),
+    byId: jest
+      .fn<(...args: unknown[]) => Promise<unknown>>()
+      .mockResolvedValue({ id: 'user-id' }),
+    byUsername: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
+    create: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
   };
   const jwt = {
-    verifyAsync: vi.fn().mockResolvedValue({
-      sub: 'user-id',
-      sid: 'session-id',
-      kind: 'refresh',
-    }),
-    signAsync: vi.fn().mockResolvedValue('new-token'),
+    verifyAsync: jest
+      .fn<(...args: unknown[]) => Promise<unknown>>()
+      .mockResolvedValue({
+        sub: 'user-id',
+        sid: 'session-id',
+        kind: 'refresh',
+      }),
+    signAsync: jest
+      .fn<(...args: unknown[]) => Promise<unknown>>()
+      .mockResolvedValue('new-token'),
   };
   const adfs = {
-    getUser: vi.fn().mockResolvedValue({ username: 'mock.adfs' }),
+    getUser: jest
+      .fn<(...args: unknown[]) => Promise<unknown>>()
+      .mockResolvedValue({ username: 'mock.adfs' }),
   };
   const service = new AuthService(
     users as unknown as UsersRepository,
