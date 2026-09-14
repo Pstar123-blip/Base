@@ -3,10 +3,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { and, eq, gt } from 'drizzle-orm';
 
-import { Database } from '../database/database.module.js';
-import { sessions } from '../database/schema.js';
 import { ENV_KEYS } from '../envKeys.constants.js';
 import { AdfsService } from './adfs.service.js';
 import {
@@ -19,6 +16,7 @@ import {
   REFRESH_TOKEN_TTL_MS,
   REFRESH_TOKEN_TTL_SECONDS,
 } from './auth.constants.js';
+import { SessionsRepository } from './sessions.repository.js';
 import { UsersRepository } from './users.repository.js';
 
 const digest = (value: string) =>
@@ -27,7 +25,7 @@ const digest = (value: string) =>
 export class AuthService {
   constructor(
     private readonly users: UsersRepository,
-    private readonly database: Database,
+    private readonly sessions: SessionsRepository,
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
     private readonly adfs: AdfsService,
@@ -74,7 +72,7 @@ export class AuthService {
         audience: JWT_AUDIENCE,
       },
     );
-    await this.database.db.insert(sessions).values({
+    await this.sessions.create({
       id,
       userId,
       tokenHash: digest(refreshToken),
@@ -112,18 +110,9 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const consumed = await this.database.db
-      .delete(sessions)
-      .where(
-        and(
-          eq(sessions.id, claims.sid),
-          eq(sessions.tokenHash, digest(token)),
-          gt(sessions.expiresAt, new Date()),
-        ),
-      )
-      .returning();
+    const consumed = await this.sessions.consume(claims.sid, digest(token));
 
-    if (!consumed.length) {
+    if (!consumed) {
       throw new UnauthorizedException();
     }
 
@@ -131,8 +120,6 @@ export class AuthService {
   }
 
   async logout(token: string) {
-    await this.database.db
-      .delete(sessions)
-      .where(eq(sessions.tokenHash, digest(token)));
+    await this.sessions.deleteByTokenHash(digest(token));
   }
 }

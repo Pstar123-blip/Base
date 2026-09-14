@@ -65,7 +65,7 @@ Use `npm run build -- --filter=api` to build only the API, or `npx turbo run bui
 
 ## API conventions
 
-Use a feature module with controller → service → repository. Controllers validate DTOs and describe responses using Swagger decorators; services implement business rules; repositories own Drizzle queries. Explicit SQL names are snake_case while TypeScript properties use camelCase. Users have createdAt, updatedAt and deletedAt. Soft-deleted users cannot authenticate; unique usernames remain reserved. Drizzle's updatedAt callback applies to ORM updates; raw SQL writers must set updated_at themselves.
+Use a feature module with controller → service → repository. Controllers validate DTOs and describe responses using Swagger decorators; services implement business rules; data-specific repositories own all database queries. Services and controllers must use repositories rather than accessing the database directly. Explicit SQL names are snake_case while TypeScript properties use camelCase. Users have createdAt, updatedAt and deletedAt. Soft-deleted users cannot authenticate; unique usernames remain reserved. Drizzle's updatedAt callback applies to ORM updates; raw SQL writers must set updated_at themselves.
 
 Every route requires a valid access token unless marked `@Public()`. `@User()` supplies a safe user DTO. Public user objects contain only `id` and `username`.
 
