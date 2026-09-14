@@ -12,9 +12,11 @@
     "dev": "turbo run dev",
     "build": "turbo run build",
     "typecheck": "turbo run typecheck",
-    "lint": "turbo run lint:root",
-    "format": "eslint . --fix && prettier --write .",
-    "format:check": "prettier --check .",
+    "lint": "turbo run lint",
+    "lint:work": "turbo run lint:work",
+    "format": "turbo run format",
+    "format:work": "turbo run format:work",
+    "format:check": "turbo run format",
     "test": "turbo run test",
     "generate": "turbo run generate",
     "docker-build": "turbo run docker-build",
@@ -25,8 +27,7 @@
     "docker:down": "docker compose -f docker-compose-dev.yml down",
     "docker:logs": "docker compose -f docker-compose-dev.yml logs -f",
     "docker:prod:down": "docker compose -f docker-compose.yml down",
-    "docker:prod:logs": "docker compose -f docker-compose.yml logs -f",
-    "lint:root": "eslint ."
+    "docker:prod:logs": "docker compose -f docker-compose.yml logs -f"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",

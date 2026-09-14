@@ -2,6 +2,6 @@
 **/dist
 **/coverage
 **/package-lock.json
-api
-client
 **/.turbo
+drizzle
+openapi.json

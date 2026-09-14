@@ -15,8 +15,18 @@
       "dependsOn": ["^build"],
       "outputs": []
     },
-    "//#lint:root": {
+    "lint": {
       "outputs": []
+    },
+    "lint:work": {
+      "cache": false
+    },
+    "format": {
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/.prettierrc.json"],
+      "outputs": []
+    },
+    "format:work": {
+      "cache": false
     },
     "test": {
       "dependsOn": ["^build"],

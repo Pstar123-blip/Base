@@ -7,9 +7,11 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint src",
+    "lint:work": "eslint src --fix",
     "preview": "serve -s dist -l 8080",
     "typecheck": "tsc -b",
-    "format": "eslint . --fix && prettier --write src",
+    "format": "prettier --check src",
+    "format:work": "prettier --write src",
     "generate": "orval --config orval.config.ts",
     "test": "vitest run",
     "docker-build": "docker build -f Dockerfile -t client .."
