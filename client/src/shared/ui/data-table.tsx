@@ -97,7 +97,7 @@ export function DataTable<T>({
               <TableRow key={group.id}>
                 <TableCell padding="checkbox">
                   <Checkbox
-                    inputProps={{ 'aria-label': 'Select current page' }}
+                    slotProps={{ input: { 'aria-label': 'Select current page' } }}
                     checked={table.getIsAllPageRowsSelected()}
                     indeterminate={table.getIsSomePageRowsSelected()}
                     onChange={table.getToggleAllPageRowsSelectedHandler()}
@@ -130,7 +130,7 @@ export function DataTable<T>({
               <TableRow key={row.id} selected={row.getIsSelected()}>
                 <TableCell padding="checkbox">
                   <Checkbox
-                    inputProps={{ 'aria-label': 'Select row ' + row.id }}
+                    slotProps={{ input: { 'aria-label': 'Select row ' + row.id } }}
                     checked={row.getIsSelected()}
                     onChange={row.getToggleSelectedHandler()}
                   />
