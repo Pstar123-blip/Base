@@ -57,8 +57,9 @@ http.interceptors.response.use(
       throw error;
     }
 
-    const config = error.config as
-      (InternalAxiosRequestConfig & { _retry?: boolean }) | undefined;
+    const config:
+      (InternalAxiosRequestConfig & { _retry?: boolean }) | undefined =
+      error.config;
 
     if (
       error.response?.status !== HttpStatusCode.Unauthorized ||
