@@ -47,9 +47,9 @@ describe('API transport', () => {
   it('preserves cancellation and removes the OpenAPI prefix', async () => {
     mocks.request.mockResolvedValue({ data: { status: 'ok' } });
     const controller = new AbortController();
-    await request({ url: '/api/health', signal: controller.signal });
+    await request({ url: '/api/auth/me', signal: controller.signal });
     expect(mocks.request).toHaveBeenCalledWith(
-      expect.objectContaining({ url: '/health', signal: controller.signal }),
+      expect.objectContaining({ url: '/auth/me', signal: controller.signal }),
     );
   });
 });

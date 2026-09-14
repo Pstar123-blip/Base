@@ -1,27 +1,6 @@
 {
   "openapi": "3.0.0",
   "paths": {
-    "/api/health": {
-      "get": {
-        "operationId": "health",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HealthDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "App"
-        ]
-      }
-    },
     "/api/auth/login": {
       "post": {
         "operationId": "login",
@@ -132,17 +111,6 @@
       }
     },
     "schemas": {
-      "HealthDto": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "status"
-        ]
-      },
       "AdfsLoginDto": {
         "type": "object",
         "properties": {

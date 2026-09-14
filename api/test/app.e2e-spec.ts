@@ -32,11 +32,10 @@ describe('HTTP boundary', () => {
   afterAll(async () => {
     await app?.close();
   });
-  it('serves public health with security headers', async () => {
+  it('includes security headers on protected routes', async () => {
     const response = await request(app.getHttpServer())
-      .get('/api/health')
-      .expect(200);
-    expect(response.body).toEqual({ status: 'ok' });
+      .get('/api/auth/me')
+      .expect(401);
     expect(response.headers['x-content-type-options']).toBe('nosniff');
   });
   it('protects private routes', async () => {

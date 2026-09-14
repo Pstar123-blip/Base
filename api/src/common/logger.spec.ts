@@ -25,7 +25,7 @@ describe('ECS logging', () => {
       {
         message: 'HTTP request completed',
         method: 'GET',
-        path: '/api/health',
+        path: '/api/auth/me',
         statusCode: 200,
         durationMs: 12,
       },
@@ -40,7 +40,7 @@ describe('ECS logging', () => {
         'log.logger': 'http',
         message: 'HTTP request completed',
         'http.request.method': 'GET',
-        'url.path': '/api/health',
+        'url.path': '/api/auth/me',
         'http.response.status_code': 200,
         'event.duration': 12_000_000,
       }),
