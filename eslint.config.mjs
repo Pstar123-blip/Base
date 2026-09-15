@@ -21,6 +21,20 @@ export default tseslint.config(
     plugins: { 'simple-import-sort': sort, '@stylistic': stylistic },
     rules: {
       curly: ['error', 'all'],
+      'prefer-const': 'error',
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'FunctionDeclaration',
+          message:
+            'Use a const arrow function instead of a function declaration.',
+        },
+        {
+          selector:
+            'FunctionExpression:not(MethodDefinition > FunctionExpression)',
+          message: 'Use an arrow function outside class methods.',
+        },
+      ],
       '@stylistic/lines-between-class-members': ['error', 'always'],
       '@stylistic/padding-line-between-statements': [
         'error',

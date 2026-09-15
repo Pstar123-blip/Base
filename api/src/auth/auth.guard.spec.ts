@@ -8,7 +8,7 @@ import { ENV_KEYS } from '../envKeys.constants.js';
 import { AuthGuard } from './auth.guard.js';
 import type { UsersRepository } from './users.repository.js';
 
-function fixture(isPublic = false) {
+const fixture = (isPublic = false) => {
   const request: { headers: { authorization: string }; user?: unknown } = {
     headers: { authorization: 'Bearer valid-token' },
   };
@@ -41,7 +41,7 @@ function fixture(isPublic = false) {
     users as unknown as UsersRepository,
   );
   return { guard, context, request, jwt, users };
-}
+};
 
 describe('authorization', () => {
   it('allows public endpoints without parsing credentials', async () => {

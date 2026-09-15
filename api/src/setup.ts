@@ -8,7 +8,7 @@ import helmet from 'helmet';
 
 import { ENV_KEYS } from './envKeys.constants.js';
 
-export function setup(app: NestExpressApplication) {
+export const setup = (app: NestExpressApplication) => {
   app.setGlobalPrefix('api');
   app.use(helmet());
   app.use(cookieParser());
@@ -48,4 +48,4 @@ export function setup(app: NestExpressApplication) {
       .build(),
     { operationIdFactory: (_controller, method) => method },
   );
-}
+};

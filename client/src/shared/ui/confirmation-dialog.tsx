@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from '@mui/material';
 
-export function ConfirmationDialog({
+export const ConfirmationDialog = ({
   open,
   title,
   description,
@@ -21,7 +21,7 @@ export function ConfirmationDialog({
   onCancel: () => void;
   onConfirm: () => void;
   busy?: boolean;
-}) {
+}) => {
   return (
     <Dialog
       open={open}
@@ -42,4 +42,4 @@ export function ConfirmationDialog({
       </DialogActions>
     </Dialog>
   );
-}
+};

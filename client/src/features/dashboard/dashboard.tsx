@@ -6,7 +6,7 @@ import type { UserDto } from '@/api/generated/model';
 import { DataTable } from '@/shared/ui/data-table';
 import { ErrorState, LoadingState } from '@/shared/ui/states';
 
-export function Dashboard() {
+export const Dashboard = () => {
   const me = useQuery(getMeQueryOptions());
 
   if (me.isPending) {
@@ -46,4 +46,4 @@ export function Dashboard() {
       </Paper>
     </Stack>
   );
-}
+};

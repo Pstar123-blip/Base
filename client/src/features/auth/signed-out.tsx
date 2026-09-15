@@ -1,7 +1,7 @@
 import { Button, Container, Stack, Typography } from '@mui/material';
 import { Link } from '@tanstack/react-router';
 
-export function SignedOut() {
+export const SignedOut = () => {
   return (
     <Container maxWidth="sm" sx={{ py: 10 }}>
       <Stack spacing={3}>
@@ -12,4 +12,4 @@ export function SignedOut() {
       </Stack>
     </Container>
   );
-}
+};

@@ -17,7 +17,7 @@ const DATABASE_PROTOCOLS = ['postgres:', 'postgresql:'];
 const HTTP_PROTOCOLS = ['http:', 'https:'];
 const NODE_ENVIRONMENTS = ['development', 'test', 'production'];
 
-export function validateEnv(env: Record<string, unknown>) {
+export const validateEnv = (env: Record<string, unknown>) => {
   for (const key of REQUIRED_ENV_KEYS) {
     if (typeof env[key] !== 'string' || !env[key]) {
       throw new Error(key + ' is required');
@@ -70,4 +70,4 @@ export function validateEnv(env: Record<string, unknown>) {
   }
 
   return { ...env, [ENV_KEYS.NODE_ENV]: nodeEnv, [ENV_KEYS.PORT]: port };
-}
+};

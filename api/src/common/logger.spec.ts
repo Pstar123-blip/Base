@@ -5,7 +5,7 @@ import { transports } from 'winston';
 
 import { createAppLogger } from './logger.js';
 
-function capture(level = 'info') {
+const capture = (level = 'info') => {
   const stream = new PassThrough();
   const records: Record<string, unknown>[] = [];
   stream.on('data', (chunk: Buffer) => {
@@ -16,7 +16,7 @@ function capture(level = 'info') {
     transports: [new transports.Stream({ stream })],
   });
   return { logger, records };
-}
+};
 
 describe('ECS logging', () => {
   it('emits structured HTTP fields with a timestamp', () => {

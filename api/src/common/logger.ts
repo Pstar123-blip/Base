@@ -2,9 +2,9 @@ import { ecsFormat } from '@elastic/ecs-winston-format';
 import { WinstonModule } from 'nest-winston';
 import { format, type LoggerOptions, transports } from 'winston';
 
-export function createAppLogger(
+export const createAppLogger = (
   options: Pick<LoggerOptions, 'level' | 'transports'> = {},
-) {
+) => {
   return WinstonModule.createLogger({
     // Include Nest's fatal level, which Winston's default npm levels omit.
     levels: {
@@ -63,4 +63,4 @@ export function createAppLogger(
       new transports.Console({ stderrLevels: ['error', 'fatal'] }),
     ],
   });
-}
+};

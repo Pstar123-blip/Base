@@ -38,12 +38,12 @@ type Props<T> = {
   };
 };
 
-export function DataTable<T>({
+export const DataTable = <T,>({
   data,
   columns,
   getRowId,
   serverPagination,
-}: Props<T>) {
+}: Props<T>) => {
   const [filter, setFilter] = useState('');
   const table = useReactTable({
     data,
@@ -97,7 +97,9 @@ export function DataTable<T>({
               <TableRow key={group.id}>
                 <TableCell padding="checkbox">
                   <Checkbox
-                    slotProps={{ input: { 'aria-label': 'Select current page' } }}
+                    slotProps={{
+                      input: { 'aria-label': 'Select current page' },
+                    }}
                     checked={table.getIsAllPageRowsSelected()}
                     indeterminate={table.getIsSomePageRowsSelected()}
                     onChange={table.getToggleAllPageRowsSelectedHandler()}
@@ -130,7 +132,9 @@ export function DataTable<T>({
               <TableRow key={row.id} selected={row.getIsSelected()}>
                 <TableCell padding="checkbox">
                   <Checkbox
-                    slotProps={{ input: { 'aria-label': 'Select row ' + row.id } }}
+                    slotProps={{
+                      input: { 'aria-label': 'Select row ' + row.id },
+                    }}
                     checked={row.getIsSelected()}
                     onChange={row.getToggleSelectedHandler()}
                   />
@@ -161,4 +165,4 @@ export function DataTable<T>({
       />
     </Box>
   );
-}
+};

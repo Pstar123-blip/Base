@@ -8,7 +8,7 @@ import { useSession } from '@/lib/store';
 
 let signingIn: Promise<void> | null = null;
 
-async function authenticate() {
+const authenticate = async () => {
   try {
     await refreshSession();
     return;
@@ -24,9 +24,9 @@ async function authenticate() {
   await queryClient.cancelQueries();
   queryClient.clear();
   useSession.getState().setToken(data.accessToken);
-}
+};
 
-export function ensureSession(): Promise<void> {
+export const ensureSession = (): Promise<void> => {
   if (useSession.getState().accessToken) {
     return Promise.resolve();
   }
@@ -40,4 +40,4 @@ export function ensureSession(): Promise<void> {
       signingIn = null;
     });
   return signingIn;
-}
+};

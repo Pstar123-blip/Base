@@ -8,7 +8,7 @@ import { AuthService } from './auth.service.js';
 import type { SessionsRepository } from './sessions.repository.js';
 import type { UsersRepository } from './users.repository.js';
 
-function fixture() {
+const fixture = () => {
   const sessions = {
     consume: jest
       .fn<(...args: unknown[]) => Promise<unknown>>()
@@ -55,7 +55,7 @@ function fixture() {
     adfs as unknown as AdfsService,
   );
   return { service, sessions, users, jwt, adfs };
-}
+};
 
 describe('refresh rotation', () => {
   it('consumes the session and stores only a hash of the replacement', async () => {

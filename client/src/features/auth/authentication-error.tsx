@@ -1,7 +1,7 @@
 import { Alert, Button, Container, Stack, Typography } from '@mui/material';
 import { Link } from '@tanstack/react-router';
 
-export function AuthenticationError() {
+export const AuthenticationError = () => {
   return (
     <Container maxWidth="sm" sx={{ py: 10 }}>
       <Stack spacing={3}>
@@ -16,4 +16,4 @@ export function AuthenticationError() {
       </Stack>
     </Container>
   );
-}
+};

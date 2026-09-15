@@ -7,7 +7,7 @@ const QUERY_STALE_TIME_MS = 30_000;
 const QUERY_GC_TIME_MS = 5 * 60_000;
 const MAX_QUERY_RETRIES = 2;
 
-function notify(error: Error) {
+const notify = (error: Error) => {
   useUi
     .getState()
     .notify(
@@ -15,7 +15,7 @@ function notify(error: Error) {
         ? error.response.data.message
         : error.message,
     );
-}
+};
 
 export const queryClient = new QueryClient({
   queryCache: new QueryCache({ onError: notify }),

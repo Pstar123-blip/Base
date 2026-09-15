@@ -5,7 +5,7 @@ import { useUi } from '@/lib/store';
 
 const ERROR_AUTO_HIDE_DURATION_MS = 6000;
 
-export function Root() {
+export const Root = () => {
   const { error, notify } = useUi();
   return (
     <>
@@ -21,4 +21,4 @@ export function Root() {
       </Snackbar>
     </>
   );
-}
+};

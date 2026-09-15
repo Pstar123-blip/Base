@@ -24,7 +24,7 @@ const sessionHttp = axios.create({
 });
 let refreshing: Promise<string> | null = null;
 
-export function refreshSession(): Promise<string> {
+export const refreshSession = (): Promise<string> => {
   refreshing ??= sessionHttp
     .post<{ accessToken: string }>(AUTH_ENDPOINTS.refresh)
     .then(({ data }) => {
@@ -39,7 +39,7 @@ export function refreshSession(): Promise<string> {
       refreshing = null;
     });
   return refreshing;
-}
+};
 
 http.interceptors.request.use((config) => {
   const token = useSession.getState().accessToken;
@@ -76,17 +76,17 @@ http.interceptors.response.use(
   },
 );
 
-export async function request<T>(
+export const request = async <T>(
   config: AxiosRequestConfig,
   options?: AxiosRequestConfig,
-): Promise<T> {
+): Promise<T> => {
   // OpenAPI includes the global /api prefix; baseURL owns it at runtime.
   const url = config.url?.replace(/^\/api(?=\/)/, '');
   const response = await http.request<T>({ ...config, ...options, url });
   return response.data;
-}
+};
 
-export async function logout() {
+export const logout = async () => {
   await sessionHttp.post(AUTH_ENDPOINTS.logout);
   useSession.getState().setToken(null);
-}
+};

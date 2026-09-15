@@ -7,7 +7,7 @@ import { queryClient } from '@/lib/query';
 import { useSession, useUi } from '@/lib/store';
 import { ConfirmationDialog } from '@/shared/ui/confirmation-dialog';
 
-export function Layout() {
+export const Layout = () => {
   const [confirm, setConfirm] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const token = useSession((state) => state.accessToken);
@@ -54,4 +54,4 @@ export function Layout() {
       />
     </>
   );
-}
+};
