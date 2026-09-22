@@ -6,7 +6,6 @@ import { AdfsService } from './adfs.service.js';
 import { AuthController } from './auth.controller.js';
 import { AuthGuard } from './auth.guard.js';
 import { AuthService } from './auth.service.js';
-import { SessionsRepository } from './sessions.repository.js';
 import { UsersRepository } from './users.repository.js';
 
 @Module({
@@ -16,7 +15,6 @@ import { UsersRepository } from './users.repository.js';
     AuthService,
     AdfsService,
     UsersRepository,
-    SessionsRepository,
     { provide: APP_GUARD, useClass: AuthGuard },
   ],
 })

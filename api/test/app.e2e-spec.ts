@@ -14,7 +14,6 @@ describe('HTTP boundary', () => {
       'postgres://unused:unused@localhost/unused';
     process.env[ENV_KEYS.CLIENT_ORIGIN] = 'http://localhost:5173';
     process.env[ENV_KEYS.JWT_ACCESS_SECRET] = 'a'.repeat(32);
-    process.env[ENV_KEYS.JWT_REFRESH_SECRET] = 'b'.repeat(32);
     const modulePath = '../dist/app.module.js';
     const { AppModule } = (await import(
       modulePath
@@ -58,9 +57,10 @@ describe('HTTP boundary', () => {
         .expect(400);
     },
   );
-  it('rejects cross-origin session requests', async () => {
+  it('rejects cross-origin login requests', async () => {
     await request(app.getHttpServer())
-      .post('/api/auth/refresh')
+      .post('/api/auth/login')
+      .send({ adfsToken: 'token' })
       .set('Origin', 'https://untrusted.example')
       .expect(403);
   });

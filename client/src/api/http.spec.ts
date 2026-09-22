@@ -1,48 +1,53 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
-  post: vi.fn(),
   request: vi.fn(),
-  requestInterceptor: vi.fn(),
-  responseInterceptor: vi.fn(),
+  responseError: undefined as undefined | ((error: unknown) => never),
 }));
 vi.mock('axios', () => ({
   default: {
     create: () => ({
-      post: mocks.post,
       request: mocks.request,
       interceptors: {
-        request: { use: mocks.requestInterceptor },
-        response: { use: mocks.responseInterceptor },
+        request: { use: vi.fn() },
+        response: {
+          use: (_pass: unknown, onError: (error: unknown) => never) => {
+            mocks.responseError = onError;
+          },
+        },
       },
     }),
-    isAxiosError: () => false,
+    isAxiosError: (error: { isAxiosError?: boolean }) =>
+      error.isAxiosError === true,
   },
+  HttpStatusCode: { Unauthorized: 401 },
 }));
 import { useSession } from '../lib/store';
-import { refreshSession, request } from './http';
+import { logout, request } from './http';
 
 describe('API transport', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     useSession.getState().setToken(null);
   });
-  it('shares a refresh request across concurrent callers', async () => {
-    mocks.post.mockResolvedValue({ data: { accessToken: 'fresh' } });
-    const [first, second] = await Promise.all([
-      refreshSession(),
-      refreshSession(),
-    ]);
-    expect(first).toBe('fresh');
-    expect(second).toBe('fresh');
-    expect(mocks.post).toHaveBeenCalledTimes(1);
-    expect(useSession.getState().accessToken).toBe('fresh');
-  });
-  it('clears the session on refresh failure', async () => {
+  it('clears the token and propagates unauthorized responses without retrying', () => {
     useSession.getState().setToken('expired');
-    mocks.post.mockRejectedValue(new Error('unauthorized'));
-    await expect(refreshSession()).rejects.toThrow('unauthorized');
+    const error = { isAxiosError: true, response: { status: 401 } };
+    expect(() => mocks.responseError!(error)).toThrow();
     expect(useSession.getState().accessToken).toBeNull();
+    expect(mocks.request).not.toHaveBeenCalled();
+  });
+  it('preserves the token on server errors', () => {
+    useSession.getState().setToken('valid');
+    const error = { isAxiosError: true, response: { status: 500 } };
+    expect(() => mocks.responseError!(error)).toThrow();
+    expect(useSession.getState().accessToken).toBe('valid');
+  });
+  it('signs out locally without a network request', async () => {
+    useSession.getState().setToken('valid');
+    await logout();
+    expect(useSession.getState().accessToken).toBeNull();
+    expect(mocks.request).not.toHaveBeenCalled();
   });
   it('preserves cancellation and removes the OpenAPI prefix', async () => {
     mocks.request.mockResolvedValue({ data: { status: 'ok' } });

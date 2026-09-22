@@ -2,7 +2,6 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import cookieParser from 'cookie-parser';
 import type { NextFunction, Request, Response } from 'express';
 import helmet from 'helmet';
 
@@ -11,7 +10,6 @@ import { ENV_KEYS } from './envKeys.constants.js';
 export const setup = (app: NestExpressApplication) => {
   app.setGlobalPrefix('api');
   app.use(helmet());
-  app.use(cookieParser());
   app.use((req: Request, res: Response, next: NextFunction) => {
     const start = Date.now();
     res.once('finish', () => {
@@ -29,7 +27,6 @@ export const setup = (app: NestExpressApplication) => {
   });
   app.enableCors({
     origin: app.get(ConfigService).getOrThrow<string>(ENV_KEYS.CLIENT_ORIGIN),
-    credentials: true,
   });
   app.useGlobalPipes(
     new ValidationPipe({

@@ -26,7 +26,6 @@ import type {
 import type {
   AdfsLoginDto,
   LoginResponseDto,
-  TokenDto,
   UserDto
 } from './model';
 
@@ -112,126 +111,6 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
         TContext
       > => {
       return useMutation(getLoginMutationOptions(options), queryClient);
-    }
-
-export const refresh = (
-
- options?: SecondParameter<typeof request>,signal?: AbortSignal
-) => {
-
-
-      return request<TokenDto>(
-      {url: `/api/auth/refresh`, method: 'POST', signal
-    },
-      options);
-    }
-
-
-
-
-export const getRefreshMutationKey = () => ['refresh'] as const;
-
-export const getRefreshMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof refresh>>, TError,void, TContext>, request?: SecondParameter<typeof request>}
-): UseMutationOptions<Awaited<ReturnType<typeof refresh>>, TError,void, TContext> => {
-
-const mutationKey = getRefreshMutationKey();
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof refresh>>, void> = () => {
-
-
-          return  refresh(requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type RefreshMutationResult = NonNullable<Awaited<ReturnType<typeof refresh>>>
-
-    export type RefreshMutationError = unknown
-
-
-    export const useRefresh = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof refresh>>, TError,void, TContext>, request?: SecondParameter<typeof request>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof refresh>>,
-        TError,
-        void,
-        TContext
-      > => {
-      return useMutation(getRefreshMutationOptions(options), queryClient);
-    }
-
-export const logout = (
-
- options?: SecondParameter<typeof request>,signal?: AbortSignal
-) => {
-
-
-      return request<void>(
-      {url: `/api/auth/logout`, method: 'POST', signal
-    },
-      options);
-    }
-
-
-
-
-export const getLogoutMutationKey = () => ['logout'] as const;
-
-export const getLogoutMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof logout>>, TError,void, TContext>, request?: SecondParameter<typeof request>}
-): UseMutationOptions<Awaited<ReturnType<typeof logout>>, TError,void, TContext> => {
-
-const mutationKey = getLogoutMutationKey();
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof logout>>, void> = () => {
-
-
-          return  logout(requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type LogoutMutationResult = NonNullable<Awaited<ReturnType<typeof logout>>>
-
-    export type LogoutMutationError = unknown
-
-
-    export const useLogout = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof logout>>, TError,void, TContext>, request?: SecondParameter<typeof request>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof logout>>,
-        TError,
-        void,
-        TContext
-      > => {
-      return useMutation(getLogoutMutationOptions(options), queryClient);
     }
 
 export const me = (

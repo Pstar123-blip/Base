@@ -7,20 +7,13 @@ import {
   HttpStatus,
   Post,
   Req,
-  Res,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import type { CookieOptions, Request, Response } from 'express';
+import type { Request } from 'express';
 
 import { ENV_KEYS } from '../envKeys.constants.js';
-import { REFRESH_COOKIE_NAME, REFRESH_TOKEN_TTL_MS } from './auth.constants.js';
-import {
-  AdfsLoginDto,
-  LoginResponseDto,
-  TokenDto,
-  UserDto,
-} from './auth.dto.js';
+import { AdfsLoginDto, LoginResponseDto, UserDto } from './auth.dto.js';
 import { Public, User } from './auth.guard.js';
 import { AuthService } from './auth.service.js';
 
@@ -32,15 +25,6 @@ export class AuthController {
     private readonly config: ConfigService,
   ) {}
 
-  private getCookieOptions(): CookieOptions {
-    return {
-      httpOnly: true,
-      secure: this.config.get(ENV_KEYS.NODE_ENV) === 'production',
-      sameSite: 'strict',
-      path: '/api/auth',
-    };
-  }
-
   private validateOrigin(req: Request) {
     if (
       req.headers.origin !==
@@ -50,53 +34,13 @@ export class AuthController {
     }
   }
 
-  private respond(
-    res: Response,
-    tokens: { accessToken: string; refreshToken: string },
-  ) {
-    res.cookie(REFRESH_COOKIE_NAME, tokens.refreshToken, {
-      ...this.getCookieOptions(),
-      maxAge: REFRESH_TOKEN_TTL_MS,
-    });
-    return { accessToken: tokens.accessToken };
-  }
-
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: LoginResponseDto })
-  async login(
-    @Body() dto: AdfsLoginDto,
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async login(@Body() dto: AdfsLoginDto, @Req() req: Request) {
     this.validateOrigin(req);
-    const result = await this.auth.login(dto.adfsToken);
-    return { ...this.respond(res, result), user: result.user };
-  }
-
-  @Public()
-  @Post('refresh')
-  @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({ type: TokenDto })
-  async refresh(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    this.validateOrigin(req);
-    return this.respond(
-      res,
-      await this.auth.refresh(String(req.cookies?.[REFRESH_COOKIE_NAME] ?? '')),
-    );
-  }
-
-  @Public()
-  @Post('logout')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    this.validateOrigin(req);
-    await this.auth.logout(String(req.cookies?.[REFRESH_COOKIE_NAME] ?? ''));
-    res.clearCookie(REFRESH_COOKIE_NAME, this.getCookieOptions());
+    return this.auth.login(dto.adfsToken);
   }
 
   @Get('me')

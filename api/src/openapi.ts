@@ -11,8 +11,6 @@ process.env[ENV_KEYS.DATABASE_URL] ??=
   'postgres://unused:unused@localhost/unused';
 process.env[ENV_KEYS.JWT_ACCESS_SECRET] ??=
   'openapi-generation-only-access-secret';
-process.env[ENV_KEYS.JWT_REFRESH_SECRET] ??=
-  'openapi-generation-only-refresh-secret';
 process.env[ENV_KEYS.CLIENT_ORIGIN] ??= 'http://localhost:5173';
 const { AppModule } = await import('./app.module.js');
 const { setup } = await import('./setup.js');

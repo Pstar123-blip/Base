@@ -20,7 +20,6 @@ describe('PostgreSQL authentication lifecycle', () => {
       process.env[ENV_KEYS.TEST_DATABASE_URL];
     process.env[ENV_KEYS.CLIENT_ORIGIN] = origin;
     process.env[ENV_KEYS.JWT_ACCESS_SECRET] = 'a'.repeat(32);
-    process.env[ENV_KEYS.JWT_REFRESH_SECRET] = 'b'.repeat(32);
     const appPath = '../dist/app.module.js',
       setupPath = '../dist/setup.js',
       dbPath = '../dist/database/database.module.js';
@@ -55,16 +54,18 @@ describe('PostgreSQL authentication lifecycle', () => {
 
     await app?.close();
   });
-  it('provisions, authenticates, rotates once, logs out and blocks soft-deleted accounts', async () => {
+  it('provisions, authenticates and blocks soft-deleted accounts', async () => {
     const agent = request.agent(app.getHttpServer());
     const initialLogin = await agent
       .post('/api/auth/login')
       .set('Origin', origin)
       .send({ adfsToken: 'integration-adfs-token' })
       .expect(200);
-    const originalCookie = initialLogin.headers['set-cookie']?.[0];
-    expect(originalCookie).toContain('HttpOnly');
-    expect(originalCookie).toContain('SameSite=Strict');
+    expect(initialLogin.headers['set-cookie']).toBeUndefined();
+    expect(Object.keys(initialLogin.body).sort()).toEqual([
+      'accessToken',
+      'user',
+    ]);
     const profile = await agent
       .get('/api/auth/me')
       .set('Authorization', 'Bearer ' + initialLogin.body.accessToken)
@@ -85,21 +86,6 @@ describe('PostgreSQL authentication lifecycle', () => {
       .get('/api/auth/me')
       .set('Authorization', 'Bearer tampered')
       .expect(401);
-    const rotated = await agent
-      .post('/api/auth/refresh')
-      .set('Origin', origin)
-      .expect(200);
-    await request(app.getHttpServer())
-      .post('/api/auth/refresh')
-      .set('Origin', origin)
-      .set('Cookie', originalCookie!)
-      .expect(401);
-    await agent
-      .get('/api/auth/me')
-      .set('Authorization', 'Bearer ' + rotated.body.accessToken)
-      .expect(200);
-    await agent.post('/api/auth/logout').set('Origin', origin).expect(204);
-    await agent.post('/api/auth/refresh').set('Origin', origin).expect(401);
     const login = await agent
       .post('/api/auth/login')
       .set('Origin', origin)
@@ -114,7 +100,6 @@ describe('PostgreSQL authentication lifecycle', () => {
       .get('/api/auth/me')
       .set('Authorization', 'Bearer ' + login.body.accessToken)
       .expect(401);
-    await agent.post('/api/auth/refresh').set('Origin', origin).expect(401);
     await agent
       .post('/api/auth/login')
       .set('Origin', origin)

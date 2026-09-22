@@ -57,9 +57,9 @@ describe('authorization', () => {
       username: 'user',
     });
   });
-  it('rejects refresh tokens used as access credentials', async () => {
+  it('rejects tokens with an unexpected kind', async () => {
     const { guard, context, jwt } = fixture();
-    jwt.verifyAsync.mockResolvedValue({ sub: 'user-id', kind: 'refresh' });
+    jwt.verifyAsync.mockResolvedValue({ sub: 'user-id', kind: 'invalid' });
     await expect(guard.canActivate(context)).rejects.toThrow('Unauthorized');
   });
 });

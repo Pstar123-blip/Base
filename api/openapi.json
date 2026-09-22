@@ -32,41 +32,6 @@
         ]
       }
     },
-    "/api/auth/refresh": {
-      "post": {
-        "operationId": "refresh",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TokenDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/auth/logout": {
-      "post": {
-        "operationId": "logout",
-        "parameters": [],
-        "responses": {
-          "204": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "auth"
-        ]
-      }
-    },
     "/api/auth/me": {
       "get": {
         "operationId": "me",
@@ -151,17 +116,6 @@
         "required": [
           "accessToken",
           "user"
-        ]
-      },
-      "TokenDto": {
-        "type": "object",
-        "properties": {
-          "accessToken": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "accessToken"
         ]
       }
     }

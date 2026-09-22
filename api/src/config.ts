@@ -4,10 +4,7 @@ const DEFAULT_PORT = 3000;
 const MIN_PORT = 1;
 const MAX_PORT = 65535;
 const MIN_JWT_SECRET_LENGTH = 32;
-const JWT_SECRET_KEYS = [
-  ENV_KEYS.JWT_ACCESS_SECRET,
-  ENV_KEYS.JWT_REFRESH_SECRET,
-];
+const JWT_SECRET_KEYS = [ENV_KEYS.JWT_ACCESS_SECRET];
 const REQUIRED_ENV_KEYS = [
   ENV_KEYS.DATABASE_URL,
   ...JWT_SECRET_KEYS,
@@ -30,10 +27,6 @@ export const validateEnv = (env: Record<string, unknown>) => {
         `${key} must have at least ${MIN_JWT_SECRET_LENGTH} characters`,
       );
     }
-  }
-
-  if (env[ENV_KEYS.JWT_ACCESS_SECRET] === env[ENV_KEYS.JWT_REFRESH_SECRET]) {
-    throw new Error('JWT secrets must differ');
   }
 
   const port = Number(env[ENV_KEYS.PORT] ?? DEFAULT_PORT);
