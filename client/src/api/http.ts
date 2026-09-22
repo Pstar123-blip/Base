@@ -1,5 +1,6 @@
 import axios, {
   type AxiosRequestConfig,
+  type AxiosResponse,
   HttpStatusCode,
   type InternalAxiosRequestConfig,
 } from 'axios';
@@ -24,24 +25,32 @@ const sessionHttp = axios.create({
 });
 let refreshing: Promise<string> | null = null;
 
+const storeRefreshedToken = ({
+  data,
+}: AxiosResponse<{ accessToken: string }>) => {
+  useSession.getState().setToken(data.accessToken);
+  return data.accessToken;
+};
+
+const handleRefreshError = (error: unknown) => {
+  useSession.getState().setToken(null);
+  throw error;
+};
+
+const finishRefresh = () => {
+  refreshing = null;
+};
+
 export const refreshSession = (): Promise<string> => {
   refreshing ??= sessionHttp
     .post<{ accessToken: string }>(AUTH_ENDPOINTS.refresh)
-    .then(({ data }) => {
-      useSession.getState().setToken(data.accessToken);
-      return data.accessToken;
-    })
-    .catch((error: unknown) => {
-      useSession.getState().setToken(null);
-      throw error;
-    })
-    .finally(() => {
-      refreshing = null;
-    });
+    .then(storeRefreshedToken)
+    .catch(handleRefreshError)
+    .finally(finishRefresh);
   return refreshing;
 };
 
-http.interceptors.request.use((config) => {
+const authorizeRequest = (config: InternalAxiosRequestConfig) => {
   const token = useSession.getState().accessToken;
 
   if (token) {
@@ -49,32 +58,38 @@ http.interceptors.request.use((config) => {
   }
 
   return config;
-});
-http.interceptors.response.use(
-  (response) => response,
-  async (error: unknown) => {
-    if (!axios.isAxiosError(error)) {
-      throw error;
-    }
+};
 
-    const config:
-      (InternalAxiosRequestConfig & { _retry?: boolean }) | undefined =
-      error.config;
+http.interceptors.request.use(authorizeRequest);
+const passResponse = (response: AxiosResponse) => response;
 
-    if (
-      error.response?.status !== HttpStatusCode.Unauthorized ||
-      !config ||
-      config._retry ||
-      SESSION_ENDPOINTS.some((endpoint) => config.url?.includes(endpoint))
-    ) {
-      throw error;
-    }
+const retryUnauthorizedRequest = async (error: unknown) => {
+  if (!axios.isAxiosError(error)) {
+    throw error;
+  }
 
-    config._retry = true;
-    await refreshSession();
-    return http(config);
-  },
-);
+  const config:
+    (InternalAxiosRequestConfig & { _retry?: boolean }) | undefined =
+    error.config;
+
+  const isSessionEndpoint = (endpoint: string) =>
+    config?.url?.includes(endpoint);
+
+  if (
+    error.response?.status !== HttpStatusCode.Unauthorized ||
+    !config ||
+    config._retry ||
+    SESSION_ENDPOINTS.some(isSessionEndpoint)
+  ) {
+    throw error;
+  }
+
+  config._retry = true;
+  await refreshSession();
+  return http(config);
+};
+
+http.interceptors.response.use(passResponse, retryUnauthorizedRequest);
 
 export const request = async <T>(
   config: AxiosRequestConfig,

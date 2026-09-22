@@ -26,18 +26,22 @@ const authenticate = async () => {
   useSession.getState().setToken(data.accessToken);
 };
 
+const handleAuthenticationError = (error: unknown) => {
+  useSession.getState().setToken(null);
+  throw error;
+};
+
+const finishAuthentication = () => {
+  signingIn = null;
+};
+
 export const ensureSession = (): Promise<void> => {
   if (useSession.getState().accessToken) {
     return Promise.resolve();
   }
 
   signingIn ??= authenticate()
-    .catch((error: unknown) => {
-      useSession.getState().setToken(null);
-      throw error;
-    })
-    .finally(() => {
-      signingIn = null;
-    });
+    .catch(handleAuthenticationError)
+    .finally(finishAuthentication);
   return signingIn;
 };

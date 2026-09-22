@@ -1,24 +1,25 @@
-import { Alert, Snackbar } from '@mui/material';
+import { Button } from '@mui/material';
 import { Outlet } from '@tanstack/react-router';
-
-import { useUi } from '@/lib/store';
+import { closeSnackbar, type SnackbarKey, SnackbarProvider } from 'notistack';
 
 const ERROR_AUTO_HIDE_DURATION_MS = 6000;
 
-export const Root = () => {
-  const { error, notify } = useUi();
+const renderDismissAction = (key: SnackbarKey) => {
+  const dismiss = () => closeSnackbar(key);
   return (
-    <>
-      <Outlet />
-      <Snackbar
-        open={!!error}
-        autoHideDuration={ERROR_AUTO_HIDE_DURATION_MS}
-        onClose={() => notify(null)}
-      >
-        <Alert severity="error" onClose={() => notify(null)}>
-          {error}
-        </Alert>
-      </Snackbar>
-    </>
+    <Button color="inherit" onClick={dismiss}>
+      Dismiss
+    </Button>
   );
 };
+
+export const Root = () => (
+  <SnackbarProvider
+    maxSnack={3}
+    autoHideDuration={ERROR_AUTO_HIDE_DURATION_MS}
+    preventDuplicate
+    action={renderDismissAction}
+  >
+    <Outlet />
+  </SnackbarProvider>
+);

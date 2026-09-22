@@ -1,18 +1,13 @@
-import { create } from 'zustand';
+import { create, type StateCreator } from 'zustand';
 
 type SessionState = {
   accessToken: string | null;
   setToken: (token: string | null) => void;
 };
 
-export const useSession = create<SessionState>((set) => ({
-  accessToken: null,
-  setToken: (accessToken) => set({ accessToken }),
-}));
+const createSession: StateCreator<SessionState> = (set) => {
+  const setToken = (accessToken: string | null) => set({ accessToken });
+  return { accessToken: null, setToken };
+};
 
-type UiState = { error: string | null; notify: (error: string | null) => void };
-
-export const useUi = create<UiState>((set) => ({
-  error: null,
-  notify: (error) => set({ error }),
-}));
+export const useSession = create<SessionState>(createSession);

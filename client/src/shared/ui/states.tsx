@@ -1,17 +1,13 @@
-import {
-  Alert,
-  Box,
-  Button,
-  CircularProgress,
-  Typography,
-} from '@mui/material';
+import { Alert, Button, CircularProgress, Typography } from '@mui/material';
+
+import { EmptyMessage, LoadingContainer } from './states.styled';
 
 export const LoadingState = () => {
   return (
-    <Box role="status" sx={{ p: 4, textAlign: 'center' }}>
+    <LoadingContainer role="status">
       <CircularProgress aria-label="Loading" />
       <Typography>Loading…</Typography>
-    </Box>
+    </LoadingContainer>
   );
 };
 
@@ -37,9 +33,5 @@ export const EmptyState = ({
 }: {
   message?: string;
 }) => {
-  return (
-    <Typography sx={{ p: 4, textAlign: 'center' }} color="text.secondary">
-      {message}
-    </Typography>
-  );
+  return <EmptyMessage color="text.secondary">{message}</EmptyMessage>;
 };

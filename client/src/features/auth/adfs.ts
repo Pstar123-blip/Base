@@ -1,6 +1,4 @@
 // Replace this adapter with the real ADFS token acquisition flow.
-export const adfsService = {
-  getToken: (): Promise<string> => {
-    return Promise.resolve('mock-adfs-token');
-  },
-};
+const getToken = (): Promise<string> => Promise.resolve('mock-adfs-token');
+
+export const adfsService = { getToken };

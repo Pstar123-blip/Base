@@ -1,4 +1,4 @@
-import { Box, Paper, Stack, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 
 import { getMeQueryOptions } from '@/api/generated/api';
@@ -6,8 +6,14 @@ import type { UserDto } from '@/api/generated/model';
 import { DataTable } from '@/shared/ui/data-table';
 import { ErrorState, LoadingState } from '@/shared/ui/states';
 
+import { AccountPanel } from './dashboard.styled';
+
+const getUserId = (row: UserDto) => row.id;
+
 export const Dashboard = () => {
   const me = useQuery(getMeQueryOptions());
+
+  const retryAccount = () => void me.refetch();
 
   if (me.isPending) {
     return <LoadingState />;
@@ -15,10 +21,7 @@ export const Dashboard = () => {
 
   if (me.isError) {
     return (
-      <ErrorState
-        message="Unable to load your account"
-        retry={() => void me.refetch()}
-      />
+      <ErrorState message="Unable to load your account" retry={retryAccount} />
     );
   }
 
@@ -34,16 +37,16 @@ export const Dashboard = () => {
           A foundation for your next project.
         </Typography>
       </Box>
-      <Paper sx={{ p: 3 }}>
+      <AccountPanel>
         <Typography variant="h6" gutterBottom>
           Account
         </Typography>
         <DataTable<UserDto>
           data={[me.data]}
           columns={columns}
-          getRowId={(row) => row.id}
+          getRowId={getUserId}
         />
-      </Paper>
+      </AccountPanel>
     </Stack>
   );
 };

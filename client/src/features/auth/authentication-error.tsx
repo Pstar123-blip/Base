@@ -1,9 +1,11 @@
-import { Alert, Button, Container, Stack, Typography } from '@mui/material';
+import { Alert, Button, Stack, Typography } from '@mui/material';
 import { Link } from '@tanstack/react-router';
+
+import { AuthContainer } from './auth.styled';
 
 export const AuthenticationError = () => {
   return (
-    <Container maxWidth="sm" sx={{ py: 10 }}>
+    <AuthContainer maxWidth="sm">
       <Stack spacing={3}>
         <Typography variant="h4">Unable to sign in</Typography>
         <Alert severity="error">
@@ -14,6 +16,6 @@ export const AuthenticationError = () => {
           Try again
         </Button>
       </Stack>
-    </Container>
+    </AuthContainer>
   );
 };
