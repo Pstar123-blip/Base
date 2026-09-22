@@ -15,9 +15,9 @@ Open http://localhost:5173 and create an account. API documentation is at http:/
 
 ## Development environment
 
-Use two env files: `api/.env` for backend and PostgreSQL settings, and `client/.env` for frontend settings. Copy the examples once; real env files are Git-ignored and excluded from Docker builds.
+Use two env files: `api/.env` for backend settings, including the database connection URL, and `client/.env` for frontend settings. Copy the examples once; real env files are Git-ignored and excluded from Docker builds.
 
-Development Compose loads all service environment settings through `env_file`, with no inline environment overrides: PostgreSQL, the API and migration service use `api/.env`, and Vite uses `client/.env`.
+Development Compose loads `api/.env` for the API and migration service, and `client/.env` for Vite. PostgreSQL initialization settings are defined directly in the `db.environment` section of `docker-compose-dev.yml`: `POSTGRES_USER=user`, `POSTGRES_PASSWORD=password`, and `POSTGRES_DB=app`.
 
 The env files use Docker service addresses directly: API DATABASE_URL connects to `db:5432`, and client API_PROXY_TARGET is `http://api:3000`. Browser-facing values remain `CLIENT_ORIGIN=http://localhost:5173` and `VITE_API_URL=/api`. Keep API PORT=3000 aligned with the Compose port mapping and proxy target.
 
@@ -27,7 +27,7 @@ Only VITE_ variables are exposed to browser code. Running the API or Vite direct
 
 After editing an env file, rerun `npm run docker:dev` to recreate affected containers; restarting an existing container does not reload its environment. Restart host-run processes after editing their environment.
 
-Production loads `api/.env` for PostgreSQL, the API and migrations. The client uses `serve` through its preview script to serve the compiled build on port 8080 with SPA fallback. VITE_ values remain build-time configuration; the static server does not load `client/.env` or proxy API requests. Route `/api` to the API through your deployment ingress.
+Production loads `api/.env` for the API and migrations. PostgreSQL initialization settings are defined directly in the `db.environment` section of `docker-compose.yml`. The client uses `serve` through its preview script to serve the compiled build on port 8080 with SPA fallback. VITE_ values remain build-time configuration; the static server does not load `client/.env` or proxy API requests. Route `/api` to the API through your deployment ingress.
 
 ## Commands
 
@@ -85,7 +85,7 @@ Generate contracts after changing API DTOs. Commit `api/openapi.json` and `clien
 
 `npm run docker:down` and `npm run docker:logs` target development; use `docker:prod:down` and `docker:prod:logs` for production.
 
-On the deployment host, copy `api/.env.example` to `api/.env`. Set PostgreSQL credentials in `api/.env`. In `api/.env`, set NODE_ENV=production, PORT=3000, a matching DATABASE_URL, independent random JWT secrets, and CLIENT_ORIGIN to the public HTTPS origin. These files belong to that deployment; do not reuse the development values for production. Run `npm run docker:prod`. Configure a TLS-terminating ingress to route `/api` to the API at host port 3000 and all other paths to the client at port 8080. The API port is bound to host loopback for the ingress; an ingress on the Compose network can use `api:3000` and `client:8080` directly. `serve` handles static assets and SPA routes. PostgreSQL is not exposed by production Compose. Migrations run as a one-off service before startup; back up the database and review migrations before deploying schema changes.
+On the deployment host, copy `api/.env.example` to `api/.env`. Set POSTGRES_USER, POSTGRES_PASSWORD and POSTGRES_DB in the `db.environment` section of `docker-compose.yml`. In `api/.env`, set NODE_ENV=production, PORT=3000, DATABASE_URL to match those PostgreSQL settings, JWT_ACCESS_SECRET to a unique random secret, and CLIENT_ORIGIN to the public HTTPS origin. These files belong to that deployment; do not reuse the development values for production. Run `npm run docker:prod`. Configure a TLS-terminating ingress to route `/api` to the API at host port 3000 and all other paths to the client at port 8080. The API port is bound to host loopback for the ingress; an ingress on the Compose network can use `api:3000` and `client:8080` directly. `serve` handles static assets and SPA routes. PostgreSQL is not exposed by production Compose. Migrations run as a one-off service before startup; back up the database and review migrations before deploying schema changes.
 
 For a fork, rename workspace/image names, choose a license, customize the theme and application identity, decide whether public registration is appropriate, and configure backups and monitoring. Add distributed rate limiting at your ingress before exposing authentication publicly.
 
