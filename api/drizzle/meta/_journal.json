@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1788949533992,
-      "tag": "0000_steep_ma_gnuci",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1789386740821,
-      "tag": "0001_nifty_mach_iv",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1789387022734,
-      "tag": "0002_freezing_ego",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1790083661752,
-      "tag": "0003_groovy_madelyne_pryor",
+      "when": 1790083860361,
+      "tag": "0000_initial",
       "breakpoints": true
     }
   ]
