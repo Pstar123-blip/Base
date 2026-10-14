@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
@@ -13,6 +13,8 @@ import {
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
@@ -28,8 +30,10 @@ export class AuthService {
 
     const user = { id: username, username };
 
+    const tokens = this.issue(user.id, user.username);
+    this.logger.log('Login completed');
     return {
-      ...this.issue(user.id, user.username),
+      ...tokens,
       user,
     };
   }

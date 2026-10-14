@@ -1,6 +1,7 @@
 import {
   Global,
   Injectable,
+  Logger,
   Module,
   type OnModuleDestroy,
 } from '@nestjs/common';
@@ -20,6 +21,12 @@ export class Database implements OnModuleDestroy {
   constructor(config: ConfigService) {
     this.pool = new Pool({
       connectionString: config.getOrThrow<string>(ENV_KEYS.DATABASE_URL),
+    });
+    this.pool.on('error', (error) => {
+      new Logger(Database.name).error(
+        'Unexpected idle database connection error',
+        error.stack,
+      );
     });
     this.db = drizzle(this.pool, { schema: { users } });
   }

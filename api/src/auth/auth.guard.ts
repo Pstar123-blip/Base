@@ -3,6 +3,7 @@ import {
   createParamDecorator,
   type ExecutionContext,
   Injectable,
+  Logger,
   SetMetadata,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -29,6 +30,8 @@ export const User = createParamDecorator(
 );
 @Injectable()
 export class AuthGuard implements CanActivate {
+  private readonly logger = new Logger(AuthGuard.name);
+
   constructor(
     private readonly reflector: Reflector,
     private readonly jwt: JwtService,
@@ -51,6 +54,7 @@ export class AuthGuard implements CanActivate {
     const token = request.headers.authorization?.match(/^Bearer (.+)$/)?.[1];
 
     if (!token) {
+      this.logger.debug('Authentication rejected: missing bearer token');
       throw new UnauthorizedException();
     }
 
@@ -63,6 +67,7 @@ export class AuthGuard implements CanActivate {
         audience: JWT_AUDIENCE,
       });
     } catch {
+      this.logger.debug('Authentication rejected: invalid access token');
       throw new UnauthorizedException();
     }
 

@@ -43,6 +43,18 @@ describe('HTTP boundary', () => {
       .expect(401);
     expect(response.headers['x-content-type-options']).toBe('nosniff');
   });
+  it('returns request IDs on guard failures and unknown routes', async () => {
+    const response = await request(app.getHttpServer())
+      .get('/api/auth/me?token=secret')
+      .set('x-request-id', 'test-request-123')
+      .expect(401);
+    expect(response.headers['x-request-id']).toBe('test-request-123');
+    const unknown = await request(app.getHttpServer())
+      .get('/api/missing')
+      .set('x-request-id', 'invalid id')
+      .expect(404);
+    expect(unknown.headers['x-request-id']).toMatch(/^[a-f0-9-]{36}$/);
+  });
   it('protects private routes', async () => {
     await request(app.getHttpServer()).get('/api/auth/me').expect(401);
   });

@@ -71,7 +71,28 @@ Every route requires a valid access token unless marked `@Public()`. `@User()` s
 
 Access JWTs expire in one day and are persisted in local storage. Unauthorized responses clear the client token and require a new sign-in. Logout clears the local token; issued access tokens remain valid until expiry. Login requires the configured Origin header.
 
-Winston handles Nest application logs and HTTP logs through the nest-winston adapter. Logs use Elastic Common Schema (ECS) JSON via `@elastic/ecs-winston-format`, with `@timestamp`, `log.level`, `ecs.version`, `service.name` and `log.logger`. HTTP completion logs include `http.request.method`, `url.path`, `http.response.status_code` and `event.duration` (nanoseconds). Errors include ECS `error.type`, `error.message` and `error.stack_trace` fields. The default threshold is info, with error/fatal output on stderr and other levels on stdout. Configure levels and transports in `api/src/common/logger.ts`. Credentials, cookies, authorization headers and query strings are not logged.
+Winston handles Nest startup, application, error and HTTP logs through one shared `LoggingModule` and the nest-winston adapter. Console logs default to readable pretty output in development/test and Elastic Common Schema (ECS) JSON in production. Set `LOG_FORMAT=pretty` or `LOG_FORMAT=ecs` to override. Pretty output includes timestamp, level, context, request ID, metadata and error stacks; colors are enabled for interactive terminals. Use `LOG_FORMAT=ecs` when Elastic Agent/Filebeat collects stdout/stderr. This configures the log format; configure the collector separately to send logs to Elasticsearch. Set `LOG_LEVEL` (default `info`) and `LOG_SERVICE_NAME` (default `api`) in `api/.env`; rename the service when cloning this base. Supported thresholds are `fatal`, `error`, `warn`, `info`, `http`, `verbose`, `debug`, and `silly`. Error/fatal logs go to stderr; other levels go to stdout, suitable for Docker log collection.
+
+Every completed HTTP response is logged once, including guard failures and unknown routes. Responses return `x-request-id`; safe incoming IDs (1-128 letters, digits, underscores or hyphens) are reused, otherwise a UUID is generated. The same `http.request.id` accompanies logs written during the request. Completion logs include method, path, status and duration in nanoseconds; 4xx responses use warn and 5xx responses use error. Headers, bodies, tokens, cookies and query strings are omitted from automatic HTTP logs.
+
+For new services, use Nest's contextual logger; it forwards to the shared Winston instance:
+
+```ts
+import { Injectable, Logger } from '@nestjs/common';
+
+@Injectable()
+export class OrdersService {
+  private readonly logger = new Logger(OrdersService.name);
+
+  create() {
+    this.logger.log({ message: 'Order created', orderId: 'example-id' });
+    this.logger.debug('Additional diagnostic details');
+  }
+}
+```
+
+Use `logger.error(error)` for an Error object or `logger.error('Operation failed', error.stack)` for an explicit message and stack. Never put credentials or personal data in messages or metadata; automatic HTTP omissions do not sanitize custom messages. Auth logs record outcomes without identities or tokens, and the database pool reports unexpected idle connection errors. Extend formats and transports in `api/src/common/logger.ts`; module configuration lives in `api/src/common/logging.module.ts`. Custom transports receive ECS JSON by default, so you can use `createPrettyFormat()` on a console transport and an ECS file/remote transport simultaneously. File or remote transports can be added there when a cloned project's deployment requires them. See the [Winston documentation](https://github.com/winstonjs/winston) and [Nest adapter documentation](https://github.com/gremo/nest-winston).
+
 
 ## Client conventions
 

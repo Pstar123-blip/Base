@@ -1,3 +1,4 @@
+import { LOG_LEVELS } from './common/logger.js';
 import { ENV_KEYS } from './envKeys.constants.js';
 
 const DEFAULT_PORT = 3000;
@@ -62,5 +63,31 @@ export const validateEnv = (env: Record<string, unknown>) => {
     throw new Error('Production CLIENT_ORIGIN must use HTTPS');
   }
 
-  return { ...env, [ENV_KEYS.NODE_ENV]: nodeEnv, [ENV_KEYS.PORT]: port };
+  const logFormat =
+    env[ENV_KEYS.LOG_FORMAT] ?? (nodeEnv === 'production' ? 'ecs' : 'pretty');
+
+  if (logFormat !== 'pretty' && logFormat !== 'ecs') {
+    throw new Error('LOG_FORMAT must be pretty or ecs');
+  }
+
+  const logLevel = env[ENV_KEYS.LOG_LEVEL] ?? 'info';
+
+  if (typeof logLevel !== 'string' || !Object.hasOwn(LOG_LEVELS, logLevel)) {
+    throw new Error('Invalid LOG_LEVEL');
+  }
+
+  const serviceName = env[ENV_KEYS.LOG_SERVICE_NAME] ?? 'api';
+
+  if (typeof serviceName !== 'string' || !serviceName.trim()) {
+    throw new Error('LOG_SERVICE_NAME must be a nonblank string');
+  }
+
+  return {
+    ...env,
+    [ENV_KEYS.LOG_FORMAT]: logFormat,
+    [ENV_KEYS.LOG_LEVEL]: logLevel,
+    [ENV_KEYS.LOG_SERVICE_NAME]: serviceName,
+    [ENV_KEYS.NODE_ENV]: nodeEnv,
+    [ENV_KEYS.PORT]: port,
+  };
 };
