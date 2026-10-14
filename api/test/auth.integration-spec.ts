@@ -10,7 +10,7 @@ import request from 'supertest';
 
 import { ENV_KEYS } from '../src/envKeys.constants.js';
 
-describe('PostgreSQL authentication lifecycle', () => {
+describe('Authentication without user provisioning', () => {
   let app: NestExpressApplication;
   let database: import('../src/database/database.module.js').Database;
   const username = randomUUID();
@@ -46,15 +46,9 @@ describe('PostgreSQL authentication lifecycle', () => {
     await app.init();
   });
   afterAll(async () => {
-    if (database) {
-      await database.pool.query('DELETE FROM users WHERE username = $1', [
-        username,
-      ]);
-    }
-
     await app?.close();
   });
-  it('provisions, authenticates and blocks soft-deleted accounts', async () => {
+  it('authenticates without creating a database user', async () => {
     const agent = request.agent(app.getHttpServer());
     const initialLogin = await agent
       .post('/api/auth/login')
@@ -73,10 +67,10 @@ describe('PostgreSQL authentication lifecycle', () => {
     expect(profile.body.username).toBe(username);
     expect(Object.keys(profile.body).sort()).toEqual(['id', 'username']);
     const stored = await database.pool.query(
-      'SELECT created_at, updated_at, deleted_at FROM users WHERE username = $1',
+      'SELECT id FROM users WHERE username = $1',
       [username],
     );
-    expect(stored.rows[0].deleted_at).toBeNull();
+    expect(stored.rows).toEqual([]);
     await agent
       .post('/api/auth/login')
       .set('Origin', origin)
@@ -92,18 +86,9 @@ describe('PostgreSQL authentication lifecycle', () => {
       .send({ adfsToken: 'integration-adfs-token' })
       .expect(200);
     expect(login.body.user).toEqual(initialLogin.body.user);
-    await database.pool.query(
-      'UPDATE users SET deleted_at = now(), updated_at = now() WHERE id = $1',
-      [login.body.user.id],
-    );
     await agent
       .get('/api/auth/me')
       .set('Authorization', 'Bearer ' + login.body.accessToken)
-      .expect(401);
-    await agent
-      .post('/api/auth/login')
-      .set('Origin', origin)
-      .send({ adfsToken: 'integration-adfs-token' })
-      .expect(401);
+      .expect(200);
   });
 });

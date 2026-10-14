@@ -16,9 +16,9 @@ import {
   ACCESS_TOKEN_KIND,
   JWT_AUDIENCE,
   JWT_ISSUER,
+  MAX_USERNAME_LENGTH,
 } from './auth.constants.js';
 import type { UserDto } from './auth.dto.js';
-import { UsersRepository } from './users.repository.js';
 
 const PUBLIC_METADATA_KEY = 'public';
 
@@ -33,7 +33,6 @@ export class AuthGuard implements CanActivate {
     private readonly reflector: Reflector,
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
-    private readonly users: UsersRepository,
   ) {}
 
   async canActivate(context: ExecutionContext) {
@@ -55,7 +54,7 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException();
     }
 
-    let claims: { sub: string; kind: string };
+    let claims: { sub?: unknown; username?: unknown; kind?: unknown };
 
     try {
       claims = await this.jwt.verifyAsync(token, {
@@ -67,19 +66,20 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException();
     }
 
-    if (claims.kind !== ACCESS_TOKEN_KIND) {
-      throw new UnauthorizedException();
-    }
-
-    const user = await this.users.byId(claims.sub);
-
-    if (!user) {
+    if (
+      claims.kind !== ACCESS_TOKEN_KIND ||
+      typeof claims.sub !== 'string' ||
+      !claims.sub.trim() ||
+      typeof claims.username !== 'string' ||
+      !claims.username.trim() ||
+      claims.username.length > MAX_USERNAME_LENGTH
+    ) {
       throw new UnauthorizedException();
     }
 
     request.user = {
-      id: user.id,
-      username: user.username,
+      id: claims.sub,
+      username: claims.username,
     };
     return true;
   }

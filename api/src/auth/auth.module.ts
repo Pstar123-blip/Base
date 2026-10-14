@@ -6,7 +6,6 @@ import { AdfsService } from './adfs.service.js';
 import { AuthController } from './auth.controller.js';
 import { AuthGuard } from './auth.guard.js';
 import { AuthService } from './auth.service.js';
-import { UsersRepository } from './users.repository.js';
 
 @Module({
   imports: [JwtModule.register({})],
@@ -14,7 +13,6 @@ import { UsersRepository } from './users.repository.js';
   providers: [
     AuthService,
     AdfsService,
-    UsersRepository,
     { provide: APP_GUARD, useClass: AuthGuard },
   ],
 })

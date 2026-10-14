@@ -11,12 +11,10 @@ import {
   JWT_ISSUER,
   MAX_USERNAME_LENGTH,
 } from './auth.constants.js';
-import { UsersRepository } from './users.repository.js';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly users: UsersRepository,
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
     private readonly adfs: AdfsService,
@@ -37,24 +35,17 @@ export class AuthService {
       throw new UnauthorizedException('ADFS user must have a unique username');
     }
 
-    const user =
-      (await this.users.byUsername(username)) ??
-      (await this.users.create(username)) ??
-      (await this.users.byUsername(username));
-
-    if (!user) {
-      throw new UnauthorizedException('Account is unavailable');
-    }
+    const user = { id: username, username };
 
     return {
-      ...(await this.issue(user.id)),
-      user: { id: user.id, username: user.username },
+      ...(await this.issue(user.id, user.username)),
+      user,
     };
   }
 
-  private async issue(userId: string) {
+  private async issue(userId: string, username: string) {
     const accessToken = await this.jwt.signAsync(
-      { sub: userId, kind: ACCESS_TOKEN_KIND },
+      { sub: userId, username, kind: ACCESS_TOKEN_KIND },
       {
         secret: this.config.getOrThrow<string>(ENV_KEYS.JWT_ACCESS_SECRET),
         expiresIn: ACCESS_TOKEN_TTL_SECONDS,
