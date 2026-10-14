@@ -9,7 +9,6 @@ import {
   ACCESS_TOKEN_TTL_SECONDS,
   JWT_AUDIENCE,
   JWT_ISSUER,
-  MAX_USERNAME_LENGTH,
 } from './auth.constants.js';
 
 @Injectable()
@@ -27,24 +26,16 @@ export class AuthService {
 
     const { username } = await this.adfs.getUser(adfsToken);
 
-    if (
-      typeof username !== 'string' ||
-      !username.trim() ||
-      username.length > MAX_USERNAME_LENGTH
-    ) {
-      throw new UnauthorizedException('ADFS user must have a unique username');
-    }
-
     const user = { id: username, username };
 
     return {
-      ...(await this.issue(user.id, user.username)),
+      ...this.issue(user.id, user.username),
       user,
     };
   }
 
-  private async issue(userId: string, username: string) {
-    const accessToken = await this.jwt.signAsync(
+  private issue(userId: string, username: string) {
+    const accessToken = this.jwt.sign(
       { sub: userId, username, kind: ACCESS_TOKEN_KIND },
       {
         secret: this.config.getOrThrow<string>(ENV_KEYS.JWT_ACCESS_SECRET),

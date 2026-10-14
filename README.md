@@ -69,7 +69,7 @@ Use a feature module with controller → service → repository. Controllers val
 
 Every route requires a valid access token unless marked `@Public()`. `@User()` supplies a safe user DTO. Public user objects contain only `id` and `username`.
 
-Access JWTs expire in 15 minutes and live only in client memory. Unauthorized responses clear the client token and require a new sign-in. Logout clears the local token; issued access tokens remain valid until expiry. Login requires the configured Origin header.
+Access JWTs expire in one day and are persisted in local storage. Unauthorized responses clear the client token and require a new sign-in. Logout clears the local token; issued access tokens remain valid until expiry. Login requires the configured Origin header.
 
 Winston handles Nest application logs and HTTP logs through the nest-winston adapter. Logs use Elastic Common Schema (ECS) JSON via `@elastic/ecs-winston-format`, with `@timestamp`, `log.level`, `ecs.version`, `service.name` and `log.logger`. HTTP completion logs include `http.request.method`, `url.path`, `http.response.status_code` and `event.duration` (nanoseconds). Errors include ECS `error.type`, `error.message` and `error.stack_trace` fields. The default threshold is info, with error/fatal output on stderr and other levels on stdout. Configure levels and transports in `api/src/common/logger.ts`. Credentials, cookies, authorization headers and query strings are not logged.
 
