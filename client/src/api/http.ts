@@ -7,8 +7,7 @@ import axios, {
 
 import { env } from '@/lib/env';
 import { useSession } from '@/lib/store';
-
-const REQUEST_TIMEOUT_MS = 15_000;
+import { REQUEST_TIMEOUT_MS } from '@/shared/constants';
 
 const baseURL = env.apiUrl;
 export const http = axios.create({

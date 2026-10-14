@@ -29,6 +29,8 @@ import {
 } from '@tanstack/react-table';
 import { type ChangeEvent, type MouseEvent, useState } from 'react';
 
+import { TABLE_PAGE_SIZE_OPTIONS } from '@/shared/constants';
+
 import { FilterField } from './data-table.styled';
 import { EmptyState } from './states';
 
@@ -168,7 +170,7 @@ export const DataTable = <T,>({
         rowsPerPage={table.getState().pagination.pageSize}
         onPageChange={changePage}
         onRowsPerPageChange={changePageSize}
-        rowsPerPageOptions={[10, 25, 50]}
+        rowsPerPageOptions={TABLE_PAGE_SIZE_OPTIONS}
       />
     </Box>
   );
