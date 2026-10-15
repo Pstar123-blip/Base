@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, Matches } from 'class-validator';
 
 export class UserDto {
   @ApiProperty() id!: string;
@@ -9,15 +8,6 @@ export class UserDto {
 
 export class TokenDto {
   @ApiProperty() accessToken!: string;
-}
-
-export class AdfsLoginDto {
-  @ApiProperty({
-    description: 'ADFS token (mock: any nonblank value is accepted)',
-  })
-  @IsString()
-  @Matches(/\S/, { message: 'adfsToken must not be blank' })
-  adfsToken!: string;
 }
 
 export class LoginResponseDto extends TokenDto {

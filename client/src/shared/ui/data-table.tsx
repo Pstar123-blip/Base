@@ -31,7 +31,7 @@ import { type ChangeEvent, type MouseEvent, useState } from 'react';
 
 import { TABLE_PAGE_SIZE_OPTIONS } from '@/shared/constants';
 
-import { FilterField } from './data-table.styled';
+import { FilterField } from './data-table.styles';
 import { EmptyState } from './states';
 
 type Props<T> = {

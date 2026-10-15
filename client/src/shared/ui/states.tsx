@@ -1,6 +1,6 @@
 import { Alert, Button, CircularProgress, Typography } from '@mui/material';
 
-import { EmptyMessage, LoadingContainer } from './states.styled';
+import { EmptyMessage, LoadingContainer } from './states.styles';
 
 export const LoadingState = () => {
   return (

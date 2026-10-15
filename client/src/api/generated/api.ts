@@ -24,7 +24,6 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  AdfsLoginDto,
   LoginResponseDto,
   UserDto
 } from './model';
@@ -51,16 +50,14 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
-export const login = (
-    adfsLoginDto: AdfsLoginDto,
+export const createToken = (
+
  options?: SecondParameter<typeof request>,signal?: AbortSignal
 ) => {
 
 
       return request<LoginResponseDto>(
-      {url: `/api/auth/login`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: adfsLoginDto, signal
+      {url: `/api/auth/create-token`, method: 'POST', signal
     },
       options);
     }
@@ -68,13 +65,13 @@ export const login = (
 
 
 
-export const getLoginMutationKey = () => ['login'] as const;
+export const getCreateTokenMutationKey = () => ['createToken'] as const;
 
-export const getLoginMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof login>>, TError,LoginMutationVariables, TContext>, request?: SecondParameter<typeof request>}
-): UseMutationOptions<Awaited<ReturnType<typeof login>>, TError,LoginMutationVariables, TContext> => {
+export const getCreateTokenMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createToken>>, TError,void, TContext>, request?: SecondParameter<typeof request>}
+): UseMutationOptions<Awaited<ReturnType<typeof createToken>>, TError,void, TContext> => {
 
-const mutationKey = getLoginMutationKey();
+const mutationKey = getCreateTokenMutationKey();
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -84,10 +81,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof login>>, LoginMutationVariables> = (props) => {
-          const {data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createToken>>, void> = () => {
 
-          return  login(data,requestOptions)
+
+          return  createToken(requestOptions)
         }
 
 
@@ -97,20 +94,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type LoginMutationResult = NonNullable<Awaited<ReturnType<typeof login>>>
-    export type LoginMutationBody = AdfsLoginDto
-    export type LoginMutationError = unknown
-    export type LoginMutationVariables = {data: AdfsLoginDto}
+    export type CreateTokenMutationResult = NonNullable<Awaited<ReturnType<typeof createToken>>>
 
-    export const useLogin = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof login>>, TError,LoginMutationVariables, TContext>, request?: SecondParameter<typeof request>}
+    export type CreateTokenMutationError = unknown
+
+
+    export const useCreateToken = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createToken>>, TError,void, TContext>, request?: SecondParameter<typeof request>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof login>>,
+        Awaited<ReturnType<typeof createToken>>,
         TError,
-        LoginMutationVariables,
+        void,
         TContext
       > => {
-      return useMutation(getLoginMutationOptions(options), queryClient);
+      return useMutation(getCreateTokenMutationOptions(options), queryClient);
     }
 
 export const me = (

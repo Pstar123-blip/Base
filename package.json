@@ -9,6 +9,9 @@
     "node": ">=22.18.0"
   },
   "scripts": {
+    "dev:adfs": "node --env-file=api/.env --watch mock-adfs/server.mjs",
+    "start:adfs": "node --env-file=api/.env mock-adfs/server.mjs",
+    "test:adfs": "node --test mock-adfs/server.test.mjs",
     "dev": "turbo run dev",
     "build": "turbo run build",
     "typecheck": "turbo run typecheck",

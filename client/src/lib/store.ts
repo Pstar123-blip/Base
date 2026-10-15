@@ -8,6 +8,6 @@ import { createSessionSlice, type SessionSlice } from './slices/session.slice';
 export const useSession = create<SessionSlice>()(
   persist(createSessionSlice, {
     name: SESSION_STORAGE_KEY,
-    partialize: ({ accessToken }) => ({ accessToken }),
+    partialize: ({ accessToken, tokenStage }) => ({ accessToken, tokenStage }),
   }),
 );

@@ -6,7 +6,7 @@ import type { UserDto } from '@/api/generated/model';
 import { DataTable } from '@/shared/ui/data-table';
 import { ErrorState, LoadingState } from '@/shared/ui/states';
 
-import { AccountPanel } from './dashboard.styled';
+import { AccountPanel } from './dashboard.styles';
 
 const getUserId = (row: UserDto) => row.id;
 

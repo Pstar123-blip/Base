@@ -11,8 +11,15 @@ cp client/.env.example client/.env
 npm run docker:dev
 ```
 
-Open http://localhost:5173 and create an account. API documentation is at http://localhost:3000/api/docs. Development uses `docker-compose-dev.yml` with `api/Dockerfile.dev` and `client/Dockerfile.dev`. Production uses `docker-compose.yml` with the standard Dockerfiles. Development runs in Docker with `npm run docker:dev`; migrations run before the API starts and source changes reload automatically.
+Open http://localhost:5173. The sign-in effect opens the separate mock ADFS service at `http://localhost:4000/login`. Use any nonblank username and password. The popup opens automatically. If the browser blocks it, allow popups for this site; the app retries opening automatically. Development Compose starts the mock, database, API and client together; migrations run before the API starts. API documentation is at http://localhost:3000/api/docs.
 
+For host development, run `npm run dev:adfs` in a separate terminal alongside the API and client. The mock has no npm dependencies. See [mock-adfs/README.md](mock-adfs/README.md).
+
+- Frontend: `VITE_ADFS_LOGIN_URL=http://localhost:4000/login` chooses the external popup page.
+- Shared signing secret: the main API and mock ADFS both load `JWT_ACCESS_SECRET` from `api/.env`. It is never exposed to the frontend.
+- Mock: `CLIENT_ORIGIN=http://localhost:5173` restricts its opener. Keep this aligned with the frontend origin.
+
+Changing the frontend provider requires changing `VITE_ADFS_LOGIN_URL` while preserving the popup message contract. The real provider must sign its JWT with the same server-side `JWT_ACCESS_SECRET` as the main API. There are no issuer or audience requirements and no provider verification URL. Production does not start the mock.
 ## Development environment
 
 Use two env files: `api/.env` for backend settings, including the database connection URL, and `client/.env` for frontend settings. Copy the examples once; real env files are Git-ignored and excluded from Docker builds.
@@ -71,9 +78,11 @@ Every route requires a valid access token unless marked `@Public()`. `@User()` s
 
 Access JWTs expire in one day and are persisted in local storage. Unauthorized responses clear the client token and require a new sign-in. Logout clears the local token; issued access tokens remain valid until expiry. Login requires the configured Origin header.
 
+For local endpoint testing, set `DEV_MASTER_TOKEN` in `api/.env` and restart the API (recreate the container when using Compose). With `NODE_ENV=development`, send `Authorization: Bearer <DEV_MASTER_TOKEN>` or paste the token into Swagger's Authorize dialog. Requests authenticate as `{ "id": "dev", "username": "dev" }` without logging in. This token is disabled when unset and is never accepted in test or production environments.
+
 Winston handles Nest startup, application, error and HTTP logs through one shared `LoggingModule` and the nest-winston adapter. Console logs default to readable pretty output in development/test and Elastic Common Schema (ECS) JSON in production. Set `LOG_FORMAT=pretty` or `LOG_FORMAT=ecs` to override. Pretty output includes timestamp, level, context, request ID, metadata and error stacks; colors are enabled for interactive terminals. Use `LOG_FORMAT=ecs` when Elastic Agent/Filebeat collects stdout/stderr. This configures the log format; configure the collector separately to send logs to Elasticsearch. Set `LOG_LEVEL` (default `info`) and `LOG_SERVICE_NAME` (default `api`) in `api/.env`; rename the service when cloning this base. Supported thresholds are `fatal`, `error`, `warn`, `info`, `http`, `verbose`, `debug`, and `silly`. Error/fatal logs go to stderr; other levels go to stdout, suitable for Docker log collection.
 
-Every completed HTTP response is logged once, including guard failures and unknown routes. Responses return `x-request-id`; safe incoming IDs (1-128 letters, digits, underscores or hyphens) are reused, otherwise a UUID is generated. The same `http.request.id` accompanies logs written during the request. Completion logs include method, path, status and duration in nanoseconds; 4xx responses use warn and 5xx responses use error. Headers, bodies, tokens, cookies and query strings are omitted from automatic HTTP logs.
+Every completed HTTP response is logged once, including guard failures and unknown routes. Responses return `x-request-id`; safe incoming IDs (1?128 letters, digits, underscores or hyphens) are reused, otherwise a UUID is generated. The same `http.request.id` accompanies logs written during the request. Completion logs include method, path, status and duration in nanoseconds; 4xx responses use warn and 5xx responses use error. Headers, bodies, tokens, cookies and query strings are omitted from automatic HTTP logs.
 
 For new services, use Nest's contextual logger; it forwards to the shared Winston instance:
 
@@ -96,7 +105,22 @@ Use `logger.error(error)` for an Error object or `logger.error('Operation failed
 
 ## Client conventions
 
-Material UI's centralized theme and CssBaseline wrap TanStack Router and Query. The home route automatically restores a session or obtains a token from the mock ADFS adapter in `client/src/features/auth/adfs.ts` and exchanges it with the project API. It shows a signing-in view while authentication runs and redirects failures to `/auth-error`, where users can retry. Sign-out opens `/signed-out` to avoid immediately signing in again. The legacy `/login` URL redirects home. The route tree also supplies error and 404 views. Zustand holds ephemeral session/UI state; Query owns server state; React Hook Form owns forms.
+For the authentication flow and provider URL setting, see [core/auth/README.md](client/src/core/auth/README.md).
+
+Material UI's centralized theme and CssBaseline wrap TanStack Router and Query. The root route protects every path except `/unauthorized`. If a completed application token is already stored, authentication proceeds without calling `/auth/me`; the server guard checks it when API requests are made. If there is no token, `useLoginPopup` opens `VITE_ADFS_LOGIN_URL` and listens for a correlated message inside `useEffect`. The effect stores the signed ADFS JWT temporarily, and Axios attaches it as a bearer header to `POST /api/auth/create-token`. This endpoint is protected by the same JWT guard, which validates the shared-secret signature and expiration. The API then issues an application JWT with its own one-day lifetime; this replaces the ADFS JWT in local storage. No separate provider verification request is made. Popup or exchange failure restarts the whole process, with an initial attempt plus two retries; after exhaustion, `/unauthorized` offers a Relogin button. Cleanup cancels pending work and removes listeners, timers, and the popup. The dashboard may still call `/auth/me` to load account display data; that is separate from session authentication.
+
+Session persistence records `tokenStage` alongside the token. A saved provider token means exchange was interrupted, so a reload clears it and restarts sign-in. Successful exchange marks the application token as complete. The auth service owns token exchange and storage; the popup hook owns the window and message listener, while the component renders its status and buttons. A 401 clears the session only when the failed request used the currently stored token, preserving newer logins when older requests finish late.
+
+The configured external URL is opened unchanged. The mock uses its server-side `CLIENT_ORIGIN` setting as the message target origin. After authenticating and obtaining a provider token, it sends this message to the opener, using the specific application origin as `targetOrigin`:
+
+```js
+window.opener.postMessage(
+  { user: { token: accessToken } },
+  parentOrigin,
+);
+```
+
+An unsuccessful result omits the token. The parent checks that the message comes from the popup window it opened. The main API JWT guard verifies the provider token signature and expiration using the shared secret.
 
 Generate contracts after changing API DTOs. Commit `api/openapi.json` and `client/src/api/generated`; do not edit generated files. Generated hooks use the central Axios mutator, including AbortSignal cancellation. Query defaults avoid retries for 4xx errors, retry transient failures twice, and report errors centrally. Mutations do not retry automatically. In mutation `onSuccess`, invalidate the affected generated query key (for example `queryClient.invalidateQueries({queryKey: getMeQueryKey()})`). Parameterized keys must include filters and pagination; use generated key helpers where available.
 
@@ -112,10 +136,10 @@ For a fork, rename workspace/image names, choose a license, customize the theme 
 
 Patched transitive dependency overrides are recorded at the root for Multer, js-yaml 4.x and Drizzle Kit’s older esbuild helper. Reassess them when upgrading those parent packages; generation, builds and tests cover the overrides.
 
-`POST /api/auth/login` accepts `{ "adfsToken": "..." }` and returns `{ accessToken, user }`. This is a mock ADFS implementation: any nonblank token signs in as the shared `mock.adfs` user, created on first login. Tokens are not verified with ADFS; replace this stub before using real authentication. The API calls `AdfsService.getUser(adfsToken)` to obtain the unique username, then finds or creates the local user by that username. Users have no passwords and there is no registration endpoint. A real integration needs tenant metadata, client credentials, callback URLs and an identity-to-local-user mapping. Implement the authorization-code flow with PKCE in a separate auth provider module; map identities to local users and reuse application access-token issuance. Do not put identity-provider secrets in Vite environment variables.
+`POST /api/auth/create-token` takes no token request body. It requires `Authorization: Bearer <ADFS JWT>`; the JWT guard verifies the signature with `JWT_ACCESS_SECRET` and passes the verified identity to token issuance. The API issues its own one-day JWT, preserving identity fields while replacing upstream JWT timestamps. The separate `mock-adfs/` service signs five-minute HS256 JWTs with the same secret. It accepts any nonblank credentials and stores no passwords or database users. Its JWTs are accepted by the API guard just like application JWTs; there is no `/verify` endpoint, replay store, issuer/audience check, or token-kind discriminator.
 
 ## Testing
 
-Unit tests cover environment validation, ADFS identity lookup, authentication rotation and client behavior. Run `npm run test:e2e` for HTTP guard, validation, origin and security-header checks without a database. Run `TEST_DATABASE_URL=postgres://... npm run test:integration` against a disposable database for migration and full authentication lifecycle coverage. Integration tests apply migrations and clean up only the randomly named user they create. CI supplies PostgreSQL and runs all suites, generated-contract checks, types, lint, formatting and builds. Add repository and browser tests as your domain grows.
+Client tests cover the external popup effect, popup-source checks, blocked and closed windows, timeouts, StrictMode cleanup, route cancellation, and protection at the root route. Run `npm run test:adfs` for provider JWT signing, expiration and login-origin checks. Run `npm run test:e2e` for the live provider-to-API token exchange, HTTP guard, validation, origin and security-header checks without a database. Run `TEST_DATABASE_URL=postgres://... npm run test:integration` against a disposable database for migration and authentication coverage; it verifies that login does not create a user. CI supplies PostgreSQL and runs all suites, generated-contract checks, types, lint, formatting and builds. Add repository and browser tests as your domain grows.
 
 Reference documentation: [Nest authentication](https://docs.nestjs.com/security/authentication), [Orval React Query generation](https://orval.dev/docs/guides/react-query/), [Drizzle](https://orm.drizzle.team/).

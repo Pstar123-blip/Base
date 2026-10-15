@@ -33,7 +33,12 @@ const handleResponseError = (error: unknown) => {
     axios.isAxiosError(error) &&
     error.response?.status === HttpStatusCode.Unauthorized
   ) {
-    useSession.getState().setToken(null);
+    const token = useSession.getState().accessToken;
+    const authorization = error.config?.headers?.Authorization;
+
+    if (token && authorization === `Bearer ${token}`) {
+      useSession.getState().setToken(null);
+    }
   }
 
   throw error;

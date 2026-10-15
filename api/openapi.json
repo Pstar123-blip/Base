@@ -1,20 +1,10 @@
 {
   "openapi": "3.0.0",
   "paths": {
-    "/api/auth/login": {
+    "/api/auth/create-token": {
       "post": {
-        "operationId": "login",
+        "operationId": "createToken",
         "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AdfsLoginDto"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "",
@@ -27,6 +17,11 @@
             }
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "auth"
         ]
@@ -76,18 +71,6 @@
       }
     },
     "schemas": {
-      "AdfsLoginDto": {
-        "type": "object",
-        "properties": {
-          "adfsToken": {
-            "type": "string",
-            "description": "ADFS token (mock: any nonblank value is accepted)"
-          }
-        },
-        "required": [
-          "adfsToken"
-        ]
-      },
       "UserDto": {
         "type": "object",
         "properties": {

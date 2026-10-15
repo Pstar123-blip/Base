@@ -13,15 +13,16 @@ import { JwtService } from '@nestjs/jwt';
 import type { Request } from 'express';
 
 import { ENV_KEYS } from '../envKeys.constants.js';
-import {
-  ACCESS_TOKEN_KIND,
-  JWT_AUDIENCE,
-  JWT_ISSUER,
-  MAX_USERNAME_LENGTH,
-} from './auth.constants.js';
+import { MAX_USERNAME_LENGTH } from './auth.constants.js';
 import type { UserDto } from './auth.dto.js';
 
 const PUBLIC_METADATA_KEY = 'public';
+
+export type AuthClaims = Record<string, unknown> & { username: string };
+export type AuthenticatedRequest = Request & {
+  user?: UserDto;
+  auth?: AuthClaims;
+};
 
 export const Public = () => SetMetadata(PUBLIC_METADATA_KEY, true);
 export const User = createParamDecorator(
@@ -38,7 +39,7 @@ export class AuthGuard implements CanActivate {
     private readonly config: ConfigService,
   ) {}
 
-  async canActivate(context: ExecutionContext) {
+  canActivate(context: ExecutionContext) {
     if (
       this.reflector.getAllAndOverride<boolean>(PUBLIC_METADATA_KEY, [
         context.getHandler(),
@@ -48,9 +49,7 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
-    const request = context
-      .switchToHttp()
-      .getRequest<Request & { user?: UserDto }>();
+    const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
     const token = request.headers.authorization?.match(/^Bearer (.+)$/)?.[1];
 
     if (!token) {
@@ -58,23 +57,27 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException();
     }
 
-    let claims: { sub?: unknown; username?: unknown; kind?: unknown };
+    const devMasterToken = this.config.get<string>(ENV_KEYS.DEV_MASTER_TOKEN);
+
+    if (
+      this.config.get<string>(ENV_KEYS.NODE_ENV) === 'development' &&
+      devMasterToken &&
+      token === devMasterToken
+    ) {
+      this.logger.debug('Development master token accepted');
+      return true;
+    }
+
+    let claims: Record<string, unknown>;
 
     try {
-      claims = await this.jwt.verifyAsync(token, {
-        secret: this.config.getOrThrow<string>(ENV_KEYS.JWT_ACCESS_SECRET),
-        issuer: JWT_ISSUER,
-        audience: JWT_AUDIENCE,
-      });
+      claims = this.jwt.verify(token);
     } catch {
       this.logger.debug('Authentication rejected: invalid access token');
       throw new UnauthorizedException();
     }
 
     if (
-      claims.kind !== ACCESS_TOKEN_KIND ||
-      typeof claims.sub !== 'string' ||
-      !claims.sub.trim() ||
       typeof claims.username !== 'string' ||
       !claims.username.trim() ||
       claims.username.length > MAX_USERNAME_LENGTH
@@ -83,9 +86,10 @@ export class AuthGuard implements CanActivate {
     }
 
     request.user = {
-      id: claims.sub,
+      id: claims.username,
       username: claims.username,
     };
+    request.auth = claims as AuthClaims;
     return true;
   }
 }
