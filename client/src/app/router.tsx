@@ -5,14 +5,14 @@ import {
   type ErrorComponentProps,
 } from '@tanstack/react-router';
 
-import { Dashboard } from '@/app/dashboard/dashboard';
 import { requireSession } from '@/core/auth/require-session';
 import { NotFoundPage } from '@/core/pages/not-found-page';
 import { SigningIn } from '@/core/pages/signing-in';
 import { UnauthorizedRoute } from '@/core/pages/unauthorized-route';
+import { Dashboard } from '@/demo/dashboard/dashboard';
+import { Layout } from '@/demo/layout/layout';
 import { ErrorState } from '@/shared/ui/states';
 
-import { Layout } from './layout/layout/layout';
 import { Root } from './root';
 
 const RouteError = ({ error }: ErrorComponentProps) => (
@@ -37,7 +37,7 @@ const unauthorizedRoute = createRoute({
   component: UnauthorizedRoute,
 });
 
-// Authentication is enforced by the root; this route only supplies the layout.
+// Replace these demo routes with your project pages. Root authentication applies to all of them.
 const layoutRoute = createRoute({
   getParentRoute: () => root,
   id: 'layout',
@@ -49,13 +49,14 @@ const index = createRoute({
   path: '/',
   component: Dashboard,
 });
-export const createAppRouter = () => createRouter({
-  routeTree: root.addChildren([
-    unauthorizedRoute,
-    layoutRoute.addChildren([index]),
-  ]),
-  defaultPreload: false,
-});
+export const createAppRouter = () =>
+  createRouter({
+    routeTree: root.addChildren([
+      unauthorizedRoute,
+      layoutRoute.addChildren([index]),
+    ]),
+    defaultPreload: false,
+  });
 
 export const router = createAppRouter();
 declare module '@tanstack/react-router' {

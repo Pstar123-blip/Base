@@ -4,11 +4,11 @@ import { enqueueSnackbar } from 'notistack';
 import { useEffect, useState } from 'react';
 
 import { logout } from '@/api/http';
+import { ConfirmationDialog } from '@/demo/ui/confirmation-dialog';
 import { queryClient } from '@/lib/query';
 import { useSession } from '@/lib/store';
-import { ConfirmationDialog } from '@/shared/ui/confirmation-dialog';
 
-import { PageContent, PageTitle } from './layout/layout.styles';
+import { PageContent, PageTitle } from './layout.styles';
 
 const selectAccessToken = (state: ReturnType<typeof useSession.getState>) =>
   state.accessToken;

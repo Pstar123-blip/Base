@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { getMeQueryOptions } from '@/api/generated/api';
 import type { UserDto } from '@/api/generated/model';
-import { DataTable } from '@/shared/ui/data-table';
+import { DataTable } from '@/demo/ui/data-table';
 import { ErrorState, LoadingState } from '@/shared/ui/states';
 
 import { AccountPanel } from './dashboard.styles';
