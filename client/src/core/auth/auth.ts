@@ -4,7 +4,7 @@ import { queryClient } from '@/lib/query';
 import { useSession } from '@/lib/store';
 import { AUTH_MAX_ATTEMPTS } from '@/shared/constants';
 
-type PopupRequest = {
+export type PopupRequest = {
   id: string;
   succeed: (token: string) => void;
   fail: (error: Error) => void;
@@ -14,25 +14,16 @@ export const useAuthPopup = create<{ request: PopupRequest | null }>(() => ({
   request: null,
 }));
 
-const requestPopupToken = (signal?: AbortSignal): Promise<string> =>
+const requestPopupToken = (): Promise<string> =>
   new Promise((resolve, reject) => {
-    signal?.throwIfAborted();
     const id = crypto.randomUUID();
 
     const cleanup = () => {
-      signal?.removeEventListener('abort', cancel);
-
       if (useAuthPopup.getState().request?.id === id) {
         useAuthPopup.setState({ request: null });
       }
     };
 
-    const cancel = () => {
-      cleanup();
-      reject(new DOMException('Sign-in cancelled', 'AbortError'));
-    };
-
-    signal?.addEventListener('abort', cancel, { once: true });
     useAuthPopup.setState({
       request: {
         id,
@@ -48,14 +39,7 @@ const requestPopupToken = (signal?: AbortSignal): Promise<string> =>
     });
   });
 
-let signingIn: {
-  promise: Promise<void>;
-  signal?: AbortSignal;
-} | null = null;
-
-const authenticate = async (signal?: AbortSignal) => {
-  signal?.throwIfAborted();
-
+const authenticate = async () => {
   const session = useSession.getState();
 
   if (session.accessToken && session.tokenStage !== 'provider') {
@@ -66,29 +50,30 @@ const authenticate = async (signal?: AbortSignal) => {
   if (session.tokenStage === 'provider') session.setToken(null);
 
   await queryClient.cancelQueries();
-  signal?.throwIfAborted();
   queryClient.clear();
 
   for (let attempt = 0; attempt < AUTH_MAX_ATTEMPTS; attempt += 1) {
     try {
-      await requestPopupToken(signal);
-      signal?.throwIfAborted();
+      await requestPopupToken();
       return;
     } catch {
-      signal?.throwIfAborted();
+      // Ignore and retry
     }
   }
 
   throw new Error('Unable to authenticate');
 };
 
+let signingIn: Promise<void> | null = null;
+
 export const ensureSession = (signal?: AbortSignal): Promise<void> => {
-  if (!signingIn || signingIn.signal?.aborted) {
-    const promise = authenticate(signal).finally(() => {
-      if (signingIn?.promise === promise) signingIn = null;
+  signal?.throwIfAborted();
+
+  if (!signingIn) {
+    signingIn = authenticate().finally(() => {
+      signingIn = null;
     });
-    signingIn = { promise, signal };
   }
 
-  return signingIn.promise;
+  return signingIn;
 };

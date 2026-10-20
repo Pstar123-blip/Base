@@ -36,6 +36,7 @@ export const Layout = () => {
     await queryClient.cancelQueries();
     queryClient.clear();
     await navigate({ to: '/unauthorized', replace: true });
+    await logout();
   };
 
   const reportSignOutError = () =>
@@ -43,10 +44,7 @@ export const Layout = () => {
 
   const confirmSignOut = () => {
     setSigningOut(true);
-    void logout()
-      .then(completeSignOut)
-      .catch(reportSignOutError)
-      .finally(finishSignOut);
+    void completeSignOut().catch(reportSignOutError).finally(finishSignOut);
   };
 
   return (

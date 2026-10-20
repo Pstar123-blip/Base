@@ -6,6 +6,7 @@ import {
 } from '@tanstack/react-router';
 
 import { requireSession } from '@/core/auth/require-session';
+import { SessionGate } from '@/core/auth/session-gate';
 import { NotFoundPage } from '@/core/pages/not-found-page';
 import { SigningIn } from '@/core/pages/signing-in';
 import { UnauthorizedRoute } from '@/core/pages/unauthorized-route';
@@ -38,10 +39,16 @@ const unauthorizedRoute = createRoute({
 });
 
 // Replace these demo routes with your project pages. Root authentication applies to all of them.
+const ProtectedLayout = () => (
+  <SessionGate>
+    <Layout />
+  </SessionGate>
+);
+
 const layoutRoute = createRoute({
   getParentRoute: () => root,
   id: 'layout',
-  component: Layout,
+  component: ProtectedLayout,
 });
 
 const index = createRoute({

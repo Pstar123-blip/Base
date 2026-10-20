@@ -5,10 +5,7 @@ To use another provider, change `VITE_ADFS_LOGIN_URL` in `client/.env` and resta
 The provider page must send the same message as the mock:
 
 ```js
-window.opener.postMessage(
-  { user: { token: providerJwt } },
-  parentOrigin,
-);
+window.opener.postMessage({ user: { token: providerJwt } }, parentOrigin);
 ```
 
 The popup opens the configured URL unchanged, without adding query parameters. Configure the provider's target origin to match the frontend origin. The provider JWT must use the same server-side signing secret as the API.

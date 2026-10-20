@@ -10,7 +10,10 @@ export const SignInStatus = () => {
   return (
     <Stack spacing={2}>
       {blocked && !busy && (
-        <Alert severity="info">Allow popups for this site to continue. Sign-in will open automatically.</Alert>
+        <Alert severity="info">
+          Allow popups for this site to continue. Sign-in will open
+          automatically.
+        </Alert>
       )}
       {blocked && !busy && (
         <Button variant="contained" onClick={openWindow}>
