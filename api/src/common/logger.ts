@@ -78,15 +78,30 @@ export const createLoggerOptions = (
       format.errors({ stack: true }),
       format((info) => {
         const requestId = requestContext.getStore()?.requestId;
-        if (requestId) info['http.request.id'] = requestId;
-        if (info.context) info['log.logger'] = info.context;
-        if (info.method !== undefined)
+
+        if (requestId) {
+          info['http.request.id'] = requestId;
+        }
+
+        if (info.context) {
+          info['log.logger'] = info.context;
+        }
+
+        if (info.method !== undefined) {
           info['http.request.method'] = info.method;
-        if (info.path !== undefined) info['url.path'] = info.path;
-        if (info.statusCode !== undefined)
+        }
+
+        if (info.path !== undefined) {
+          info['url.path'] = info.path;
+        }
+
+        if (info.statusCode !== undefined) {
           info['http.response.status_code'] = info.statusCode;
-        if (typeof info.durationMs === 'number')
+        }
+
+        if (typeof info.durationMs === 'number') {
           info['event.duration'] = info.durationMs * 1_000_000;
+        }
 
         // nest-winston stores Error objects and traces separately.
         if (info.error instanceof Error) {

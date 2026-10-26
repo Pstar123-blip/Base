@@ -22,7 +22,9 @@ export const Layout = () => {
 
   const redirectWithoutSession = () => {
     if (!token) {
-      if (!signingOut) void router.invalidate();
+      if (!signingOut) {
+        void router.invalidate();
+      }
     }
   };
 
@@ -33,10 +35,10 @@ export const Layout = () => {
   const finishSignOut = () => setSigningOut(false);
 
   const completeSignOut = async () => {
+    await logout();
     await queryClient.cancelQueries();
     queryClient.clear();
     await navigate({ to: '/unauthorized', replace: true });
-    await logout();
   };
 
   const reportSignOutError = () =>

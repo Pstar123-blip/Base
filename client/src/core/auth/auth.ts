@@ -14,6 +14,12 @@ export const useAuthPopup = create<{ request: PopupRequest | null }>(() => ({
   request: null,
 }));
 
+export class AuthCancelledError extends Error {
+  constructor() {
+    super('Sign-in was cancelled');
+  }
+}
+
 const requestPopupToken = (): Promise<string> =>
   new Promise((resolve, reject) => {
     const id = crypto.randomUUID();
@@ -47,7 +53,9 @@ const authenticate = async () => {
   }
 
   // A reload during exchange must restart sign-in, not accept the provider token.
-  if (session.tokenStage === 'provider') session.setToken(null);
+  if (session.tokenStage === 'provider') {
+    session.setToken(null);
+  }
 
   await queryClient.cancelQueries();
   queryClient.clear();
@@ -56,8 +64,11 @@ const authenticate = async () => {
     try {
       await requestPopupToken();
       return;
-    } catch {
-      // Ignore and retry
+    } catch (error) {
+      // A closed window is a deliberate cancel; retrying would reopen it without a user gesture.
+      if (error instanceof AuthCancelledError) {
+        throw error;
+      }
     }
   }
 

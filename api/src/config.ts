@@ -5,6 +5,7 @@ const DEFAULT_PORT = 3000;
 const MIN_PORT = 1;
 const MAX_PORT = 65535;
 const MIN_JWT_SECRET_LENGTH = 32;
+const MIN_DEV_MASTER_TOKEN_LENGTH = 32;
 const JWT_SECRET_KEYS = [ENV_KEYS.JWT_ACCESS_SECRET];
 const REQUIRED_ENV_KEYS = [
   ENV_KEYS.DATABASE_URL,
@@ -61,6 +62,25 @@ export const validateEnv = (env: Record<string, unknown>) => {
 
   if (nodeEnv === 'production' && origin.protocol !== 'https:') {
     throw new Error('Production CLIENT_ORIGIN must use HTTPS');
+  }
+
+  const devMasterToken = env[ENV_KEYS.DEV_MASTER_TOKEN];
+
+  if (devMasterToken !== undefined && devMasterToken !== '') {
+    if (env[ENV_KEYS.NODE_ENV] !== 'development') {
+      throw new Error(
+        `${ENV_KEYS.DEV_MASTER_TOKEN} requires NODE_ENV=development to be set explicitly`,
+      );
+    }
+
+    if (
+      typeof devMasterToken !== 'string' ||
+      devMasterToken.length < MIN_DEV_MASTER_TOKEN_LENGTH
+    ) {
+      throw new Error(
+        `${ENV_KEYS.DEV_MASTER_TOKEN} must have at least ${MIN_DEV_MASTER_TOKEN_LENGTH} characters`,
+      );
+    }
   }
 
   const logFormat =

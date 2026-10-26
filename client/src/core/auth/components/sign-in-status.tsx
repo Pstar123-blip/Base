@@ -5,7 +5,9 @@ import { useLoginPopup } from '../use-login-popup';
 export const SignInStatus = () => {
   const { isActive, blocked, busy, openWindow } = useLoginPopup();
 
-  if (!isActive) return null;
+  if (!isActive) {
+    return null;
+  }
 
   return (
     <Stack spacing={2}>

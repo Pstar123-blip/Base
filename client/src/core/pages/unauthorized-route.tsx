@@ -22,7 +22,9 @@ export const UnauthorizedRoute = () => {
     }
   };
 
-  if (signingIn) return <SigningIn />;
+  if (signingIn) {
+    return <SigningIn />;
+  }
 
   return (
     <AuthContainer maxWidth="sm">

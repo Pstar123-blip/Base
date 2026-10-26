@@ -64,4 +64,12 @@ export default tseslint.config(
     rules: { '@typescript-eslint/consistent-type-imports': 'off' },
   },
   prettierRecommended,
+  {
+    // eslint-config-prettier turns these off, so re-enable them after.
+    files: ['**/*.{ts,tsx}'],
+    rules: {
+      curly: ['error', 'all'],
+      '@stylistic/brace-style': ['error', '1tbs', { allowSingleLine: false }],
+    },
+  },
 );

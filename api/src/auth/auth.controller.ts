@@ -36,7 +36,10 @@ export class AuthController {
       throw new ForbiddenException('Untrusted origin');
     }
 
-    if (!req.auth) throw new UnauthorizedException();
+    if (!req.auth) {
+      throw new UnauthorizedException();
+    }
+
     return this.auth.createToken(req.auth);
   }
 

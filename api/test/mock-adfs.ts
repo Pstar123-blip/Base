@@ -8,8 +8,11 @@ export const startMockAdfs = async () => {
   const server = createMockAdfsServer({ jwtSecret: 'a'.repeat(32) });
   await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
   const address = server.address();
-  if (!address || typeof address === 'string')
+
+  if (!address || typeof address === 'string') {
     throw new Error('Missing mock provider port');
+  }
+
   const origin = `http://127.0.0.1:${address.port}`;
   return {
     token: async (username = 'mock.adfs') => {
@@ -18,7 +21,11 @@ export const startMockAdfs = async () => {
         headers: { Origin: origin, 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password: 'mock-password' }),
       });
-      if (!response.ok) throw new Error('Mock provider login failed');
+
+      if (!response.ok) {
+        throw new Error('Mock provider login failed');
+      }
+
       const data = (await response.json()) as { accessToken: string };
       return data.accessToken;
     },

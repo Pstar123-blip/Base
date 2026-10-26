@@ -1,3 +1,5 @@
+import { createHash, timingSafeEqual } from 'node:crypto';
+
 import {
   type CanActivate,
   createParamDecorator,
@@ -17,6 +19,11 @@ import { MAX_USERNAME_LENGTH } from './auth.constants.js';
 import type { UserDto } from './auth.dto.js';
 
 const PUBLIC_METADATA_KEY = 'public';
+const DEV_USERNAME = 'dev';
+
+const sha256 = (value: string) => createHash('sha256').update(value).digest();
+const safeEqual = (a: string, b: string) =>
+  timingSafeEqual(sha256(a), sha256(b));
 
 export type AuthClaims = Record<string, unknown> & { username: string };
 export type AuthenticatedRequest = Request & {
@@ -62,9 +69,11 @@ export class AuthGuard implements CanActivate {
     if (
       this.config.get<string>(ENV_KEYS.NODE_ENV) === 'development' &&
       devMasterToken &&
-      token === devMasterToken
+      safeEqual(token, devMasterToken)
     ) {
       this.logger.debug('Development master token accepted');
+      request.user = { id: DEV_USERNAME, username: DEV_USERNAME };
+      request.auth = { username: DEV_USERNAME };
       return true;
     }
 

@@ -10,14 +10,8 @@ export class AuthService {
   constructor(private readonly jwt: JwtService) {}
 
   createToken(identity: AuthClaims) {
-    const payload = { ...identity };
-
-    // The application sets its own lifetime instead of retaining ADFS JWT metadata.
-    for (const claim of ['iat', 'exp', 'nbf', 'iss', 'aud']) {
-      delete payload[claim];
-    }
-
-    const accessToken = this.jwt.sign(payload);
+    // Only the identity is carried over; other provider claims are not promoted.
+    const accessToken = this.jwt.sign({ username: identity.username });
     this.logger.log('Login completed');
     return {
       accessToken,

@@ -9,12 +9,17 @@ export const requireSession = async ({
   location: { pathname: string };
   abortController: AbortController;
 }) => {
-  if (location.pathname.replace(/\/+$/, '') === '/unauthorized') return;
+  if (location.pathname.replace(/\/+$/, '') === '/unauthorized') {
+    return;
+  }
 
   try {
     await ensureSession(abortController.signal);
   } catch {
-    if (abortController.signal.aborted) return;
+    if (abortController.signal.aborted) {
+      return;
+    }
+
     throw redirect({ to: '/unauthorized', replace: true });
   }
 };

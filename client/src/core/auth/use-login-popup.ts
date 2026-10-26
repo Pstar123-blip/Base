@@ -8,7 +8,7 @@ import {
   AUTH_POPUP_TIMEOUT_MS,
 } from '@/shared/constants';
 
-import { type PopupRequest, useAuthPopup } from './auth';
+import { AuthCancelledError, type PopupRequest, useAuthPopup } from './auth';
 import { authService } from './services/auth-service';
 
 type LoginMessage = {
@@ -20,6 +20,8 @@ type PopupStatus = 'idle' | 'waiting' | 'blocked' | 'exchanging';
 const usePopupStatus = create<{ status: PopupStatus }>(() => ({
   status: 'idle',
 }));
+
+const adfsOrigin = new URL(env.adfsLoginUrl).origin;
 
 let popup: Window | null = null;
 
@@ -47,15 +49,25 @@ const managePopup = (request: PopupRequest) => {
     popup?.focus();
   };
 
-  const fail = (message: string) => {
-    if (signal.aborted) return;
+  const fail = (message: string, error = new Error(message)) => {
+    if (signal.aborted) {
+      return;
+    }
+
     controller.abort();
-    request.fail(new Error(message));
+    request.fail(error);
   };
 
   const handleOnMessage = async (event: MessageEvent<LoginMessage>) => {
-    if (signal.aborted || exchanging || !popup || event.source !== popup)
+    if (
+      signal.aborted ||
+      exchanging ||
+      !popup ||
+      event.source !== popup ||
+      event.origin !== adfsOrigin
+    ) {
       return;
+    }
 
     popup.close();
     const token = event.data?.user?.token;
@@ -70,7 +82,10 @@ const managePopup = (request: PopupRequest) => {
 
     try {
       const applicationToken = await authService.createToken(token, signal);
-      if (!signal.aborted) request.succeed(applicationToken);
+
+      if (!signal.aborted) {
+        request.succeed(applicationToken);
+      }
     } catch {
       fail('Application token exchange failed');
     }
@@ -83,8 +98,9 @@ const managePopup = (request: PopupRequest) => {
     if (Date.now() - startedAt >= AUTH_POPUP_TIMEOUT_MS) {
       fail('Sign-in timed out');
     } else if (!exchanging) {
-      if (popup?.closed) fail('Sign-in window was closed');
-      else if (!popup && Date.now() >= nextOpenAt) {
+      if (popup?.closed) {
+        fail('Sign-in window was closed', new AuthCancelledError());
+      } else if (!popup && Date.now() >= nextOpenAt) {
         open();
         nextOpenAt = Date.now() + AUTH_POPUP_REOPEN_MS;
       }
