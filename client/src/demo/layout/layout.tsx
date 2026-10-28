@@ -9,7 +9,13 @@ import { queryClient } from '@/lib/query';
 import { useSession } from '@/lib/store';
 import { ColorModeToggle } from '@/shared/ui/color-mode-toggle';
 
-import { PageContent, PageTitle } from './layout.styles';
+import {
+  LayoutBody,
+  LayoutMain,
+  PageContent,
+  PageTitle,
+} from './layout.styles';
+import { Sidebar } from './sidebar';
 
 const selectAccessToken = (state: ReturnType<typeof useSession.getState>) =>
   state.accessToken;
@@ -61,9 +67,14 @@ export const Layout = () => {
           </Button>
         </Toolbar>
       </AppBar>
-      <PageContent>
-        <Outlet />
-      </PageContent>
+      <LayoutBody>
+        <Sidebar />
+        <LayoutMain>
+          <PageContent>
+            <Outlet />
+          </PageContent>
+        </LayoutMain>
+      </LayoutBody>
       <ConfirmationDialog
         open={confirm}
         busy={signingOut}
