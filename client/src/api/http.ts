@@ -7,8 +7,7 @@ import axios, {
 
 import { env } from '@/lib/env';
 import { useSession } from '@/lib/store';
-
-const REQUEST_TIMEOUT_MS = 15_000;
+import { REQUEST_TIMEOUT_MS } from '@/shared/constants';
 
 const baseURL = env.apiUrl;
 export const http = axios.create({
@@ -34,7 +33,12 @@ const handleResponseError = (error: unknown) => {
     axios.isAxiosError(error) &&
     error.response?.status === HttpStatusCode.Unauthorized
   ) {
-    useSession.getState().setToken(null);
+    const token = useSession.getState().accessToken;
+    const authorization = error.config?.headers?.Authorization;
+
+    if (token && authorization === `Bearer ${token}`) {
+      useSession.getState().setToken(null);
+    }
   }
 
   throw error;

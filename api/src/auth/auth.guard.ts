@@ -1,8 +1,11 @@
+import { createHash, timingSafeEqual } from 'node:crypto';
+
 import {
   type CanActivate,
   createParamDecorator,
   type ExecutionContext,
   Injectable,
+  Logger,
   SetMetadata,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -12,15 +15,21 @@ import { JwtService } from '@nestjs/jwt';
 import type { Request } from 'express';
 
 import { ENV_KEYS } from '../envKeys.constants.js';
-import {
-  ACCESS_TOKEN_KIND,
-  JWT_AUDIENCE,
-  JWT_ISSUER,
-} from './auth.constants.js';
+import { MAX_USERNAME_LENGTH } from './auth.constants.js';
 import type { UserDto } from './auth.dto.js';
-import { UsersRepository } from './users.repository.js';
 
 const PUBLIC_METADATA_KEY = 'public';
+const DEV_USERNAME = 'dev';
+
+const sha256 = (value: string) => createHash('sha256').update(value).digest();
+const safeEqual = (a: string, b: string) =>
+  timingSafeEqual(sha256(a), sha256(b));
+
+export type AuthClaims = Record<string, unknown> & { username: string };
+export type AuthenticatedRequest = Request & {
+  user?: UserDto;
+  auth?: AuthClaims;
+};
 
 export const Public = () => SetMetadata(PUBLIC_METADATA_KEY, true);
 export const User = createParamDecorator(
@@ -29,14 +38,15 @@ export const User = createParamDecorator(
 );
 @Injectable()
 export class AuthGuard implements CanActivate {
+  private readonly logger = new Logger(AuthGuard.name);
+
   constructor(
     private readonly reflector: Reflector,
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
-    private readonly users: UsersRepository,
   ) {}
 
-  async canActivate(context: ExecutionContext) {
+  canActivate(context: ExecutionContext) {
     if (
       this.reflector.getAllAndOverride<boolean>(PUBLIC_METADATA_KEY, [
         context.getHandler(),
@@ -46,41 +56,49 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
-    const request = context
-      .switchToHttp()
-      .getRequest<Request & { user?: UserDto }>();
+    const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
     const token = request.headers.authorization?.match(/^Bearer (.+)$/)?.[1];
 
     if (!token) {
+      this.logger.debug('Authentication rejected: missing bearer token');
       throw new UnauthorizedException();
     }
 
-    let claims: { sub: string; kind: string };
+    const devMasterToken = this.config.get<string>(ENV_KEYS.DEV_MASTER_TOKEN);
+
+    if (
+      this.config.get<string>(ENV_KEYS.NODE_ENV) === 'development' &&
+      devMasterToken &&
+      safeEqual(token, devMasterToken)
+    ) {
+      this.logger.debug('Development master token accepted');
+      request.user = { id: DEV_USERNAME, username: DEV_USERNAME };
+      request.auth = { username: DEV_USERNAME };
+      return true;
+    }
+
+    let claims: Record<string, unknown>;
 
     try {
-      claims = await this.jwt.verifyAsync(token, {
-        secret: this.config.getOrThrow<string>(ENV_KEYS.JWT_ACCESS_SECRET),
-        issuer: JWT_ISSUER,
-        audience: JWT_AUDIENCE,
-      });
+      claims = this.jwt.verify(token);
     } catch {
+      this.logger.debug('Authentication rejected: invalid access token');
       throw new UnauthorizedException();
     }
 
-    if (claims.kind !== ACCESS_TOKEN_KIND) {
-      throw new UnauthorizedException();
-    }
-
-    const user = await this.users.byId(claims.sub);
-
-    if (!user) {
+    if (
+      typeof claims.username !== 'string' ||
+      !claims.username.trim() ||
+      claims.username.length > MAX_USERNAME_LENGTH
+    ) {
       throw new UnauthorizedException();
     }
 
     request.user = {
-      id: user.id,
-      username: user.username,
+      id: claims.username,
+      username: claims.username,
     };
+    request.auth = claims as AuthClaims;
     return true;
   }
 }

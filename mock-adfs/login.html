@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="client-origin" content="__CLIENT_ORIGIN__" />
+    <title>Mock ADFS sign in</title>
+    <link rel="stylesheet" href="/login.css" />
+    <script src="/login.js" defer></script>
+  </head>
+  <body>
+    <main>
+      <p class="eyebrow">EXTERNAL IDENTITY PROVIDER</p>
+      <h1>Sign in</h1>
+      <p>
+        This is the local mock ADFS service. Use any nonblank username and
+        password.
+      </p>
+      <form>
+        <label for="username">Username</label>
+        <input
+          id="username"
+          name="username"
+          autocomplete="username"
+          required
+          autofocus
+        />
+        <label for="password">Password</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          autocomplete="current-password"
+          required
+        />
+        <p id="status" role="status" aria-live="polite"></p>
+        <button type="submit">Sign in</button>
+        <button type="button" id="cancel">Cancel</button>
+      </form>
+    </main>
+  </body>
+</html>

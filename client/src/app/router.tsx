@@ -1,29 +1,21 @@
-import { Typography } from '@mui/material';
 import {
   createRootRoute,
   createRoute,
   createRouter,
   type ErrorComponentProps,
-  Link,
-  redirect,
 } from '@tanstack/react-router';
 
-import { ensureSession } from '@/features/auth/auth';
-import { AuthenticationError } from '@/features/auth/authentication-error';
-import { SignedOut } from '@/features/auth/signed-out';
-import { Dashboard } from '@/features/dashboard/dashboard';
-import { ErrorState, LoadingState } from '@/shared/ui/states';
+import { requireSession } from '@/core/auth/require-session';
+import { SessionGate } from '@/core/auth/session-gate';
+import { NotFoundPage } from '@/core/pages/not-found-page';
+import { SigningIn } from '@/core/pages/signing-in';
+import { UnauthorizedRoute } from '@/core/pages/unauthorized-route';
+import { Dashboard } from '@/demo/dashboard/dashboard';
+import { Layout } from '@/demo/layout/layout';
+import { ErrorState } from '@/shared/ui/states';
 
-import { Layout } from './layout';
 import { Root } from './root';
-import { RouteContainer } from './router.styled';
 
-const NotFound = () => (
-  <RouteContainer>
-    <Typography variant="h4">Page not found</Typography>
-    <Link to="/">Return home</Link>
-  </RouteContainer>
-);
 const RouteError = ({ error }: ErrorComponentProps) => (
   <ErrorState
     message={error instanceof Error ? error.message : 'Something went wrong'}
@@ -31,77 +23,49 @@ const RouteError = ({ error }: ErrorComponentProps) => (
 );
 
 const root = createRootRoute({
-  component: Root,
-  notFoundComponent: NotFound,
-  errorComponent: RouteError,
-  pendingComponent: LoadingState,
-});
-
-const getRootRoute = () => root;
-
-const authErrorRoute = createRoute({
-  getParentRoute: getRootRoute,
-  path: '/auth-error',
-  component: AuthenticationError,
-});
-
-const signedOutRoute = createRoute({
-  getParentRoute: getRootRoute,
-  path: '/signed-out',
-  component: SignedOut,
-});
-
-const redirectToHome = () => {
-  throw redirect({ to: '/', replace: true });
-};
-
-const loginRoute = createRoute({
-  getParentRoute: getRootRoute,
-  path: '/login',
-  beforeLoad: redirectToHome,
-});
-
-const SigningIn = () => (
-  <RouteContainer>
-    <Typography variant="h4">Welcome</Typography>
-    <Typography>Signing you in to your workspace…</Typography>
-    <LoadingState />
-  </RouteContainer>
-);
-
-const requireSession = async () => {
-  try {
-    await ensureSession();
-  } catch {
-    throw redirect({ to: '/auth-error', replace: true });
-  }
-};
-
-const protectedRoute = createRoute({
-  getParentRoute: getRootRoute,
-  id: 'authenticated',
   beforeLoad: requireSession,
+  component: Root,
+  notFoundComponent: NotFoundPage,
+  errorComponent: RouteError,
   pendingComponent: SigningIn,
   pendingMs: 0,
-  component: Layout,
+  pendingMinMs: 0,
 });
 
-const getProtectedRoute = () => protectedRoute;
+const unauthorizedRoute = createRoute({
+  getParentRoute: () => root,
+  path: '/unauthorized',
+  component: UnauthorizedRoute,
+});
+
+// Replace these demo routes with your project pages. Root authentication applies to all of them.
+const ProtectedLayout = () => (
+  <SessionGate>
+    <Layout />
+  </SessionGate>
+);
+
+const layoutRoute = createRoute({
+  getParentRoute: () => root,
+  id: 'layout',
+  component: ProtectedLayout,
+});
 
 const index = createRoute({
-  getParentRoute: getProtectedRoute,
+  getParentRoute: () => layoutRoute,
   path: '/',
   component: Dashboard,
 });
-export const router = createRouter({
-  routeTree: root.addChildren([
-    loginRoute,
-    authErrorRoute,
-    signedOutRoute,
-    protectedRoute.addChildren([index]),
-  ]),
-  defaultPreload: 'intent',
-});
+export const createAppRouter = () =>
+  createRouter({
+    routeTree: root.addChildren([
+      unauthorizedRoute,
+      layoutRoute.addChildren([index]),
+    ]),
+    defaultPreload: false,
+  });
+
+export const router = createAppRouter();
 declare module '@tanstack/react-router' {
   interface Register {
     router: typeof router;

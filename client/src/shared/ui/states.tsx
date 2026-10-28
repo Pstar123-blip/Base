@@ -1,6 +1,6 @@
 import { Alert, Button, CircularProgress, Typography } from '@mui/material';
 
-import { EmptyMessage, LoadingContainer } from './states.styled';
+import { LoadingContainer } from './states.styles';
 
 export const LoadingState = () => {
   return (
@@ -26,12 +26,4 @@ export const ErrorState = ({
       {message}
     </Alert>
   );
-};
-
-export const EmptyState = ({
-  message = 'No results found',
-}: {
-  message?: string;
-}) => {
-  return <EmptyMessage color="text.secondary">{message}</EmptyMessage>;
 };

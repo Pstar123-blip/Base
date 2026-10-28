@@ -2,7 +2,7 @@ import { Button } from '@mui/material';
 import { Outlet } from '@tanstack/react-router';
 import { closeSnackbar, type SnackbarKey, SnackbarProvider } from 'notistack';
 
-const ERROR_AUTO_HIDE_DURATION_MS = 6000;
+import { ERROR_AUTO_HIDE_DURATION_MS, MAX_SNACKBARS } from '@/shared/constants';
 
 const renderDismissAction = (key: SnackbarKey) => {
   const dismiss = () => closeSnackbar(key);
@@ -15,7 +15,7 @@ const renderDismissAction = (key: SnackbarKey) => {
 
 export const Root = () => (
   <SnackbarProvider
-    maxSnack={3}
+    maxSnack={MAX_SNACKBARS}
     autoHideDuration={ERROR_AUTO_HIDE_DURATION_MS}
     preventDuplicate
     action={renderDismissAction}

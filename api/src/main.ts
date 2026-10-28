@@ -4,15 +4,16 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule } from '@nestjs/swagger';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 import { AppModule } from './app.module.js';
-import { createAppLogger } from './common/logger.js';
 import { ENV_KEYS } from './envKeys.constants.js';
 import { setup } from './setup.js';
 
 const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-  logger: createAppLogger(),
+  bufferLogs: true,
 });
+app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 const document = setup(app);
 
 if (app.get(ConfigService).get(ENV_KEYS.NODE_ENV) !== 'production') {

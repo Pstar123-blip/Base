@@ -9,6 +9,7 @@ export default defineConfig({
       client: 'react-query',
       httpClient: 'axios',
       mode: 'split',
+      clean: true,
       override: {
         mutator: { path: 'src/api/http.ts', name: 'request' },
         query: { signal: true },

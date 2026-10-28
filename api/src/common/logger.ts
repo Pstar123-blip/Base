@@ -1,34 +1,107 @@
+import { inspect } from 'node:util';
+
 import { ecsFormat } from '@elastic/ecs-winston-format';
 import { WinstonModule } from 'nest-winston';
 import { format, type LoggerOptions, transports } from 'winston';
 
-export const createAppLogger = (
-  options: Pick<LoggerOptions, 'level' | 'transports'> = {},
+import { requestContext } from './request-context.js';
+
+export const LOG_LEVELS = {
+  fatal: 0,
+  error: 1,
+  warn: 2,
+  info: 3,
+  http: 4,
+  verbose: 5,
+  debug: 6,
+  silly: 7,
+};
+
+export const createPrettyFormat = (colorize = Boolean(process.stdout.isTTY)) =>
+  format.combine(
+    ...(colorize
+      ? [
+          format.colorize({
+            colors: {
+              fatal: 'red',
+              error: 'red',
+              warn: 'yellow',
+              info: 'green',
+              http: 'cyan',
+              verbose: 'cyan',
+              debug: 'blue',
+              silly: 'magenta',
+            },
+          }),
+        ]
+      : []),
+    format.printf((info) => {
+      const { message, level, error, ...metadata } = info;
+      const timestamp = metadata['@timestamp'];
+      const context = metadata['log.logger'] ?? 'app';
+      const requestId = metadata['http.request.id'];
+
+      for (const key of [
+        '@timestamp',
+        'log.logger',
+        'log.level',
+        'ecs.version',
+        'service.name',
+        'event.dataset',
+        'http.request.id',
+      ]) {
+        delete metadata[key];
+      }
+
+      const details = Object.keys(metadata).length
+        ? ` ${inspect(metadata, { colors: colorize, compact: true, breakLength: Infinity })}`
+        : '';
+      const stack =
+        error && typeof error === 'object' && 'stack_trace' in error
+          ? `\n${String(error.stack_trace)}`
+          : '';
+      return `${String(timestamp)} ${String(level)} [${String(context)}]${requestId ? ` [${String(requestId)}]` : ''} ${String(message)}${details}${stack}`;
+    }),
+  );
+
+export const createLoggerOptions = (
+  options: Pick<LoggerOptions, 'level' | 'transports'> & {
+    serviceName?: string;
+    consoleFormat?: 'pretty' | 'ecs';
+  } = {},
 ) => {
-  return WinstonModule.createLogger({
+  return {
     // Include Nest's fatal level, which Winston's default npm levels omit.
-    levels: {
-      fatal: 0,
-      error: 1,
-      warn: 2,
-      info: 3,
-      http: 4,
-      verbose: 5,
-      debug: 6,
-      silly: 7,
-    },
+    levels: LOG_LEVELS,
     level: options.level ?? 'info',
     format: format.combine(
       format.errors({ stack: true }),
       format((info) => {
-        if (info.context) info['log.logger'] = info.context;
-        if (info.method !== undefined)
+        const requestId = requestContext.getStore()?.requestId;
+
+        if (requestId) {
+          info['http.request.id'] = requestId;
+        }
+
+        if (info.context) {
+          info['log.logger'] = info.context;
+        }
+
+        if (info.method !== undefined) {
           info['http.request.method'] = info.method;
-        if (info.path !== undefined) info['url.path'] = info.path;
-        if (info.statusCode !== undefined)
+        }
+
+        if (info.path !== undefined) {
+          info['url.path'] = info.path;
+        }
+
+        if (info.statusCode !== undefined) {
           info['http.response.status_code'] = info.statusCode;
-        if (typeof info.durationMs === 'number')
+        }
+
+        if (typeof info.durationMs === 'number') {
           info['event.duration'] = info.durationMs * 1_000_000;
+        }
 
         // nest-winston stores Error objects and traces separately.
         if (info.error instanceof Error) {
@@ -57,10 +130,19 @@ export const createAppLogger = (
 
         return info;
       })(),
-      ecsFormat({ serviceName: 'api' }),
+      ecsFormat({ serviceName: options.serviceName ?? 'api' }),
     ),
     transports: options.transports ?? [
-      new transports.Console({ stderrLevels: ['error', 'fatal'] }),
+      new transports.Console({
+        stderrLevels: ['error', 'fatal'],
+        ...(options.consoleFormat !== 'ecs'
+          ? { format: createPrettyFormat() }
+          : {}),
+      }),
     ],
-  });
+  } satisfies LoggerOptions;
 };
+
+export const createAppLogger = (
+  options: Parameters<typeof createLoggerOptions>[0] = {},
+) => WinstonModule.createLogger(createLoggerOptions(options));
