@@ -1,0 +1,4 @@
+services:
+  api:
+    command: npm run dev -w api -- --debug 0.0.0.0:9229
+    ports: ['127.0.0.1:9229:9229']
