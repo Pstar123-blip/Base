@@ -7,6 +7,7 @@ import { logout } from '@/api/http';
 import { ConfirmationDialog } from '@/demo/ui/confirmation-dialog';
 import { queryClient } from '@/lib/query';
 import { useSession } from '@/lib/store';
+import { ColorModeToggle } from '@/shared/ui/color-mode-toggle';
 
 import { PageContent, PageTitle } from './layout.styles';
 
@@ -54,6 +55,7 @@ export const Layout = () => {
       <AppBar position="static">
         <Toolbar>
           <PageTitle variant="h6">Project</PageTitle>
+          <ColorModeToggle />
           <Button color="inherit" onClick={openConfirmation}>
             Sign out
           </Button>
