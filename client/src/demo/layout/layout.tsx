@@ -57,7 +57,7 @@ export const Layout = () => {
   };
 
   return (
-    <>
+    <LayoutRoot>
       <AppBar position="static">
         <Toolbar>
           <PageTitle variant="h6">Project</PageTitle>
@@ -83,6 +83,6 @@ export const Layout = () => {
         onCancel={closeConfirmation}
         onConfirm={confirmSignOut}
       />
-    </>
+    </LayoutRoot>
   );
 };

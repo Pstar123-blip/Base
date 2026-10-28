@@ -11,3 +11,8 @@ export const PageContent = styled(Container)(pageContentStyles);
 
 export const LayoutBody = styled('div')({ display: 'flex', flexGrow: 1 });
 export const LayoutMain = styled('main')({ flexGrow: 1, minWidth: 0 });
+export const LayoutRoot = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  minHeight: '100vh',
+});
