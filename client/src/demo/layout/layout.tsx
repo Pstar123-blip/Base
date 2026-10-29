@@ -7,8 +7,16 @@ import { logout } from '@/api/http';
 import { ConfirmationDialog } from '@/demo/ui/confirmation-dialog';
 import { queryClient } from '@/lib/query';
 import { useSession } from '@/lib/store';
+import { ColorModeToggle } from '@/shared/ui/color-mode-toggle';
 
-import { PageContent, PageTitle } from './layout.styles';
+import {
+  LayoutRoot,
+  LayoutBody,
+  LayoutMain,
+  PageContent,
+  PageTitle,
+} from './layout.styles';
+import { Sidebar } from './sidebar';
 
 const selectAccessToken = (state: ReturnType<typeof useSession.getState>) =>
   state.accessToken;
@@ -35,10 +43,12 @@ export const Layout = () => {
   const finishSignOut = () => setSigningOut(false);
 
   const completeSignOut = async () => {
+    // Leave the protected layout first: clearing the token while SessionGate is
+    // mounted would make it start a new ADFS sign-in popup.
+    await navigate({ to: '/unauthorized', replace: true });
     await logout();
     await queryClient.cancelQueries();
     queryClient.clear();
-    await navigate({ to: '/unauthorized', replace: true });
   };
 
   const reportSignOutError = () =>
@@ -50,18 +60,24 @@ export const Layout = () => {
   };
 
   return (
-    <>
+    <LayoutRoot>
       <AppBar position="static">
         <Toolbar>
           <PageTitle variant="h6">Project</PageTitle>
+          <ColorModeToggle />
           <Button color="inherit" onClick={openConfirmation}>
             Sign out
           </Button>
         </Toolbar>
       </AppBar>
-      <PageContent>
-        <Outlet />
-      </PageContent>
+      <LayoutBody>
+        <Sidebar />
+        <LayoutMain>
+          <PageContent>
+            <Outlet />
+          </PageContent>
+        </LayoutMain>
+      </LayoutBody>
       <ConfirmationDialog
         open={confirm}
         busy={signingOut}
@@ -70,6 +86,6 @@ export const Layout = () => {
         onCancel={closeConfirmation}
         onConfirm={confirmSignOut}
       />
-    </>
+    </LayoutRoot>
   );
 };
