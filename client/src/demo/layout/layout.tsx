@@ -10,6 +10,7 @@ import { useSession } from '@/lib/store';
 import { ColorModeToggle } from '@/shared/ui/color-mode-toggle';
 
 import {
+  LayoutRoot,
   LayoutBody,
   LayoutMain,
   PageContent,
@@ -42,10 +43,12 @@ export const Layout = () => {
   const finishSignOut = () => setSigningOut(false);
 
   const completeSignOut = async () => {
+    // Leave the protected layout first: clearing the token while SessionGate is
+    // mounted would make it start a new ADFS sign-in popup.
+    await navigate({ to: '/unauthorized', replace: true });
     await logout();
     await queryClient.cancelQueries();
     queryClient.clear();
-    await navigate({ to: '/unauthorized', replace: true });
   };
 
   const reportSignOutError = () =>
