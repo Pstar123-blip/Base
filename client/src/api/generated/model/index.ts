@@ -5,5 +5,13 @@
  * OpenAPI spec version: 1.0
  */
 
+export * from './listSessionsParams';
 export * from './loginResponseDto';
+export * from './sessionDto';
+export * from './sessionSearchField';
+export * from './sessionSortField';
+export * from './sessionsPageDto';
+export * from './sessionStatus';
+export * from './sessionType';
+export * from './sortDirection';
 export * from './userDto';

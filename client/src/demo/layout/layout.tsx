@@ -4,15 +4,15 @@ import { enqueueSnackbar } from 'notistack';
 import { useEffect, useState } from 'react';
 
 import { logout } from '@/api/http';
-import { ConfirmationDialog } from '@/demo/ui/confirmation-dialog';
 import { queryClient } from '@/lib/query';
 import { useSession } from '@/lib/store';
 import { ColorModeToggle } from '@/shared/ui/color-mode-toggle';
+import { ConfirmationDialog } from '@/shared/ui/confirmation-dialog';
 
 import {
-  LayoutRoot,
   LayoutBody,
   LayoutMain,
+  LayoutRoot,
   PageContent,
   PageTitle,
 } from './layout.styles';

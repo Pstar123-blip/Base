@@ -52,6 +52,129 @@
           "auth"
         ]
       }
+    },
+    "/api/sessions": {
+      "get": {
+        "operationId": "listSessions",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Case-insensitive text to look for in `searchField`",
+            "schema": {
+              "maxLength": 200,
+              "type": "string"
+            }
+          },
+          {
+            "name": "searchField",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/SessionSearchField"
+            }
+          },
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/SessionType"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/SessionSortField"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/SortDirection"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionsPageDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List sessions (paginated, filterable)",
+        "tags": [
+          "sessions"
+        ]
+      }
+    },
+    "/api/sessions/{id}": {
+      "delete": {
+        "operationId": "deleteSession",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a session",
+        "tags": [
+          "sessions"
+        ]
+      }
     }
   },
   "info": {
@@ -99,6 +222,128 @@
         "required": [
           "accessToken",
           "user"
+        ]
+      },
+      "SessionSearchField": {
+        "type": "string",
+        "enum": [
+          "id",
+          "type",
+          "owner",
+          "status"
+        ]
+      },
+      "SessionType": {
+        "type": "string",
+        "enum": [
+          "training",
+          "inference",
+          "evaluation",
+          "calibration"
+        ]
+      },
+      "SessionSortField": {
+        "type": "string",
+        "enum": [
+          "id",
+          "type",
+          "owner",
+          "createdAt",
+          "updatedAt",
+          "progress",
+          "status"
+        ]
+      },
+      "SortDirection": {
+        "type": "string",
+        "enum": [
+          "asc",
+          "desc"
+        ]
+      },
+      "SessionStatus": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "in_progress",
+          "running",
+          "completed",
+          "failed",
+          "canceled"
+        ]
+      },
+      "SessionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SessionType"
+              }
+            ]
+          },
+          "owner": {
+            "type": "string"
+          },
+          "imageAUrl": {
+            "type": "string"
+          },
+          "imageBUrl": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "progress": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SessionStatus"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "owner",
+          "imageAUrl",
+          "imageBUrl",
+          "createdAt",
+          "updatedAt",
+          "progress",
+          "status"
+        ]
+      },
+      "SessionsPageDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SessionDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "Total sessions matching the filters"
+          }
+        },
+        "required": [
+          "items",
+          "total"
         ]
       }
     }
