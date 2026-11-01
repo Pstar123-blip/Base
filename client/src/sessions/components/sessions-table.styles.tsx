@@ -1,13 +1,11 @@
 import { LinearProgress, Paper, Table } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-import { TABLE_MIN_WIDTH_PX } from '../consts';
-
 export const TablePanel = styled(Paper)({ overflow: 'hidden' });
 
-export const WideTable = styled(Table)({
-  minWidth: TABLE_MIN_WIDTH_PX,
-  '& th, & td': { whiteSpace: 'nowrap' },
+export const FitTable = styled(Table)({
+  width: '100%',
+  '& th, & td': { paddingInline: 8 },
 });
 
 // Reserves the bar's height so the table doesn't jump while refetching.

@@ -14,7 +14,6 @@ export const SESSIONS_GROUP_PATH_SUFFIX = '/sessions/group';
 export const getResultsPath = (id: string) => `${SESSIONS_PATH}/${id}/results`;
 
 export const IMAGE_SIZE_PX = 40;
-export const TABLE_MIN_WIDTH_PX = 960;
 export const ID_MAX_WIDTH_PX = 96;
 export const TYPE_TAG_FILL_ALPHA = 0.16;
 export const TYPE_TAG_BORDER_ALPHA = 0.4;

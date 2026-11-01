@@ -7,5 +7,6 @@ export const IdText = styled('span')({
   maxWidth: ID_MAX_WIDTH_PX,
   overflow: 'hidden',
   textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
   verticalAlign: 'bottom',
 });

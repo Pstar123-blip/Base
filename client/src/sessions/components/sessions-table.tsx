@@ -14,7 +14,7 @@ import { EmptyState } from '@/shared/ui/empty-state';
 import { SESSION_COLUMNS } from '../consts';
 import type { Session } from '../utils/map-session';
 import { SessionRow } from './session-row';
-import { FetchIndicator, TablePanel, WideTable } from './sessions-table.styles';
+import { FetchIndicator, FitTable, TablePanel } from './sessions-table.styles';
 
 type Column = (typeof SESSION_COLUMNS)[number];
 
@@ -61,12 +61,12 @@ export const SessionsTable = ({
         <FetchIndicator variant="determinate" value={0} />
       )}
       <TableContainer>
-        <WideTable size="small">
+        <FitTable size="small">
           <TableHead>
             <TableRow>{SESSION_COLUMNS.map(renderHeader)}</TableRow>
           </TableHead>
           <TableBody>{sessions.map(renderRow)}</TableBody>
-        </WideTable>
+        </FitTable>
       </TableContainer>
       {!sessions.length && <EmptyState message="No sessions found" />}
       <TablePagination
