@@ -5,16 +5,14 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  TableSortLabel,
 } from '@mui/material';
 import type { ChangeEvent, MouseEvent } from 'react';
 
-import type { SessionDto, SortDirection } from '@/api/generated/model';
-import type { SessionSortField } from '@/api/generated/model';
 import { TABLE_PAGE_SIZE_OPTIONS } from '@/shared/constants';
 import { EmptyState } from '@/shared/ui/empty-state';
 
 import { SESSION_COLUMNS } from '../consts';
+import type { Session } from '../utils/map-session';
 import { SessionRow } from './session-row';
 import { FetchIndicator, TablePanel, WideTable } from './sessions-table.styles';
 
@@ -25,25 +23,19 @@ export const SessionsTable = ({
   total,
   page,
   pageSize,
-  sortBy,
-  sortDirection,
   fetching,
   onPageChange,
   onPageSizeChange,
-  onSort,
   onDelete,
 }: {
-  sessions: SessionDto[];
+  sessions: Session[];
   total: number;
   page: number;
   pageSize: number;
-  sortBy: SessionSortField;
-  sortDirection: SortDirection;
   fetching: boolean;
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: number) => void;
-  onSort: (column: SessionSortField) => void;
-  onDelete: (session: SessionDto) => void;
+  onDelete: (session: Session) => void;
 }) => {
   const changePage = (
     _event: MouseEvent<HTMLButtonElement> | null,
@@ -53,30 +45,11 @@ export const SessionsTable = ({
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => onPageSizeChange(Number(event.target.value));
 
-  const renderHeader = (column: Column) => {
-    const { sortBy: columnSort } = column;
+  const renderHeader = (column: Column) => (
+    <TableCell key={column.id}>{column.label}</TableCell>
+  );
 
-    return (
-      <TableCell
-        key={column.id}
-        sortDirection={columnSort === sortBy ? sortDirection : false}
-      >
-        {columnSort ? (
-          <TableSortLabel
-            active={columnSort === sortBy}
-            direction={columnSort === sortBy ? sortDirection : 'asc'}
-            onClick={() => onSort(columnSort)}
-          >
-            {column.label}
-          </TableSortLabel>
-        ) : (
-          column.label
-        )}
-      </TableCell>
-    );
-  };
-
-  const renderRow = (session: SessionDto) => (
+  const renderRow = (session: Session) => (
     <SessionRow key={session.id} session={session} onDelete={onDelete} />
   );
 

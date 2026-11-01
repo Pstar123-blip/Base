@@ -1,15 +1,16 @@
 import {
-  type SessionSearchField,
-  type SessionSortField,
+  type SessionSearchValuesDto,
   type SessionStatus,
   type SessionType,
 } from '@/api/generated/model';
 
 export const SEARCH_DEBOUNCE_MS = 300;
+export const REFETCH_INTERVAL_MS = 5000;
 export const SEARCH_MAX_LENGTH = 200;
 export const ALL_TYPES = 'all';
 
 export const SESSIONS_PATH = '/sessions';
+export const SESSIONS_GROUP_PATH_SUFFIX = '/sessions/group';
 export const getResultsPath = (id: string) => `${SESSIONS_PATH}/${id}/results`;
 
 export const IMAGE_SIZE_PX = 40;
@@ -54,10 +55,13 @@ export const SESSION_STATUS_COLORS: Record<
   canceled: 'warning',
 };
 
+export type SessionSearchField = keyof SessionSearchValuesDto;
+
+export const DEFAULT_SEARCH_FIELD: SessionSearchField = 'session_id';
+
 export const SEARCH_FIELD_LABELS: Record<SessionSearchField, string> = {
-  id: 'ID',
-  type: 'Type',
-  owner: 'Owner',
+  session_id: 'ID',
+  session_owner: 'Owner',
   status: 'Status',
 };
 
@@ -77,20 +81,18 @@ export type SessionColumnId =
 interface SessionColumn {
   id: SessionColumnId;
   label: string;
-  // Present when the server can sort by this column.
-  sortBy?: SessionSortField;
 }
 
 export const SESSION_COLUMNS: SessionColumn[] = [
-  { id: 'id', label: 'ID', sortBy: 'id' },
-  { id: 'type', label: 'Type', sortBy: 'type' },
-  { id: 'owner', label: 'Owner', sortBy: 'owner' },
+  { id: 'id', label: 'ID' },
+  { id: 'type', label: 'Type' },
+  { id: 'owner', label: 'Owner' },
   { id: 'imageA', label: 'Image A' },
   { id: 'imageB', label: 'Image B' },
-  { id: 'createdAt', label: 'Created', sortBy: 'createdAt' },
-  { id: 'updatedAt', label: 'Last update', sortBy: 'updatedAt' },
-  { id: 'progress', label: 'Progress', sortBy: 'progress' },
-  { id: 'status', label: 'Status', sortBy: 'status' },
+  { id: 'createdAt', label: 'Created' },
+  { id: 'updatedAt', label: 'Last update' },
+  { id: 'progress', label: 'Progress' },
+  { id: 'status', label: 'Status' },
   { id: 'results', label: 'Results' },
   { id: 'options', label: '' },
 ];

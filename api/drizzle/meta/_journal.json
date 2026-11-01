@@ -15,6 +15,13 @@
       "when": 1793270826324,
       "tag": "0001_sessions",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793543653823,
+      "tag": "0002_sessions_notes_logs",
+      "breakpoints": true
     }
   ]
 }

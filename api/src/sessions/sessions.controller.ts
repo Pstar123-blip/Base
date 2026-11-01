@@ -18,31 +18,38 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { ListSessionsQueryDto, SessionsPageDto } from './sessions.dto.js';
+import {
+  GroupSessionsQueryDto,
+  SessionDto,
+  SessionsPageDto,
+  SessionTypeParamDto,
+} from './sessions.dto.js';
 import { SessionsRepository } from './sessions.repository.js';
 
 @ApiTags('sessions')
 @ApiBearerAuth()
-@Controller('sessions')
+@Controller()
 export class SessionsController {
   constructor(private readonly sessions: SessionsRepository) {}
 
-  @Get()
-  @ApiOperation({ summary: 'List sessions (paginated, filterable)' })
+  @Get('sessions/group')
+  @ApiOperation({ summary: 'Get a group of sessions of any type' })
   @ApiOkResponse({ type: SessionsPageDto })
-  async listSessions(@Query() query: ListSessionsQueryDto) {
-    const { items, total } = await this.sessions.list(query);
-    return {
-      total,
-      items: items.map((item) => ({
-        ...item,
-        createdAt: item.createdAt.toISOString(),
-        updatedAt: item.updatedAt.toISOString(),
-      })),
-    } as SessionsPageDto;
+  groupSessions(@Query() query: GroupSessionsQueryDto) {
+    return this.findGroup(query);
   }
 
-  @Delete(':id')
+  @Get(':type/sessions/group')
+  @ApiOperation({ summary: 'Get a group of sessions of a single type' })
+  @ApiOkResponse({ type: SessionsPageDto })
+  groupSessionsByType(
+    @Param() { type }: SessionTypeParamDto,
+    @Query() query: GroupSessionsQueryDto,
+  ) {
+    return this.findGroup(query, type);
+  }
+
+  @Delete('sessions/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete a session' })
   @ApiNoContentResponse()
@@ -51,5 +58,28 @@ export class SessionsController {
     if (!(await this.sessions.delete(id))) {
       throw new NotFoundException();
     }
+  }
+
+  private async findGroup(
+    query: GroupSessionsQueryDto,
+    type?: SessionTypeParamDto['type'],
+  ) {
+    const { items, total } = await this.sessions.group(query, type);
+    return {
+      total,
+      items: items.map((item): SessionDto => ({
+        session_id: item.id,
+        type: item.type as SessionDto['type'],
+        session_owner: item.owner,
+        image_a_url: item.imageAUrl,
+        image_b_url: item.imageBUrl,
+        creation_time: item.createdAt.toISOString(),
+        last_update: item.updatedAt.toISOString(),
+        progress: item.progress,
+        status: item.status as SessionDto['status'],
+        notes: item.notes,
+        logs: item.logs,
+      })),
+    };
   }
 }

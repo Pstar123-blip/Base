@@ -8,17 +8,20 @@ import type { SessionStatus } from './sessionStatus';
 import type { SessionType } from './sessionType';
 
 export interface SessionDto {
-  id: string;
+  session_id: string;
   type: SessionType;
-  owner: string;
-  imageAUrl: string;
-  imageBUrl: string;
-  createdAt: string;
-  updatedAt: string;
+  session_owner: string;
+  image_a_url: string;
+  image_b_url: string;
+  creation_time: string;
+  last_update: string;
   /**
      * @minimum 0
      * @maximum 100
      */
   progress: number;
   status: SessionStatus;
+  notes: string;
+  /** @nullable */
+  logs: string | null;
 }

@@ -1,17 +1,17 @@
 import { keepPreviousData } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
-import { useListSessions } from '@/api/generated/api';
-import type {
-  ListSessionsParams,
-  SessionSearchField,
-  SessionSortField,
-  SessionType,
-  SortDirection,
-} from '@/api/generated/model';
+import { useGroupSessions, useGroupSessionsByType } from '@/api/generated/api';
+import { type GroupSessionsParams, SessionType } from '@/api/generated/model';
 import { DEFAULT_TABLE_PAGE_SIZE } from '@/shared/constants';
 
-import { SEARCH_DEBOUNCE_MS } from '../consts';
+import {
+  DEFAULT_SEARCH_FIELD,
+  REFETCH_INTERVAL_MS,
+  SEARCH_DEBOUNCE_MS,
+  type SessionSearchField,
+} from '../consts';
+import { mapSessionsPage } from '../utils/map-session';
 import { useDebouncedValue } from './use-debounced-value';
 
 // Filtering, sorting and paging all happen on the server, so only the
@@ -20,25 +20,37 @@ export const useSessionsTable = () => {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(DEFAULT_TABLE_PAGE_SIZE);
   const [search, setSearch] = useState('');
-  const [searchField, setSearchField] = useState<SessionSearchField>('id');
+  const [searchField, setSearchField] =
+    useState<SessionSearchField>(DEFAULT_SEARCH_FIELD);
   const [type, setType] = useState<SessionType | undefined>();
-  const [sortBy, setSortBy] = useState<SessionSortField>('updatedAt');
-  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
   const debouncedSearch = useDebouncedValue(search.trim(), SEARCH_DEBOUNCE_MS);
 
-  const params: ListSessionsParams = {
-    page,
-    pageSize,
-    searchField,
-    sortBy,
-    sortDirection,
-    ...(debouncedSearch ? { search: debouncedSearch } : {}),
-    ...(type ? { type } : {}),
+  const params: GroupSessionsParams = {
+    first_session_index: page * pageSize,
+    number_of_sessions: pageSize,
+    ...(debouncedSearch
+      ? { search_values: { [searchField]: debouncedSearch } }
+      : {}),
   };
-  const query = useListSessions(params, {
-    query: { placeholderData: keepPreviousData },
+  const queryOptions = {
+    placeholderData: keepPreviousData,
+    refetchInterval: REFETCH_INTERVAL_MS,
+    select: mapSessionsPage,
+  };
+  // The type lives in the route, so each variant is its own endpoint; only
+  // the one matching the current filter is enabled.
+  const allTypesQuery = useGroupSessions(params, {
+    query: { ...queryOptions, enabled: !type },
   });
+  const typeQuery = useGroupSessionsByType(
+    type ?? SessionType.training,
+    params,
+    {
+      query: { ...queryOptions, enabled: Boolean(type) },
+    },
+  );
+  const query = type ? typeQuery : allTypesQuery;
 
   const total = query.data?.total;
 
@@ -71,17 +83,6 @@ export const useSessionsTable = () => {
     setPage(0);
   };
 
-  const toggleSort = (column: SessionSortField) => {
-    if (column === sortBy) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortBy(column);
-      setSortDirection('asc');
-    }
-
-    setPage(0);
-  };
-
   return {
     query,
     page,
@@ -89,13 +90,10 @@ export const useSessionsTable = () => {
     search,
     searchField,
     type,
-    sortBy,
-    sortDirection,
     setPage,
     changeSearch,
     changeSearchField,
     changeType,
     changePageSize,
-    toggleSort,
   };
 };

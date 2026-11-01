@@ -27,6 +27,8 @@ export const sessions = pgTable(
       .$onUpdate(() => new Date()),
     progress: integer('progress').notNull().default(0),
     status: varchar('status', { length: 32 }).notNull().default('pending'),
+    notes: text('notes').notNull().default(''),
+    logs: text('logs'),
   },
   (table) => [
     index('sessions_updated_at_idx').on(table.updatedAt.desc(), table.id),

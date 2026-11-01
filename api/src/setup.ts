@@ -12,6 +12,8 @@ import { ENV_KEYS } from './envKeys.constants.js';
 
 export const setup = (app: NestExpressApplication) => {
   app.setGlobalPrefix('api');
+  // Express 5 defaults to the simple parser, which can't read `a[b]=c` keys.
+  app.set('query parser', 'extended');
   app.use(helmet());
   app.use((req: Request, res: Response, next: NextFunction) => {
     const suppliedId = req.get('x-request-id');

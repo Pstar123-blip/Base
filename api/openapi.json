@@ -53,12 +53,12 @@
         ]
       }
     },
-    "/api/sessions": {
+    "/api/sessions/group": {
       "get": {
-        "operationId": "listSessions",
+        "operationId": "groupSessions",
         "parameters": [
           {
-            "name": "page",
+            "name": "first_session_index",
             "required": false,
             "in": "query",
             "schema": {
@@ -68,7 +68,7 @@
             }
           },
           {
-            "name": "pageSize",
+            "name": "number_of_sessions",
             "required": false,
             "in": "query",
             "schema": {
@@ -79,45 +79,12 @@
             }
           },
           {
-            "name": "search",
+            "name": "search_values",
             "required": false,
             "in": "query",
-            "description": "Case-insensitive text to look for in `searchField`",
+            "description": "Sessions must match every provided value",
             "schema": {
-              "maxLength": 200,
-              "type": "string"
-            }
-          },
-          {
-            "name": "searchField",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/SessionSearchField"
-            }
-          },
-          {
-            "name": "type",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/SessionType"
-            }
-          },
-          {
-            "name": "sortBy",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/SessionSortField"
-            }
-          },
-          {
-            "name": "sortDirection",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/SortDirection"
+              "$ref": "#/components/schemas/SessionSearchValuesDto"
             }
           }
         ],
@@ -138,7 +105,73 @@
             "bearer": []
           }
         ],
-        "summary": "List sessions (paginated, filterable)",
+        "summary": "Get a group of sessions of any type",
+        "tags": [
+          "sessions"
+        ]
+      }
+    },
+    "/api/{type}/sessions/group": {
+      "get": {
+        "operationId": "groupSessionsByType",
+        "parameters": [
+          {
+            "name": "type",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "$ref": "#/components/schemas/SessionType"
+            }
+          },
+          {
+            "name": "first_session_index",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "number_of_sessions",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "search_values",
+            "required": false,
+            "in": "query",
+            "description": "Sessions must match every provided value",
+            "schema": {
+              "$ref": "#/components/schemas/SessionSearchValuesDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionsPageDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get a group of sessions of a single type",
         "tags": [
           "sessions"
         ]
@@ -224,14 +257,25 @@
           "user"
         ]
       },
-      "SessionSearchField": {
-        "type": "string",
-        "enum": [
-          "id",
-          "type",
-          "owner",
-          "status"
-        ]
+      "SessionSearchValuesDto": {
+        "type": "object",
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "description": "Case-insensitive text to look for in the session id",
+            "maxLength": 200
+          },
+          "session_owner": {
+            "type": "string",
+            "description": "Case-insensitive text to look for in the session owner",
+            "maxLength": 200
+          },
+          "status": {
+            "type": "string",
+            "description": "Case-insensitive text to look for in the session status",
+            "maxLength": 200
+          }
+        }
       },
       "SessionType": {
         "type": "string",
@@ -240,25 +284,6 @@
           "inference",
           "evaluation",
           "calibration"
-        ]
-      },
-      "SessionSortField": {
-        "type": "string",
-        "enum": [
-          "id",
-          "type",
-          "owner",
-          "createdAt",
-          "updatedAt",
-          "progress",
-          "status"
-        ]
-      },
-      "SortDirection": {
-        "type": "string",
-        "enum": [
-          "asc",
-          "desc"
         ]
       },
       "SessionStatus": {
@@ -275,7 +300,7 @@
       "SessionDto": {
         "type": "object",
         "properties": {
-          "id": {
+          "session_id": {
             "type": "string"
           },
           "type": {
@@ -285,20 +310,20 @@
               }
             ]
           },
-          "owner": {
+          "session_owner": {
             "type": "string"
           },
-          "imageAUrl": {
+          "image_a_url": {
             "type": "string"
           },
-          "imageBUrl": {
+          "image_b_url": {
             "type": "string"
           },
-          "createdAt": {
+          "creation_time": {
             "type": "string",
             "format": "date-time"
           },
-          "updatedAt": {
+          "last_update": {
             "type": "string",
             "format": "date-time"
           },
@@ -313,18 +338,27 @@
                 "$ref": "#/components/schemas/SessionStatus"
               }
             ]
+          },
+          "notes": {
+            "type": "string"
+          },
+          "logs": {
+            "type": "string",
+            "nullable": true
           }
         },
         "required": [
-          "id",
+          "session_id",
           "type",
-          "owner",
-          "imageAUrl",
-          "imageBUrl",
-          "createdAt",
-          "updatedAt",
+          "session_owner",
+          "image_a_url",
+          "image_b_url",
+          "creation_time",
+          "last_update",
           "progress",
-          "status"
+          "status",
+          "notes",
+          "logs"
         ]
       },
       "SessionsPageDto": {

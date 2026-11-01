@@ -1,32 +1,30 @@
 import { Injectable } from '@nestjs/common';
-import { and, asc, count, desc, eq, ilike, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, ilike, type SQL, sql } from 'drizzle-orm';
 
 import { Database } from '../database/database.module.js';
-import type { ListSessionsQueryDto } from './sessions.dto.js';
+import type { GroupSessionsQueryDto } from './sessions.dto.js';
 import { sessions } from './sessions.schema.js';
 
 const escapeLike = (value: string) => value.replace(/[\\%_]/g, '\\$&');
-
-const searchColumns = {
-  id: sql`${sessions.id}::text`,
-  type: sessions.type,
-  owner: sessions.owner,
-  status: sessions.status,
-};
 
 @Injectable()
 export class SessionsRepository {
   constructor(private readonly database: Database) {}
 
-  async list(query: ListSessionsQueryDto) {
-    const search = query.search?.trim();
+  async group(query: GroupSessionsQueryDto, type?: string) {
+    const { session_id, session_owner, status } = query.search_values ?? {};
+
+    const contains = (column: SQL, value?: string) => {
+      const text = value?.trim();
+      return text ? ilike(column, `%${escapeLike(text)}%`) : undefined;
+    };
+
     const where = and(
-      query.type ? eq(sessions.type, query.type) : undefined,
-      search
-        ? ilike(searchColumns[query.searchField], `%${escapeLike(search)}%`)
-        : undefined,
+      type ? eq(sessions.type, type) : undefined,
+      contains(sql`${sessions.id}::text`, session_id),
+      contains(sql`${sessions.owner}`, session_owner),
+      contains(sql`${sessions.status}`, status),
     );
-    const direction = query.sortDirection === 'asc' ? asc : desc;
     const { db } = this.database;
 
     const [items, [totals]] = await Promise.all([
@@ -34,10 +32,10 @@ export class SessionsRepository {
         .select()
         .from(sessions)
         .where(where)
-        // `id` keeps pagination stable when the sorted column has ties.
-        .orderBy(direction(sessions[query.sortBy]), asc(sessions.id))
-        .limit(query.pageSize)
-        .offset(query.page * query.pageSize),
+        // `id` keeps pagination stable when `updatedAt` has ties.
+        .orderBy(desc(sessions.updatedAt), asc(sessions.id))
+        .limit(query.number_of_sessions)
+        .offset(query.first_session_index),
       db.select({ total: count() }).from(sessions).where(where),
     ]);
 

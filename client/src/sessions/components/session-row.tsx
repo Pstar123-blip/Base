@@ -1,13 +1,12 @@
 import { Link, TableCell, TableRow } from '@mui/material';
 
-import type { SessionDto } from '@/api/generated/model';
-
 import { getResultsPath } from '../consts';
 import { formatDateTime } from '../utils/format';
+import type { Session } from '../utils/map-session';
 import { ProgressCell } from './progress-cell';
 import { RowOptions } from './row-options';
-import { IdText } from './session-row.styles';
 import { SessionImage } from './session-image';
+import { IdText } from './session-row.styles';
 import { StatusTag } from './status-tag';
 import { TypeTag } from './type-tag';
 
@@ -15,8 +14,8 @@ export const SessionRow = ({
   session,
   onDelete,
 }: {
-  session: SessionDto;
-  onDelete: (session: SessionDto) => void;
+  session: Session;
+  onDelete: (session: Session) => void;
 }) => {
   const deleteSession = () => onDelete(session);
 

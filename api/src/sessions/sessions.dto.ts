@@ -8,39 +8,41 @@ import {
   Max,
   MaxLength,
   Min,
+  ValidateNested,
 } from 'class-validator';
 
 import {
-  DEFAULT_PAGE_SIZE,
-  MAX_PAGE_SIZE,
+  DEFAULT_NUMBER_OF_SESSIONS,
+  MAX_NUMBER_OF_SESSIONS,
   MAX_SEARCH_LENGTH,
-  SESSION_SEARCH_FIELDS,
-  SESSION_SORT_FIELDS,
   SESSION_STATUSES,
   SESSION_TYPES,
-  SORT_DIRECTIONS,
 } from './sessions.constants.js';
 
 export class SessionDto {
-  @ApiProperty() id!: string;
+  @ApiProperty() session_id!: string;
 
   @ApiProperty({ enum: SESSION_TYPES, enumName: 'SessionType' })
   type!: (typeof SESSION_TYPES)[number];
 
-  @ApiProperty() owner!: string;
+  @ApiProperty() session_owner!: string;
 
-  @ApiProperty() imageAUrl!: string;
+  @ApiProperty() image_a_url!: string;
 
-  @ApiProperty() imageBUrl!: string;
+  @ApiProperty() image_b_url!: string;
 
-  @ApiProperty({ format: 'date-time' }) createdAt!: string;
+  @ApiProperty({ format: 'date-time' }) creation_time!: string;
 
-  @ApiProperty({ format: 'date-time' }) updatedAt!: string;
+  @ApiProperty({ format: 'date-time' }) last_update!: string;
 
   @ApiProperty({ minimum: 0, maximum: 100 }) progress!: number;
 
   @ApiProperty({ enum: SESSION_STATUSES, enumName: 'SessionStatus' })
   status!: (typeof SESSION_STATUSES)[number];
+
+  @ApiProperty() notes!: string;
+
+  @ApiProperty({ type: String, nullable: true }) logs!: string | null;
 }
 
 export class SessionsPageDto {
@@ -50,64 +52,67 @@ export class SessionsPageDto {
   total!: number;
 }
 
-export class ListSessionsQueryDto {
-  @ApiPropertyOptional({ minimum: 0, default: 0 })
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(0)
-  page: number = 0;
-
+export class SessionSearchValuesDto {
   @ApiPropertyOptional({
-    minimum: 1,
-    maximum: MAX_PAGE_SIZE,
-    default: DEFAULT_PAGE_SIZE,
-  })
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  @Max(MAX_PAGE_SIZE)
-  pageSize: number = DEFAULT_PAGE_SIZE;
-
-  @ApiPropertyOptional({
-    description: 'Case-insensitive text to look for in `searchField`',
+    description: 'Case-insensitive text to look for in the session id',
     maxLength: MAX_SEARCH_LENGTH,
   })
   @IsOptional()
   @IsString()
   @MaxLength(MAX_SEARCH_LENGTH)
-  search?: string;
+  session_id?: string;
 
   @ApiPropertyOptional({
-    enum: SESSION_SEARCH_FIELDS,
-    enumName: 'SessionSearchField',
-    default: 'id',
+    description: 'Case-insensitive text to look for in the session owner',
+    maxLength: MAX_SEARCH_LENGTH,
   })
   @IsOptional()
-  @IsIn(SESSION_SEARCH_FIELDS)
-  searchField: (typeof SESSION_SEARCH_FIELDS)[number] = 'id';
+  @IsString()
+  @MaxLength(MAX_SEARCH_LENGTH)
+  session_owner?: string;
 
-  @ApiPropertyOptional({ enum: SESSION_TYPES, enumName: 'SessionType' })
+  @ApiPropertyOptional({
+    description: 'Case-insensitive text to look for in the session status',
+    maxLength: MAX_SEARCH_LENGTH,
+  })
   @IsOptional()
+  @IsString()
+  @MaxLength(MAX_SEARCH_LENGTH)
+  status?: string;
+}
+
+export class SessionTypeParamDto {
+  @ApiProperty({ enum: SESSION_TYPES, enumName: 'SessionType' })
   @IsIn(SESSION_TYPES)
-  type?: (typeof SESSION_TYPES)[number];
+  type!: (typeof SESSION_TYPES)[number];
+}
+
+export class GroupSessionsQueryDto {
+  @ApiPropertyOptional({ minimum: 0, default: 0 })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  first_session_index: number = 0;
 
   @ApiPropertyOptional({
-    enum: SESSION_SORT_FIELDS,
-    enumName: 'SessionSortField',
-    default: 'updatedAt',
+    minimum: 1,
+    maximum: MAX_NUMBER_OF_SESSIONS,
+    default: DEFAULT_NUMBER_OF_SESSIONS,
   })
   @IsOptional()
-  @IsIn(SESSION_SORT_FIELDS)
-  sortBy: (typeof SESSION_SORT_FIELDS)[number] = 'updatedAt';
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(MAX_NUMBER_OF_SESSIONS)
+  number_of_sessions: number = DEFAULT_NUMBER_OF_SESSIONS;
 
   @ApiPropertyOptional({
-    enum: SORT_DIRECTIONS,
-    enumName: 'SortDirection',
-    default: 'desc',
+    type: SessionSearchValuesDto,
+    description: 'Sessions must match every provided value',
   })
   @IsOptional()
-  @IsIn(SORT_DIRECTIONS)
-  sortDirection: (typeof SORT_DIRECTIONS)[number] = 'desc';
+  @ValidateNested()
+  @Type(() => SessionSearchValuesDto)
+  search_values?: SessionSearchValuesDto;
 }

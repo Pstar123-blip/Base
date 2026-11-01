@@ -78,6 +78,8 @@ const createMockSession = (index: number) => {
     updatedAt,
     progress: progressFor(status),
     status,
+    notes: '',
+    logs: status === 'failed' ? 'Session failed unexpectedly' : null,
   };
 };
 

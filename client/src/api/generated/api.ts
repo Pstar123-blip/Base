@@ -24,8 +24,10 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  ListSessionsParams,
+  GroupSessionsByTypeParams,
+  GroupSessionsParams,
   LoginResponseDto,
+  SessionType,
   SessionsPageDto,
   UserDto
 } from './model';
@@ -200,16 +202,16 @@ export function useMe<TData = Awaited<ReturnType<typeof me>>, TError = unknown>(
 
 
 /**
- * @summary List sessions (paginated, filterable)
+ * @summary Get a group of sessions of any type
  */
-export const listSessions = (
-    params?: ListSessionsParams,
+export const groupSessions = (
+    params?: GroupSessionsParams,
  options?: SecondParameter<typeof request>,signal?: AbortSignal
 ) => {
 
 
       return request<SessionsPageDto>(
-      {url: `/api/sessions`, method: 'GET',
+      {url: `/api/sessions/group`, method: 'GET',
         params, signal
     },
       options);
@@ -218,69 +220,170 @@ export const listSessions = (
 
 
 
-export const getListSessionsQueryKey = (params?: ListSessionsParams,) => {
+export const getGroupSessionsQueryKey = (params?: GroupSessionsParams,) => {
     return [
-    `/api/sessions`, ...(params ? [params] : [])
+    `/api/sessions/group`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getListSessionsQueryOptions = <TData = Awaited<ReturnType<typeof listSessions>>, TError = unknown>(params?: ListSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof request>}
+export const getGroupSessionsQueryOptions = <TData = Awaited<ReturnType<typeof groupSessions>>, TError = unknown>(params?: GroupSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessions>>, TError, TData>>, request?: SecondParameter<typeof request>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getListSessionsQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGroupSessionsQueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listSessions>>> = ({ signal }) => listSessions(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof groupSessions>>> = ({ signal }) => groupSessions(params, requestOptions, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof groupSessions>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type ListSessionsQueryResult = NonNullable<Awaited<ReturnType<typeof listSessions>>>
-export type ListSessionsQueryError = unknown
+export type GroupSessionsQueryResult = NonNullable<Awaited<ReturnType<typeof groupSessions>>>
+export type GroupSessionsQueryError = unknown
 
 
-export function useListSessions<TData = Awaited<ReturnType<typeof listSessions>>, TError = unknown>(
- params: undefined |  ListSessionsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>> & Pick<
+export function useGroupSessions<TData = Awaited<ReturnType<typeof groupSessions>>, TError = unknown>(
+ params: undefined |  GroupSessionsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessions>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listSessions>>,
+          Awaited<ReturnType<typeof groupSessions>>,
           TError,
-          Awaited<ReturnType<typeof listSessions>>
+          Awaited<ReturnType<typeof groupSessions>>
         > , 'initialData'
       >, request?: SecondParameter<typeof request>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListSessions<TData = Awaited<ReturnType<typeof listSessions>>, TError = unknown>(
- params?: ListSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>> & Pick<
+export function useGroupSessions<TData = Awaited<ReturnType<typeof groupSessions>>, TError = unknown>(
+ params?: GroupSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessions>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listSessions>>,
+          Awaited<ReturnType<typeof groupSessions>>,
           TError,
-          Awaited<ReturnType<typeof listSessions>>
+          Awaited<ReturnType<typeof groupSessions>>
         > , 'initialData'
       >, request?: SecondParameter<typeof request>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListSessions<TData = Awaited<ReturnType<typeof listSessions>>, TError = unknown>(
- params?: ListSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof request>}
+export function useGroupSessions<TData = Awaited<ReturnType<typeof groupSessions>>, TError = unknown>(
+ params?: GroupSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessions>>, TError, TData>>, request?: SecondParameter<typeof request>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary List sessions (paginated, filterable)
+ * @summary Get a group of sessions of any type
  */
 
-export function useListSessions<TData = Awaited<ReturnType<typeof listSessions>>, TError = unknown>(
- params?: ListSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof request>}
+export function useGroupSessions<TData = Awaited<ReturnType<typeof groupSessions>>, TError = unknown>(
+ params?: GroupSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessions>>, TError, TData>>, request?: SecondParameter<typeof request>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getListSessionsQueryOptions(params,options)
+  const queryOptions = getGroupSessionsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+/**
+ * @summary Get a group of sessions of a single type
+ */
+export const groupSessionsByType = (
+    type: SessionType,
+    params?: GroupSessionsByTypeParams,
+ options?: SecondParameter<typeof request>,signal?: AbortSignal
+) => {
+
+
+      return request<SessionsPageDto>(
+      {url: `/api/${type}/sessions/group`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+
+
+
+
+export const getGroupSessionsByTypeQueryKey = (type: SessionType,
+    params?: GroupSessionsByTypeParams,) => {
+    return [
+    `/api/${type}/sessions/group`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGroupSessionsByTypeQueryOptions = <TData = Awaited<ReturnType<typeof groupSessionsByType>>, TError = unknown>(type: SessionType,
+    params?: GroupSessionsByTypeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessionsByType>>, TError, TData>>, request?: SecondParameter<typeof request>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGroupSessionsByTypeQueryKey(type,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof groupSessionsByType>>> = ({ signal }) => groupSessionsByType(type,params, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: type !== null && type !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof groupSessionsByType>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GroupSessionsByTypeQueryResult = NonNullable<Awaited<ReturnType<typeof groupSessionsByType>>>
+export type GroupSessionsByTypeQueryError = unknown
+
+
+export function useGroupSessionsByType<TData = Awaited<ReturnType<typeof groupSessionsByType>>, TError = unknown>(
+ type: SessionType,
+    params: undefined |  GroupSessionsByTypeParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessionsByType>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof groupSessionsByType>>,
+          TError,
+          Awaited<ReturnType<typeof groupSessionsByType>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof request>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGroupSessionsByType<TData = Awaited<ReturnType<typeof groupSessionsByType>>, TError = unknown>(
+ type: SessionType,
+    params?: GroupSessionsByTypeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessionsByType>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof groupSessionsByType>>,
+          TError,
+          Awaited<ReturnType<typeof groupSessionsByType>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof request>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGroupSessionsByType<TData = Awaited<ReturnType<typeof groupSessionsByType>>, TError = unknown>(
+ type: SessionType,
+    params?: GroupSessionsByTypeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessionsByType>>, TError, TData>>, request?: SecondParameter<typeof request>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get a group of sessions of a single type
+ */
+
+export function useGroupSessionsByType<TData = Awaited<ReturnType<typeof groupSessionsByType>>, TError = unknown>(
+ type: SessionType,
+    params?: GroupSessionsByTypeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessionsByType>>, TError, TData>>, request?: SecondParameter<typeof request>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGroupSessionsByTypeQueryOptions(type,params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

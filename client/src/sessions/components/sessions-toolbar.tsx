@@ -2,13 +2,14 @@ import SearchIcon from '@mui/icons-material/Search';
 import { InputAdornment, MenuItem } from '@mui/material';
 import type { ChangeEvent } from 'react';
 
-import { SessionSearchField, SessionType } from '@/api/generated/model';
+import { SessionType } from '@/api/generated/model';
 
 import {
   ALL_TYPES,
   SEARCH_FIELD_LABELS,
   SEARCH_MAX_LENGTH,
   SESSION_TYPE_LABELS,
+  type SessionSearchField,
 } from '../consts';
 import {
   SearchInput,
@@ -16,14 +17,15 @@ import {
   ToolbarRoot,
 } from './sessions-toolbar.styles';
 
-const searchFields = Object.values(SessionSearchField);
 const sessionTypes = Object.values(SessionType);
+const searchFields = Object.keys(SEARCH_FIELD_LABELS) as SessionSearchField[];
 
 const renderSearchField = (field: SessionSearchField) => (
   <MenuItem key={field} value={field}>
     {SEARCH_FIELD_LABELS[field]}
   </MenuItem>
 );
+
 const renderType = (type: SessionType) => (
   <MenuItem key={type} value={type}>
     {SESSION_TYPE_LABELS[type]}
