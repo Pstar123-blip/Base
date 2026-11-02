@@ -4,9 +4,11 @@ import { IconButton, Tooltip, useColorScheme } from '@mui/material';
 
 export const ColorModeToggle = () => {
   const { mode, systemMode, setMode } = useColorScheme();
+
   if (!mode) {
     return null;
   }
+
   const isDark = (mode === 'system' ? systemMode : mode) === 'dark';
   const label = isDark ? 'Switch to light mode' : 'Switch to dark mode';
   const toggle = () => setMode(isDark ? 'light' : 'dark');

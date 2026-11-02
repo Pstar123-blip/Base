@@ -24,11 +24,13 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  GroupSessionsBodyDto,
   GroupSessionsByTypeParams,
   GroupSessionsParams,
   LoginResponseDto,
+  SessionDto,
+  SessionSearchValuesDto,
   SessionType,
-  SessionsPageDto,
   UserDto
 } from './model';
 
@@ -205,13 +207,16 @@ export function useMe<TData = Awaited<ReturnType<typeof me>>, TError = unknown>(
  * @summary Get a group of sessions of any type
  */
 export const groupSessions = (
+    groupSessionsBodyDto: GroupSessionsBodyDto,
     params?: GroupSessionsParams,
  options?: SecondParameter<typeof request>,signal?: AbortSignal
 ) => {
 
 
-      return request<SessionsPageDto>(
-      {url: `/api/sessions/group`, method: 'GET',
+      return request<SessionDto[]>(
+      {url: `/api/sessions/group`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: groupSessionsBodyDto,
         params, signal
     },
       options);
@@ -220,23 +225,25 @@ export const groupSessions = (
 
 
 
-export const getGroupSessionsQueryKey = (params?: GroupSessionsParams,) => {
+export const getGroupSessionsQueryKey = (groupSessionsBodyDto?: GroupSessionsBodyDto,
+    params?: GroupSessionsParams,) => {
     return [
-    `/api/sessions/group`, ...(params ? [params] : [])
+    'POST', `/api/sessions/group`, ...(params ? [params] : []), groupSessionsBodyDto
     ] as const;
     }
 
 
-export const getGroupSessionsQueryOptions = <TData = Awaited<ReturnType<typeof groupSessions>>, TError = unknown>(params?: GroupSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessions>>, TError, TData>>, request?: SecondParameter<typeof request>}
+export const getGroupSessionsQueryOptions = <TData = Awaited<ReturnType<typeof groupSessions>>, TError = unknown>(groupSessionsBodyDto: GroupSessionsBodyDto,
+    params?: GroupSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessions>>, TError, TData>>, request?: SecondParameter<typeof request>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGroupSessionsQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGroupSessionsQueryKey(groupSessionsBodyDto,params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof groupSessions>>> = ({ signal }) => groupSessions(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof groupSessions>>> = ({ signal }) => groupSessions(groupSessionsBodyDto,params, requestOptions, signal);
 
 
 
@@ -250,7 +257,8 @@ export type GroupSessionsQueryError = unknown
 
 
 export function useGroupSessions<TData = Awaited<ReturnType<typeof groupSessions>>, TError = unknown>(
- params: undefined |  GroupSessionsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessions>>, TError, TData>> & Pick<
+ groupSessionsBodyDto: GroupSessionsBodyDto,
+    params: undefined |  GroupSessionsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessions>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof groupSessions>>,
           TError,
@@ -260,7 +268,8 @@ export function useGroupSessions<TData = Awaited<ReturnType<typeof groupSessions
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGroupSessions<TData = Awaited<ReturnType<typeof groupSessions>>, TError = unknown>(
- params?: GroupSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessions>>, TError, TData>> & Pick<
+ groupSessionsBodyDto: GroupSessionsBodyDto,
+    params?: GroupSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessions>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof groupSessions>>,
           TError,
@@ -270,7 +279,8 @@ export function useGroupSessions<TData = Awaited<ReturnType<typeof groupSessions
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGroupSessions<TData = Awaited<ReturnType<typeof groupSessions>>, TError = unknown>(
- params?: GroupSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessions>>, TError, TData>>, request?: SecondParameter<typeof request>}
+ groupSessionsBodyDto: GroupSessionsBodyDto,
+    params?: GroupSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessions>>, TError, TData>>, request?: SecondParameter<typeof request>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -278,11 +288,12 @@ export function useGroupSessions<TData = Awaited<ReturnType<typeof groupSessions
  */
 
 export function useGroupSessions<TData = Awaited<ReturnType<typeof groupSessions>>, TError = unknown>(
- params?: GroupSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessions>>, TError, TData>>, request?: SecondParameter<typeof request>}
+ groupSessionsBodyDto: GroupSessionsBodyDto,
+    params?: GroupSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessions>>, TError, TData>>, request?: SecondParameter<typeof request>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGroupSessionsQueryOptions(params,options)
+  const queryOptions = getGroupSessionsQueryOptions(groupSessionsBodyDto,params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -300,13 +311,16 @@ export function useGroupSessions<TData = Awaited<ReturnType<typeof groupSessions
  */
 export const groupSessionsByType = (
     type: SessionType,
+    groupSessionsBodyDto: GroupSessionsBodyDto,
     params?: GroupSessionsByTypeParams,
  options?: SecondParameter<typeof request>,signal?: AbortSignal
 ) => {
 
 
-      return request<SessionsPageDto>(
-      {url: `/api/${type}/sessions/group`, method: 'GET',
+      return request<SessionDto[]>(
+      {url: `/api/${type}/sessions/group`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: groupSessionsBodyDto,
         params, signal
     },
       options);
@@ -316,24 +330,26 @@ export const groupSessionsByType = (
 
 
 export const getGroupSessionsByTypeQueryKey = (type: SessionType,
+    groupSessionsBodyDto?: GroupSessionsBodyDto,
     params?: GroupSessionsByTypeParams,) => {
     return [
-    `/api/${type}/sessions/group`, ...(params ? [params] : [])
+    'POST', `/api/${type}/sessions/group`, ...(params ? [params] : []), groupSessionsBodyDto
     ] as const;
     }
 
 
 export const getGroupSessionsByTypeQueryOptions = <TData = Awaited<ReturnType<typeof groupSessionsByType>>, TError = unknown>(type: SessionType,
+    groupSessionsBodyDto: GroupSessionsBodyDto,
     params?: GroupSessionsByTypeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessionsByType>>, TError, TData>>, request?: SecondParameter<typeof request>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGroupSessionsByTypeQueryKey(type,params);
+  const queryKey =  queryOptions?.queryKey ?? getGroupSessionsByTypeQueryKey(type,groupSessionsBodyDto,params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof groupSessionsByType>>> = ({ signal }) => groupSessionsByType(type,params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof groupSessionsByType>>> = ({ signal }) => groupSessionsByType(type,groupSessionsBodyDto,params, requestOptions, signal);
 
 
 
@@ -348,6 +364,7 @@ export type GroupSessionsByTypeQueryError = unknown
 
 export function useGroupSessionsByType<TData = Awaited<ReturnType<typeof groupSessionsByType>>, TError = unknown>(
  type: SessionType,
+    groupSessionsBodyDto: GroupSessionsBodyDto,
     params: undefined |  GroupSessionsByTypeParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessionsByType>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof groupSessionsByType>>,
@@ -359,6 +376,7 @@ export function useGroupSessionsByType<TData = Awaited<ReturnType<typeof groupSe
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGroupSessionsByType<TData = Awaited<ReturnType<typeof groupSessionsByType>>, TError = unknown>(
  type: SessionType,
+    groupSessionsBodyDto: GroupSessionsBodyDto,
     params?: GroupSessionsByTypeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessionsByType>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof groupSessionsByType>>,
@@ -370,6 +388,7 @@ export function useGroupSessionsByType<TData = Awaited<ReturnType<typeof groupSe
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGroupSessionsByType<TData = Awaited<ReturnType<typeof groupSessionsByType>>, TError = unknown>(
  type: SessionType,
+    groupSessionsBodyDto: GroupSessionsBodyDto,
     params?: GroupSessionsByTypeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessionsByType>>, TError, TData>>, request?: SecondParameter<typeof request>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -379,11 +398,209 @@ export function useGroupSessionsByType<TData = Awaited<ReturnType<typeof groupSe
 
 export function useGroupSessionsByType<TData = Awaited<ReturnType<typeof groupSessionsByType>>, TError = unknown>(
  type: SessionType,
+    groupSessionsBodyDto: GroupSessionsBodyDto,
     params?: GroupSessionsByTypeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessionsByType>>, TError, TData>>, request?: SecondParameter<typeof request>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGroupSessionsByTypeQueryOptions(type,params,options)
+  const queryOptions = getGroupSessionsByTypeQueryOptions(type,groupSessionsBodyDto,params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+/**
+ * @summary Count sessions of any type
+ */
+export const countSessions = (
+    sessionSearchValuesDto: SessionSearchValuesDto,
+ options?: SecondParameter<typeof request>,signal?: AbortSignal
+) => {
+
+
+      return request<number>(
+      {url: `/api/sessions/count`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: sessionSearchValuesDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getCountSessionsQueryKey = (sessionSearchValuesDto?: SessionSearchValuesDto,) => {
+    return [
+    'POST', `/api/sessions/count`, sessionSearchValuesDto
+    ] as const;
+    }
+
+
+export const getCountSessionsQueryOptions = <TData = Awaited<ReturnType<typeof countSessions>>, TError = unknown>(sessionSearchValuesDto: SessionSearchValuesDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof countSessions>>, TError, TData>>, request?: SecondParameter<typeof request>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getCountSessionsQueryKey(sessionSearchValuesDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof countSessions>>> = ({ signal }) => countSessions(sessionSearchValuesDto, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof countSessions>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type CountSessionsQueryResult = NonNullable<Awaited<ReturnType<typeof countSessions>>>
+export type CountSessionsQueryError = unknown
+
+
+export function useCountSessions<TData = Awaited<ReturnType<typeof countSessions>>, TError = unknown>(
+ sessionSearchValuesDto: SessionSearchValuesDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof countSessions>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof countSessions>>,
+          TError,
+          Awaited<ReturnType<typeof countSessions>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof request>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCountSessions<TData = Awaited<ReturnType<typeof countSessions>>, TError = unknown>(
+ sessionSearchValuesDto: SessionSearchValuesDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof countSessions>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof countSessions>>,
+          TError,
+          Awaited<ReturnType<typeof countSessions>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof request>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCountSessions<TData = Awaited<ReturnType<typeof countSessions>>, TError = unknown>(
+ sessionSearchValuesDto: SessionSearchValuesDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof countSessions>>, TError, TData>>, request?: SecondParameter<typeof request>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Count sessions of any type
+ */
+
+export function useCountSessions<TData = Awaited<ReturnType<typeof countSessions>>, TError = unknown>(
+ sessionSearchValuesDto: SessionSearchValuesDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof countSessions>>, TError, TData>>, request?: SecondParameter<typeof request>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getCountSessionsQueryOptions(sessionSearchValuesDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+/**
+ * @summary Count sessions of a single type
+ */
+export const countSessionsByType = (
+    type: SessionType,
+    sessionSearchValuesDto: SessionSearchValuesDto,
+ options?: SecondParameter<typeof request>,signal?: AbortSignal
+) => {
+
+
+      return request<number>(
+      {url: `/api/${type}/sessions/count`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: sessionSearchValuesDto, signal
+    },
+      options);
+    }
+
+
+
+
+export const getCountSessionsByTypeQueryKey = (type: SessionType,
+    sessionSearchValuesDto?: SessionSearchValuesDto,) => {
+    return [
+    'POST', `/api/${type}/sessions/count`, sessionSearchValuesDto
+    ] as const;
+    }
+
+
+export const getCountSessionsByTypeQueryOptions = <TData = Awaited<ReturnType<typeof countSessionsByType>>, TError = unknown>(type: SessionType,
+    sessionSearchValuesDto: SessionSearchValuesDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof countSessionsByType>>, TError, TData>>, request?: SecondParameter<typeof request>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getCountSessionsByTypeQueryKey(type,sessionSearchValuesDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof countSessionsByType>>> = ({ signal }) => countSessionsByType(type,sessionSearchValuesDto, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: type !== null && type !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof countSessionsByType>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type CountSessionsByTypeQueryResult = NonNullable<Awaited<ReturnType<typeof countSessionsByType>>>
+export type CountSessionsByTypeQueryError = unknown
+
+
+export function useCountSessionsByType<TData = Awaited<ReturnType<typeof countSessionsByType>>, TError = unknown>(
+ type: SessionType,
+    sessionSearchValuesDto: SessionSearchValuesDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof countSessionsByType>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof countSessionsByType>>,
+          TError,
+          Awaited<ReturnType<typeof countSessionsByType>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof request>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCountSessionsByType<TData = Awaited<ReturnType<typeof countSessionsByType>>, TError = unknown>(
+ type: SessionType,
+    sessionSearchValuesDto: SessionSearchValuesDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof countSessionsByType>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof countSessionsByType>>,
+          TError,
+          Awaited<ReturnType<typeof countSessionsByType>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof request>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCountSessionsByType<TData = Awaited<ReturnType<typeof countSessionsByType>>, TError = unknown>(
+ type: SessionType,
+    sessionSearchValuesDto: SessionSearchValuesDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof countSessionsByType>>, TError, TData>>, request?: SecondParameter<typeof request>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Count sessions of a single type
+ */
+
+export function useCountSessionsByType<TData = Awaited<ReturnType<typeof countSessionsByType>>, TError = unknown>(
+ type: SessionType,
+    sessionSearchValuesDto: SessionSearchValuesDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof countSessionsByType>>, TError, TData>>, request?: SecondParameter<typeof request>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getCountSessionsByTypeQueryOptions(type,sessionSearchValuesDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

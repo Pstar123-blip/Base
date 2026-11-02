@@ -1,8 +1,17 @@
 import { keepPreviousData } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
-import { useGroupSessions, useGroupSessionsByType } from '@/api/generated/api';
-import { type GroupSessionsParams, SessionType } from '@/api/generated/model';
+import {
+  useCountSessions,
+  useCountSessionsByType,
+  useGroupSessions,
+  useGroupSessionsByType,
+} from '@/api/generated/api';
+import {
+  type GroupSessionsParams,
+  type SessionSearchValuesDto,
+  SessionType,
+} from '@/api/generated/model';
 import { DEFAULT_TABLE_PAGE_SIZE } from '@/shared/constants';
 
 import {
@@ -11,7 +20,7 @@ import {
   SEARCH_DEBOUNCE_MS,
   type SessionSearchField,
 } from '../consts';
-import { mapSessionsPage } from '../utils/map-session';
+import { mapSessions } from '../utils/map-session';
 import { useDebouncedValue } from './use-debounced-value';
 
 // Filtering, sorting and paging all happen on the server, so only the
@@ -26,33 +35,42 @@ export const useSessionsTable = () => {
 
   const debouncedSearch = useDebouncedValue(search.trim(), SEARCH_DEBOUNCE_MS);
 
+  const searchValues: SessionSearchValuesDto = debouncedSearch
+    ? { [searchField]: debouncedSearch }
+    : {};
   const params: GroupSessionsParams = {
     first_session_index: page * pageSize,
     number_of_sessions: pageSize,
-    ...(debouncedSearch
-      ? { search_values: { [searchField]: debouncedSearch } }
-      : {}),
   };
   const queryOptions = {
     placeholderData: keepPreviousData,
     refetchInterval: REFETCH_INTERVAL_MS,
-    select: mapSessionsPage,
   };
+  const groupOptions = { ...queryOptions, select: mapSessions };
   // The type lives in the route, so each variant is its own endpoint; only
   // the one matching the current filter is enabled.
-  const allTypesQuery = useGroupSessions(params, {
-    query: { ...queryOptions, enabled: !type },
-  });
+  const allTypesQuery = useGroupSessions(
+    { search_values: searchValues },
+    params,
+    { query: { ...groupOptions, enabled: !type } },
+  );
   const typeQuery = useGroupSessionsByType(
     type ?? SessionType.training,
+    { search_values: searchValues },
     params,
-    {
-      query: { ...queryOptions, enabled: Boolean(type) },
-    },
+    { query: { ...groupOptions, enabled: Boolean(type) } },
   );
   const query = type ? typeQuery : allTypesQuery;
 
-  const total = query.data?.total;
+  const allTypesCount = useCountSessions(searchValues, {
+    query: { ...queryOptions, enabled: !type },
+  });
+  const typeCount = useCountSessionsByType(
+    type ?? SessionType.training,
+    searchValues,
+    { query: { ...queryOptions, enabled: Boolean(type) } },
+  );
+  const total = (type ? typeCount : allTypesCount).data;
 
   const clampPage = () => {
     if (total !== undefined && page > 0 && page * pageSize >= total) {
@@ -85,6 +103,7 @@ export const useSessionsTable = () => {
 
   return {
     query,
+    total,
     page,
     pageSize,
     search,

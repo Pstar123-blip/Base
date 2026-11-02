@@ -9,7 +9,7 @@ import { ErrorState, LoadingState } from '@/shared/ui/states';
 
 import { SessionsTable } from '../components/sessions-table';
 import { SessionsToolbar } from '../components/sessions-toolbar';
-import { SESSIONS_GROUP_PATH_SUFFIX } from '../consts';
+import { SESSIONS_QUERY_PATH_SUFFIXES } from '../consts';
 import { useSessionsTable } from '../hooks/use-sessions-table';
 import type { Session } from '../utils/map-session';
 
@@ -19,11 +19,13 @@ export const SessionsPage = () => {
   const [pendingDelete, setPendingDelete] = useState<Session | null>(null);
 
   const closeDialog = () => setPendingDelete(null);
-  // Every type variant of the group endpoint has its own query key.
+  // Every type variant of the group and count endpoints has its own query
+  // key: [method, path, ...].
   const refreshSessions = () =>
     queryClient.invalidateQueries({
-      predicate: ({ queryKey: [path] }) =>
-        typeof path === 'string' && path.endsWith(SESSIONS_GROUP_PATH_SUFFIX),
+      predicate: ({ queryKey: [, path] }) =>
+        typeof path === 'string' &&
+        SESSIONS_QUERY_PATH_SUFFIXES.some((suffix) => path.endsWith(suffix)),
     });
 
   const reportDeleted = () => {
@@ -53,6 +55,7 @@ export const SessionsPage = () => {
   const retry = () => void table.query.refetch();
 
   const { data, isPending, isError, isFetching } = table.query;
+  const { total } = table;
 
   return (
     <Stack spacing={3}>
@@ -75,10 +78,10 @@ export const SessionsPage = () => {
         {isError && (
           <ErrorState message="Unable to load sessions" retry={retry} />
         )}
-        {data && (
+        {data && total !== undefined && (
           <SessionsTable
-            sessions={data.items}
-            total={data.total}
+            sessions={data}
+            total={total}
             page={table.page}
             pageSize={table.pageSize}
             fetching={isFetching}

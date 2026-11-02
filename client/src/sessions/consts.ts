@@ -10,7 +10,11 @@ export const SEARCH_MAX_LENGTH = 200;
 export const ALL_TYPES = 'all';
 
 export const SESSIONS_PATH = '/sessions';
-export const SESSIONS_GROUP_PATH_SUFFIX = '/sessions/group';
+// Both are POST queries, so they differ from other keys by method + path.
+export const SESSIONS_QUERY_PATH_SUFFIXES = [
+  '/sessions/group',
+  '/sessions/count',
+];
 export const getResultsPath = (id: string) => `${SESSIONS_PATH}/${id}/results`;
 
 export const IMAGE_SIZE_PX = 40;

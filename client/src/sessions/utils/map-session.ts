@@ -1,6 +1,5 @@
 import type {
   SessionDto,
-  SessionsPageDto,
   SessionStatus,
   SessionType,
 } from '@/api/generated/model';
@@ -20,11 +19,6 @@ export interface Session {
   logs: string | null;
 }
 
-export interface SessionsPage {
-  items: Session[];
-  total: number;
-}
-
 const mapSession = (dto: SessionDto): Session => ({
   id: dto.session_id,
   type: dto.type,
@@ -39,7 +33,5 @@ const mapSession = (dto: SessionDto): Session => ({
   logs: dto.logs,
 });
 
-export const mapSessionsPage = (page: SessionsPageDto): SessionsPage => ({
-  total: page.total,
-  items: page.items.map(mapSession),
-});
+export const mapSessions = (dtos: SessionDto[]): Session[] =>
+  dtos.map(mapSession);

@@ -4,7 +4,6 @@
  * API
  * OpenAPI spec version: 1.0
  */
-import type { SessionSearchValuesDto } from './sessionSearchValuesDto';
 
 export type GroupSessionsParams = {
 /**
@@ -16,8 +15,4 @@ first_session_index?: number;
  * @maximum 100
  */
 number_of_sessions?: number;
-/**
- * Sessions must match every provided value
- */
-search_values?: SessionSearchValuesDto;
 };

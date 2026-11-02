@@ -5,12 +5,12 @@
  * OpenAPI spec version: 1.0
  */
 
+export * from './groupSessionsBodyDto';
 export * from './groupSessionsByTypeParams';
 export * from './groupSessionsParams';
 export * from './loginResponseDto';
 export * from './sessionDto';
 export * from './sessionSearchValuesDto';
-export * from './sessionsPageDto';
 export * from './sessionStatus';
 export * from './sessionType';
 export * from './userDto';

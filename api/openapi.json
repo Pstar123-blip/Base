@@ -54,7 +54,7 @@
       }
     },
     "/api/sessions/group": {
-      "get": {
+      "post": {
         "operationId": "groupSessions",
         "parameters": [
           {
@@ -77,24 +77,28 @@
               "default": 10,
               "type": "number"
             }
-          },
-          {
-            "name": "search_values",
-            "required": false,
-            "in": "query",
-            "description": "Sessions must match every provided value",
-            "schema": {
-              "$ref": "#/components/schemas/SessionSearchValuesDto"
-            }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GroupSessionsBodyDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SessionsPageDto"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SessionDto"
+                  }
                 }
               }
             }
@@ -108,11 +112,12 @@
         "summary": "Get a group of sessions of any type",
         "tags": [
           "sessions"
-        ]
+        ],
+        "x-query": true
       }
     },
     "/api/{type}/sessions/group": {
-      "get": {
+      "post": {
         "operationId": "groupSessionsByType",
         "parameters": [
           {
@@ -143,24 +148,28 @@
               "default": 10,
               "type": "number"
             }
-          },
-          {
-            "name": "search_values",
-            "required": false,
-            "in": "query",
-            "description": "Sessions must match every provided value",
-            "schema": {
-              "$ref": "#/components/schemas/SessionSearchValuesDto"
-            }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GroupSessionsBodyDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SessionsPageDto"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SessionDto"
+                  }
                 }
               }
             }
@@ -174,7 +183,95 @@
         "summary": "Get a group of sessions of a single type",
         "tags": [
           "sessions"
-        ]
+        ],
+        "x-query": true
+      }
+    },
+    "/api/sessions/count": {
+      "post": {
+        "operationId": "countSessions",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionSearchValuesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Count sessions of any type",
+        "tags": [
+          "sessions"
+        ],
+        "x-query": true
+      }
+    },
+    "/api/{type}/sessions/count": {
+      "post": {
+        "operationId": "countSessionsByType",
+        "parameters": [
+          {
+            "name": "type",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "$ref": "#/components/schemas/SessionType"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionSearchValuesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Count sessions of a single type",
+        "tags": [
+          "sessions"
+        ],
+        "x-query": true
       }
     },
     "/api/sessions/{id}": {
@@ -277,6 +374,19 @@
           }
         }
       },
+      "GroupSessionsBodyDto": {
+        "type": "object",
+        "properties": {
+          "search_values": {
+            "description": "Sessions must match every provided value",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SessionSearchValuesDto"
+              }
+            ]
+          }
+        }
+      },
       "SessionType": {
         "type": "string",
         "enum": [
@@ -359,25 +469,6 @@
           "status",
           "notes",
           "logs"
-        ]
-      },
-      "SessionsPageDto": {
-        "type": "object",
-        "properties": {
-          "items": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SessionDto"
-            }
-          },
-          "total": {
-            "type": "number",
-            "description": "Total sessions matching the filters"
-          }
-        },
-        "required": [
-          "items",
-          "total"
         ]
       }
     }

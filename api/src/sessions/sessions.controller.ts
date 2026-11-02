@@ -1,15 +1,17 @@
 import {
+  Body,
   Controller,
   Delete,
-  Get,
   HttpCode,
   HttpStatus,
   Param,
   ParseUUIDPipe,
+  Post,
   Query,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiExtension,
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -17,9 +19,12 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
+import { READ_ONLY_EXTENSION } from './sessions.constants.js';
 import {
+  GroupSessionsBodyDto,
   GroupSessionsQueryDto,
-  SessionsPageDto,
+  SessionDto,
+  SessionSearchValuesDto,
   SessionTypeParamDto,
 } from './sessions.dto.js';
 import { SessionsService } from './sessions.service.js';
@@ -30,21 +35,50 @@ import { SessionsService } from './sessions.service.js';
 export class SessionsController {
   constructor(private readonly sessions: SessionsService) {}
 
-  @Get('sessions/group')
+  @Post('sessions/group')
+  @HttpCode(HttpStatus.OK)
+  @ApiExtension(READ_ONLY_EXTENSION, true)
   @ApiOperation({ summary: 'Get a group of sessions of any type' })
-  @ApiOkResponse({ type: SessionsPageDto })
-  groupSessions(@Query() query: GroupSessionsQueryDto) {
-    return this.sessions.group(query);
+  @ApiOkResponse({ type: SessionDto, isArray: true })
+  groupSessions(
+    @Query() query: GroupSessionsQueryDto,
+    @Body() { search_values }: GroupSessionsBodyDto,
+  ) {
+    return this.sessions.group(query, search_values);
   }
 
-  @Get(':type/sessions/group')
+  @Post(':type/sessions/group')
+  @HttpCode(HttpStatus.OK)
+  @ApiExtension(READ_ONLY_EXTENSION, true)
   @ApiOperation({ summary: 'Get a group of sessions of a single type' })
-  @ApiOkResponse({ type: SessionsPageDto })
+  @ApiOkResponse({ type: SessionDto, isArray: true })
   groupSessionsByType(
     @Param() { type }: SessionTypeParamDto,
     @Query() query: GroupSessionsQueryDto,
+    @Body() { search_values }: GroupSessionsBodyDto,
   ) {
-    return this.sessions.group(query, type);
+    return this.sessions.group(query, search_values, type);
+  }
+
+  @Post('sessions/count')
+  @HttpCode(HttpStatus.OK)
+  @ApiExtension(READ_ONLY_EXTENSION, true)
+  @ApiOperation({ summary: 'Count sessions of any type' })
+  @ApiOkResponse({ schema: { type: 'integer', minimum: 0 } })
+  countSessions(@Body() searchValues: SessionSearchValuesDto) {
+    return this.sessions.count(searchValues);
+  }
+
+  @Post(':type/sessions/count')
+  @HttpCode(HttpStatus.OK)
+  @ApiExtension(READ_ONLY_EXTENSION, true)
+  @ApiOperation({ summary: 'Count sessions of a single type' })
+  @ApiOkResponse({ schema: { type: 'integer', minimum: 0 } })
+  countSessionsByType(
+    @Param() { type }: SessionTypeParamDto,
+    @Body() searchValues: SessionSearchValuesDto,
+  ) {
+    return this.sessions.count(searchValues, type);
   }
 
   @Delete('sessions/:id')

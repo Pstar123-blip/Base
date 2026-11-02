@@ -45,13 +45,6 @@ export class SessionDto {
   @ApiProperty({ type: String, nullable: true }) logs!: string | null;
 }
 
-export class SessionsPageDto {
-  @ApiProperty({ type: [SessionDto] }) items!: SessionDto[];
-
-  @ApiProperty({ description: 'Total sessions matching the filters' })
-  total!: number;
-}
-
 export class SessionSearchValuesDto {
   @ApiPropertyOptional({
     description: 'Case-insensitive text to look for in the session id',
@@ -106,7 +99,9 @@ export class GroupSessionsQueryDto {
   @Min(1)
   @Max(MAX_NUMBER_OF_SESSIONS)
   number_of_sessions: number = DEFAULT_NUMBER_OF_SESSIONS;
+}
 
+export class GroupSessionsBodyDto {
   @ApiPropertyOptional({
     type: SessionSearchValuesDto,
     description: 'Sessions must match every provided value',
