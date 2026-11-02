@@ -274,16 +274,34 @@
         "x-query": true
       }
     },
-    "/api/sessions/{id}": {
+    "/api/{type}/{sessionId}": {
       "delete": {
         "operationId": "deleteSession",
         "parameters": [
           {
-            "name": "id",
+            "name": "type",
             "required": true,
             "in": "path",
             "schema": {
+              "$ref": "#/components/schemas/SessionType"
+            }
+          },
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
               "type": "string"
+            }
+          },
+          {
+            "name": "should_delete",
+            "required": true,
+            "in": "query",
+            "description": "The session is deleted only when true",
+            "schema": {
+              "type": "boolean"
             }
           }
         ],

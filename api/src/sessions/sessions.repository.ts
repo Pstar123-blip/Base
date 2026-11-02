@@ -55,10 +55,10 @@ export class SessionsRepository {
     return totals?.total ?? 0;
   }
 
-  async delete(id: string) {
+  async delete(type: string, id: string) {
     const deleted = await this.database.db
       .delete(sessions)
-      .where(eq(sessions.id, id))
+      .where(and(eq(sessions.id, id), eq(sessions.type, type)))
       .returning({ id: sessions.id });
     return deleted.length > 0;
   }

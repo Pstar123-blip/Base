@@ -36,8 +36,8 @@ export class SessionsService {
     return this.sessions.count(searchValues, type);
   }
 
-  async delete(id: string) {
-    if (!(await this.sessions.delete(id))) {
+  async delete(type: SessionDto['type'], id: string, shouldDelete: boolean) {
+    if (shouldDelete && !(await this.sessions.delete(type, id))) {
       throw new NotFoundException();
     }
   }

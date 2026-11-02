@@ -1,10 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
+  IsBoolean,
   IsIn,
   IsInt,
   IsOptional,
   IsString,
+  IsUUID,
   Max,
   MaxLength,
   Min,
@@ -78,6 +80,25 @@ export class SessionTypeParamDto {
   @ApiProperty({ enum: SESSION_TYPES, enumName: 'SessionType' })
   @IsIn(SESSION_TYPES)
   type!: (typeof SESSION_TYPES)[number];
+}
+
+export class DeleteSessionParamDto {
+  @ApiProperty({ enum: SESSION_TYPES, enumName: 'SessionType' })
+  @IsIn(SESSION_TYPES)
+  type!: (typeof SESSION_TYPES)[number];
+
+  @ApiProperty({ format: 'uuid' })
+  @IsUUID()
+  sessionId!: string;
+}
+
+export class DeleteSessionQueryDto {
+  @ApiProperty({ description: 'The session is deleted only when true' })
+  @Transform(({ value }: { value: unknown }) =>
+    value === 'true' ? true : value === 'false' ? false : value,
+  )
+  @IsBoolean()
+  should_delete!: boolean;
 }
 
 export class GroupSessionsQueryDto {

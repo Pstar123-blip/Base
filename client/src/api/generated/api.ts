@@ -24,6 +24,7 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  DeleteSessionParams,
   GroupSessionsBodyDto,
   GroupSessionsByTypeParams,
   GroupSessionsParams,
@@ -617,13 +618,16 @@ export function useCountSessionsByType<TData = Awaited<ReturnType<typeof countSe
  * @summary Delete a session
  */
 export const deleteSession = (
-    id: string,
+    type: SessionType,
+    sessionId: string,
+    params: DeleteSessionParams,
  options?: SecondParameter<typeof request>,signal?: AbortSignal
 ) => {
 
 
       return request<void>(
-      {url: `/api/sessions/${id}`, method: 'DELETE', signal
+      {url: `/api/${type}/${sessionId}`, method: 'DELETE',
+        params, signal
     },
       options);
     }
@@ -648,9 +652,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteSession>>, DeleteSessionMutationVariables> = (props) => {
-          const {id} = props ?? {};
+          const {type,sessionId,params} = props ?? {};
 
-          return  deleteSession(id,requestOptions)
+          return  deleteSession(type,sessionId,params,requestOptions)
         }
 
 
@@ -663,7 +667,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type DeleteSessionMutationResult = NonNullable<Awaited<ReturnType<typeof deleteSession>>>
 
     export type DeleteSessionMutationError = void
-    export type DeleteSessionMutationVariables = {id: string}
+    export type DeleteSessionMutationVariables = {type: SessionType;sessionId: string;params: DeleteSessionParams}
 
     /**
  * @summary Delete a session

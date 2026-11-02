@@ -5,7 +5,6 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseUUIDPipe,
   Post,
   Query,
 } from '@nestjs/common';
@@ -21,6 +20,8 @@ import {
 
 import { READ_ONLY_EXTENSION } from './sessions.constants.js';
 import {
+  DeleteSessionParamDto,
+  DeleteSessionQueryDto,
   GroupSessionsBodyDto,
   GroupSessionsQueryDto,
   SessionDto,
@@ -81,12 +82,15 @@ export class SessionsController {
     return this.sessions.count(searchValues, type);
   }
 
-  @Delete('sessions/:id')
+  @Delete(':type/:sessionId')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete a session' })
   @ApiNoContentResponse()
   @ApiNotFoundResponse()
-  async deleteSession(@Param('id', ParseUUIDPipe) id: string) {
-    await this.sessions.delete(id);
+  async deleteSession(
+    @Param() { type, sessionId }: DeleteSessionParamDto,
+    @Query() { should_delete }: DeleteSessionQueryDto,
+  ) {
+    await this.sessions.delete(type, sessionId, should_delete);
   }
 }

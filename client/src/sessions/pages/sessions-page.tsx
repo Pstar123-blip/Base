@@ -48,7 +48,11 @@ export const SessionsPage = () => {
 
   const confirmDelete = () => {
     if (pendingDelete) {
-      deletion.mutate({ id: pendingDelete.id });
+      deletion.mutate({
+        type: pendingDelete.type,
+        sessionId: pendingDelete.id,
+        params: { should_delete: true },
+      });
     }
   };
 

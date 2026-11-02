@@ -5,6 +5,7 @@
  * OpenAPI spec version: 1.0
  */
 
+export * from './deleteSessionParams';
 export * from './groupSessionsBodyDto';
 export * from './groupSessionsByTypeParams';
 export * from './groupSessionsParams';
