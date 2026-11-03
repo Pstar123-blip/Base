@@ -3,7 +3,6 @@ const dateTimeFormat = new Intl.DateTimeFormat(undefined, {
   timeStyle: 'short',
 });
 
-export const formatDateTime = (iso: string) =>
-  dateTimeFormat.format(new Date(iso));
+export const formatDateTime = (date: Date) => dateTimeFormat.format(date);
 
 export const formatPercent = (value: number) => `${value}%`;

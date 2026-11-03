@@ -8,6 +8,7 @@ export const SEARCH_DEBOUNCE_MS = 300;
 export const REFETCH_INTERVAL_MS = 5000;
 export const SEARCH_MAX_LENGTH = 200;
 export const ALL_TYPES = 'all';
+export const DISPLAY_TIME_OFFSET_MS = 2 * 60 * 60 * 1000;
 
 export const SESSIONS_PATH = '/sessions';
 // Both are POST queries, so they differ from other keys by method + path.
