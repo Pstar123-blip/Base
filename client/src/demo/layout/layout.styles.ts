@@ -1,4 +1,4 @@
-import { Box, Container, Typography } from '@mui/material';
+import { Box, Container, IconButton, Typography } from '@mui/material';
 import { styled, type Theme } from '@mui/material/styles';
 import type { ElementType } from 'react';
 
@@ -20,3 +20,9 @@ export const LayoutRoot = styled(Box)({
   flexDirection: 'column',
   minHeight: '100vh',
 });
+
+const menuButtonStyles = ({ theme }: { theme: Theme }) => ({
+  marginRight: theme.spacing(1),
+  [theme.breakpoints.up('md')]: { display: 'none' },
+});
+export const MenuButton = styled(IconButton)(menuButtonStyles);

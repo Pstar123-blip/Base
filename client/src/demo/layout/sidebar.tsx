@@ -1,11 +1,15 @@
 import { List } from '@mui/material';
 
-import { SidebarItem } from '@/shared/ui/sidebar-item';
+import { SIDEBAR_ENTRIES, type SidebarEntry } from './consts';
+import { MobileSidebarDrawer, SidebarDrawer } from './sidebar.styles';
+import { SidebarItem } from './sidebar-item';
 
-import { SIDEBAR_ENTRIES } from './consts';
-import { SidebarDrawer } from './sidebar.styles';
+interface SidebarProps {
+  open: boolean;
+  onClose: () => void;
+}
 
-const renderEntry = (entry: (typeof SIDEBAR_ENTRIES)[number]) => (
+const renderEntry = (entry: SidebarEntry) => (
   <SidebarItem
     key={entry.to}
     icon={entry.icon}
@@ -14,8 +18,19 @@ const renderEntry = (entry: (typeof SIDEBAR_ENTRIES)[number]) => (
   />
 );
 
-export const Sidebar = () => (
-  <SidebarDrawer variant="permanent">
-    <List>{SIDEBAR_ENTRIES.map(renderEntry)}</List>
-  </SidebarDrawer>
+export const Sidebar = ({ open, onClose }: SidebarProps) => (
+  <>
+    <SidebarDrawer variant="permanent">
+      <List>{SIDEBAR_ENTRIES.map(renderEntry)}</List>
+    </SidebarDrawer>
+    <MobileSidebarDrawer
+      variant="temporary"
+      open={open}
+      onClose={onClose}
+      onClick={onClose}
+      ModalProps={{ keepMounted: true }}
+    >
+      <List>{SIDEBAR_ENTRIES.map(renderEntry)}</List>
+    </MobileSidebarDrawer>
+  </>
 );

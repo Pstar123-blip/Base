@@ -1,3 +1,4 @@
+import MenuIcon from '@mui/icons-material/Menu';
 import { AppBar, Button, Toolbar } from '@mui/material';
 import { Outlet, useNavigate, useRouter } from '@tanstack/react-router';
 import { enqueueSnackbar } from 'notistack';
@@ -13,6 +14,7 @@ import {
   LayoutBody,
   LayoutMain,
   LayoutRoot,
+  MenuButton,
   PageContent,
   PageTitle,
 } from './layout.styles';
@@ -23,6 +25,7 @@ const selectAccessToken = (state: ReturnType<typeof useSession.getState>) =>
 
 export const Layout = () => {
   const [confirm, setConfirm] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const token = useSession(selectAccessToken);
   const navigate = useNavigate();
@@ -30,23 +33,23 @@ export const Layout = () => {
 
   const redirectWithoutSession = () => {
     if (!token) {
-      if (!signingOut) {
-        void router.invalidate();
-      }
+      void router.invalidate();
     }
   };
 
-  useEffect(redirectWithoutSession, [token, router, signingOut]);
+  useEffect(redirectWithoutSession, [token, router]);
 
   const openConfirmation = () => setConfirm(true);
   const closeConfirmation = () => setConfirm(false);
+  const openSidebar = () => setSidebarOpen(true);
+  const closeSidebar = () => setSidebarOpen(false);
   const finishSignOut = () => setSigningOut(false);
 
   const completeSignOut = async () => {
-    // Leave the protected layout first: clearing the token while SessionGate is
-    // mounted would make it start a new ADFS sign-in popup.
-    await navigate({ to: '/unauthorized', replace: true });
+    // The signedOut flag keeps SessionGate and requireSession from starting a
+    // new sign-in popup, so the order of these calls does not matter.
     await logout();
+    await navigate({ to: '/unauthorized', replace: true });
     await queryClient.cancelQueries();
     queryClient.clear();
   };
@@ -63,6 +66,13 @@ export const Layout = () => {
     <LayoutRoot>
       <AppBar position="static">
         <Toolbar>
+          <MenuButton
+            color="inherit"
+            aria-label="Open menu"
+            onClick={openSidebar}
+          >
+            <MenuIcon />
+          </MenuButton>
           <PageTitle variant="h6">Project</PageTitle>
           <ColorModeToggle />
           <Button color="inherit" onClick={openConfirmation}>
@@ -71,7 +81,7 @@ export const Layout = () => {
         </Toolbar>
       </AppBar>
       <LayoutBody>
-        <Sidebar />
+        <Sidebar open={sidebarOpen} onClose={closeSidebar} />
         <LayoutMain component="main">
           <PageContent>
             <Outlet />

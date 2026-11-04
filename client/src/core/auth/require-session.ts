@@ -1,5 +1,7 @@
 import { redirect } from '@tanstack/react-router';
 
+import { useSession } from '@/lib/store';
+
 import { ensureSession } from './auth';
 
 export const requireSession = async ({
@@ -11,6 +13,10 @@ export const requireSession = async ({
 }) => {
   if (location.pathname.replace(/\/+$/, '') === '/unauthorized') {
     return;
+  }
+
+  if (useSession.getState().signedOut) {
+    throw redirect({ to: '/unauthorized', replace: true });
   }
 
   try {

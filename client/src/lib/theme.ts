@@ -36,12 +36,10 @@ export const theme = createTheme({
     MuiPaper: {
       defaultProps: { elevation: 0 },
       styleOverrides: {
-        root: ({ theme }) => ({
-          backgroundImage: 'none',
-          border: `1px solid ${theme.vars.palette.divider}`,
-        }),
+        root: { backgroundImage: 'none' },
       },
     },
+    MuiCard: { defaultProps: { variant: 'outlined' } },
     MuiAppBar: {
       defaultProps: { elevation: 0, color: 'inherit' },
       styleOverrides: {
@@ -49,9 +47,6 @@ export const theme = createTheme({
           backgroundColor: theme.vars.palette.background.paper,
           color: theme.vars.palette.text.primary,
           borderBottom: `1px solid ${theme.vars.palette.divider}`,
-          borderTop: 0,
-          borderLeft: 0,
-          borderRight: 0,
         }),
       },
     },

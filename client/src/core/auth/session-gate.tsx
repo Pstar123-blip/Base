@@ -9,16 +9,21 @@ const selectAuthenticated = ({
   tokenStage,
 }: ReturnType<typeof useSession.getState>) => tokenStage === 'application';
 
+const selectSignedOut = ({
+  signedOut,
+}: ReturnType<typeof useSession.getState>) => signedOut;
+
 export const SessionGate = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = useSession(selectAuthenticated);
+  const signedOut = useSession(selectSignedOut);
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated || signedOut) {
       return;
     }
 
     void ensureSession().catch(() => undefined);
-  }, [isAuthenticated]);
+  }, [isAuthenticated, signedOut]);
 
   if (!isAuthenticated) {
     return <SigningIn />;

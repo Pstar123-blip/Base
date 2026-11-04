@@ -7,12 +7,16 @@ import { useSession } from '@/lib/store';
 import { SigningIn } from './signing-in';
 import { AuthContainer } from './unauthorized-route.styles';
 
+const selectSignedOut = (state: ReturnType<typeof useSession.getState>) =>
+  state.signedOut;
+
 export const UnauthorizedRoute = () => {
   const navigate = useNavigate();
   const [signingIn, setSigningIn] = useState(false);
 
   const relogin = async () => {
     setSigningIn(true);
+    useSession.getState().clearSignedOut();
     useSession.getState().setToken(null);
 
     try {
@@ -22,6 +26,8 @@ export const UnauthorizedRoute = () => {
     }
   };
 
+  const signedOut = useSession(selectSignedOut);
+
   if (signingIn) {
     return <SigningIn />;
   }
@@ -29,13 +35,19 @@ export const UnauthorizedRoute = () => {
   return (
     <AuthContainer maxWidth="sm">
       <Stack spacing={3}>
-        <Typography variant="h4">Unauthorized</Typography>
-        <Alert severity="error">
-          We couldn’t sign you in to your workspace. Try again, or contact your
-          administrator if the problem continues.
-        </Alert>
+        <Typography variant="h4">
+          {signedOut ? 'Signed out' : 'Unauthorized'}
+        </Typography>
+        {signedOut ? (
+          <Alert severity="info">You have been signed out.</Alert>
+        ) : (
+          <Alert severity="error">
+            We couldn’t sign you in to your workspace. Try again, or contact
+            your administrator if the problem continues.
+          </Alert>
+        )}
         <Button onClick={relogin} variant="contained">
-          Relogin
+          {signedOut ? 'Sign in' : 'Relogin'}
         </Button>
       </Stack>
     </AuthContainer>

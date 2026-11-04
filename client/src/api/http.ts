@@ -57,5 +57,5 @@ export const request = async <T>(
 };
 
 export const logout = async () => {
-  useSession.getState().setToken(null);
+  useSession.getState().signOut();
 };

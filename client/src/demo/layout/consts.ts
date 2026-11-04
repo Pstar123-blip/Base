@@ -1,13 +1,15 @@
+import type { SvgIconComponent } from '@mui/icons-material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import type { ReactNode } from 'react';
-import { createElement } from 'react';
+import type { LinkProps } from '@tanstack/react-router';
 
-interface SidebarEntry {
+export const SIDEBAR_WIDTH = 240;
+
+export interface SidebarEntry {
   label: string;
-  to: string;
-  icon: ReactNode;
+  to: LinkProps['to'];
+  icon: SvgIconComponent;
 }
 
 export const SIDEBAR_ENTRIES: SidebarEntry[] = [
-  { label: 'Dashboard', to: '/', icon: createElement(DashboardIcon) },
+  { label: 'Dashboard', to: '/', icon: DashboardIcon },
 ];

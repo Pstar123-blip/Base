@@ -10,7 +10,7 @@ import { theme } from '@/lib/theme';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme} noSsr>
       <CssBaseline />
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
