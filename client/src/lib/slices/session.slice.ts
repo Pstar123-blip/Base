@@ -3,8 +3,11 @@ import type { StateCreator } from 'zustand';
 export type SessionSlice = {
   accessToken: string | null;
   tokenStage: 'provider' | 'application' | null;
+  signedOut: boolean;
   setProviderToken: (token: string) => void;
   setToken: (token: string | null) => void;
+  signOut: () => void;
+  clearSignedOut: () => void;
 };
 
 export const createSessionSlice: StateCreator<SessionSlice> = (set) => {
@@ -12,5 +15,16 @@ export const createSessionSlice: StateCreator<SessionSlice> = (set) => {
     set({ accessToken, tokenStage: 'provider' });
   const setToken = (accessToken: string | null) =>
     set({ accessToken, tokenStage: accessToken ? 'application' : null });
-  return { accessToken: null, tokenStage: null, setProviderToken, setToken };
+  const signOut = () =>
+    set({ accessToken: null, tokenStage: null, signedOut: true });
+  const clearSignedOut = () => set({ signedOut: false });
+  return {
+    accessToken: null,
+    tokenStage: null,
+    signedOut: false,
+    setProviderToken,
+    setToken,
+    signOut,
+    clearSignedOut,
+  };
 };

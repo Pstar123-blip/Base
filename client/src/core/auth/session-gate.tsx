@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { useSession } from '@/lib/store';
+import { selectSignedOut, useSession } from '@/lib/store';
 
 import { SigningIn } from '../pages/signing-in';
 import { ensureSession } from './auth';
@@ -11,14 +11,15 @@ const selectAuthenticated = ({
 
 export const SessionGate = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = useSession(selectAuthenticated);
+  const signedOut = useSession(selectSignedOut);
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated || signedOut) {
       return;
     }
 
     void ensureSession().catch(() => undefined);
-  }, [isAuthenticated]);
+  }, [isAuthenticated, signedOut]);
 
   if (!isAuthenticated) {
     return <SigningIn />;
