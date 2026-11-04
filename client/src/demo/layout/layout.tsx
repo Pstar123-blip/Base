@@ -82,7 +82,7 @@ export const Layout = () => {
       <LayoutBody>
         <Sidebar open={sidebarOpen} onClose={closeSidebar} />
         <LayoutMain>
-          <PageContent>
+          <PageContent maxWidth={false}>
             <Outlet />
           </PageContent>
         </LayoutMain>

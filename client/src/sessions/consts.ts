@@ -18,12 +18,12 @@ export const SESSIONS_QUERY_PATH_SUFFIXES = [
 ];
 export const getResultsPath = (id: string) => `${SESSIONS_PATH}/${id}/results`;
 
+export const TABLE_FONT_SIZE = '1rem';
 export const IMAGE_SIZE_PX = 40;
 export const IMAGE_PREVIEW_SIZE_PX = 320;
 export const ZOOM_MIN = 1;
 export const ZOOM_MAX = 8;
 export const ZOOM_STEP = 0.15;
-export const ID_MAX_WIDTH_PX = 96;
 export const TYPE_TAG_FILL_ALPHA = 0.16;
 export const TYPE_TAG_BORDER_ALPHA = 0.4;
 
