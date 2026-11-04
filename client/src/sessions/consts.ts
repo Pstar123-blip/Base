@@ -8,6 +8,7 @@ export const SEARCH_DEBOUNCE_MS = 300;
 export const REFETCH_INTERVAL_MS = 5000;
 export const SEARCH_MAX_LENGTH = 200;
 export const ALL_TYPES = 'all';
+export const ALL_STATUSES = 'all';
 export const DISPLAY_TIME_OFFSET_MS = 2 * 60 * 60 * 1000;
 
 export const SESSIONS_PATH = '/sessions';
@@ -63,14 +64,17 @@ export const SESSION_STATUS_COLORS: Record<
   canceled: 'warning',
 };
 
-export type SessionSearchField = keyof SessionSearchValuesDto;
+// Status has its own dropdown, so it is not a free-text search field.
+export type SessionSearchField = Exclude<
+  keyof SessionSearchValuesDto,
+  'status'
+>;
 
 export const DEFAULT_SEARCH_FIELD: SessionSearchField = 'session_id';
 
 export const SEARCH_FIELD_LABELS: Record<SessionSearchField, string> = {
   session_id: 'ID',
   session_owner: 'Owner',
-  status: 'Status',
 };
 
 export type SessionColumnId =

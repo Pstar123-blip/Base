@@ -74,9 +74,11 @@ export const SessionsPage = () => {
           search={table.search}
           searchField={table.searchField}
           type={table.type}
+          status={table.status}
           onSearchChange={table.changeSearch}
           onSearchFieldChange={table.changeSearchField}
           onTypeChange={table.changeType}
+          onStatusChange={table.changeStatus}
         />
         {isPending && <LoadingState />}
         {isError && (

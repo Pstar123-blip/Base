@@ -10,6 +10,7 @@ import {
 import {
   type GroupSessionsParams,
   type SessionSearchValuesDto,
+  type SessionStatus,
   SessionType,
 } from '@/api/generated/model';
 import { DEFAULT_TABLE_PAGE_SIZE } from '@/shared/constants';
@@ -32,12 +33,14 @@ export const useSessionsTable = () => {
   const [searchField, setSearchField] =
     useState<SessionSearchField>(DEFAULT_SEARCH_FIELD);
   const [type, setType] = useState<SessionType | undefined>();
+  const [status, setStatus] = useState<SessionStatus | undefined>();
 
   const debouncedSearch = useDebouncedValue(search.trim(), SEARCH_DEBOUNCE_MS);
 
-  const searchValues: SessionSearchValuesDto = debouncedSearch
-    ? { [searchField]: debouncedSearch }
-    : {};
+  const searchValues: SessionSearchValuesDto = {
+    ...(debouncedSearch && { [searchField]: debouncedSearch }),
+    ...(status && { status }),
+  };
   const params: GroupSessionsParams = {
     first_session_index: page * pageSize,
     number_of_sessions: pageSize,
@@ -96,6 +99,11 @@ export const useSessionsTable = () => {
     setPage(0);
   };
 
+  const changeStatus = (value: SessionStatus | undefined) => {
+    setStatus(value);
+    setPage(0);
+  };
+
   const changePageSize = (value: number) => {
     setPageSize(value);
     setPage(0);
@@ -109,10 +117,12 @@ export const useSessionsTable = () => {
     search,
     searchField,
     type,
+    status,
     setPage,
     changeSearch,
     changeSearchField,
     changeType,
+    changeStatus,
     changePageSize,
   };
 };
