@@ -1,12 +1,10 @@
 import { ListItemButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import type { LinkProps } from '@tanstack/react-router';
-import type { ElementType } from 'react';
+import { createLink } from '@tanstack/react-router';
 
-export const SidebarItemButton = styled(ListItemButton)<{
-  component?: ElementType;
-  to?: LinkProps['to'];
-}>(({ theme }) => ({
+const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
   margin: theme.spacing(0.5, 1),
 }));
+
+export const SidebarItemButton = createLink(StyledListItemButton);

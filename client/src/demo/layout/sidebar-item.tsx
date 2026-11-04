@@ -1,21 +1,27 @@
 import type { SvgIconComponent } from '@mui/icons-material';
 import { ListItemIcon, ListItemText } from '@mui/material';
-import { Link, type LinkProps, useMatchRoute } from '@tanstack/react-router';
+import { type LinkProps, useMatchRoute } from '@tanstack/react-router';
 
 import { SidebarItemButton } from './sidebar-item.styles';
 
-interface SidebarItemProps {
+export interface SidebarItemProps {
   icon: SvgIconComponent;
   label: string;
   to: LinkProps['to'];
+  onNavigate?: () => void;
 }
 
-export const SidebarItem = ({ icon: Icon, label, to }: SidebarItemProps) => {
+export const SidebarItem = ({
+  icon: Icon,
+  label,
+  to,
+  onNavigate,
+}: SidebarItemProps) => {
   const matchRoute = useMatchRoute();
   const selected = Boolean(matchRoute({ to, fuzzy: to !== '/' }));
 
   return (
-    <SidebarItemButton component={Link} to={to} selected={selected}>
+    <SidebarItemButton to={to} selected={selected} onClick={onNavigate}>
       <ListItemIcon>
         <Icon />
       </ListItemIcon>

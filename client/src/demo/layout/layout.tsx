@@ -4,7 +4,6 @@ import { Outlet, useNavigate, useRouter } from '@tanstack/react-router';
 import { enqueueSnackbar } from 'notistack';
 import { useEffect, useState } from 'react';
 
-import { logout } from '@/api/http';
 import { ConfirmationDialog } from '@/demo/ui/confirmation-dialog';
 import { queryClient } from '@/lib/query';
 import { selectAccessToken, selectSignedOut, useSession } from '@/lib/store';
@@ -45,20 +44,13 @@ export const Layout = () => {
   const finishSignOut = () => setSigningOut(false);
 
   const completeSignOut = async () => {
-    // Flag the sign-out first so the destination page never shows the error
-    // state, then leave the layout and clear queries before dropping the token
-    // so nothing in flight can fire with a null token.
-    useSession.getState().beginSignOut();
-
-    try {
-      await navigate({ to: '/unauthorized', replace: true });
-      await queryClient.cancelQueries();
-      queryClient.clear();
-    } finally {
-      // Always drop the token, otherwise the user is left on the signed-out
-      // page while still authenticated.
-      await logout();
-    }
+    // Stop in-flight requests, then sign out (drops the token and flags the
+    // sign-out so the destination shows "Signed out", not an error). If the
+    // cancel throws we stay signed in and report the failure.
+    await queryClient.cancelQueries();
+    useSession.getState().signOut();
+    await navigate({ to: '/unauthorized', replace: true });
+    queryClient.clear();
   };
 
   const reportSignOutError = () =>
@@ -89,7 +81,7 @@ export const Layout = () => {
       </AppBar>
       <LayoutBody>
         <Sidebar open={sidebarOpen} onClose={closeSidebar} />
-        <LayoutMain component="main">
+        <LayoutMain>
           <PageContent>
             <Outlet />
           </PageContent>

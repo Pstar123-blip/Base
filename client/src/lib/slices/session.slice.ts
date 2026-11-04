@@ -6,7 +6,6 @@ export type SessionSlice = {
   signedOut: boolean;
   setProviderToken: (token: string) => void;
   setToken: (token: string | null) => void;
-  beginSignOut: () => void;
   signOut: () => void;
   clearSignedOut: () => void;
 };
@@ -16,7 +15,6 @@ export const createSessionSlice: StateCreator<SessionSlice> = (set) => {
     set({ accessToken, tokenStage: 'provider' });
   const setToken = (accessToken: string | null) =>
     set({ accessToken, tokenStage: accessToken ? 'application' : null });
-  const beginSignOut = () => set({ signedOut: true });
   const signOut = () =>
     set({ accessToken: null, tokenStage: null, signedOut: true });
   const clearSignedOut = () => set({ signedOut: false });
@@ -26,7 +24,6 @@ export const createSessionSlice: StateCreator<SessionSlice> = (set) => {
     signedOut: false,
     setProviderToken,
     setToken,
-    beginSignOut,
     signOut,
     clearSignedOut,
   };

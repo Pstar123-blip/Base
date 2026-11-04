@@ -1,26 +1,25 @@
 import { List, useMediaQuery, useTheme } from '@mui/material';
 
-import { SIDEBAR_ENTRIES, type SidebarEntry } from './consts';
+import { SIDEBAR_ENTRIES } from './consts';
 import { MobileSidebarDrawer, SidebarDrawer } from './sidebar.styles';
-import { SidebarItem } from './sidebar-item';
+import { SidebarItem, type SidebarItemProps } from './sidebar-item';
 
 interface SidebarProps {
   open: boolean;
   onClose: () => void;
 }
 
-const renderEntry = (entry: SidebarEntry) => (
-  <SidebarItem
-    key={entry.to}
-    icon={entry.icon}
-    label={entry.label}
-    to={entry.to}
-  />
-);
-
 export const Sidebar = ({ open, onClose }: SidebarProps) => {
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up('md'), { noSsr: true });
+
+  const renderEntry = (entry: SidebarItemProps) => (
+    <SidebarItem
+      key={entry.to}
+      {...entry}
+      onNavigate={desktop ? undefined : onClose}
+    />
+  );
   const items = <List>{SIDEBAR_ENTRIES.map(renderEntry)}</List>;
 
   if (desktop) {
@@ -28,12 +27,7 @@ export const Sidebar = ({ open, onClose }: SidebarProps) => {
   }
 
   return (
-    <MobileSidebarDrawer
-      variant="temporary"
-      open={open}
-      onClose={onClose}
-      onClick={onClose}
-    >
+    <MobileSidebarDrawer variant="temporary" open={open} onClose={onClose}>
       {items}
     </MobileSidebarDrawer>
   );

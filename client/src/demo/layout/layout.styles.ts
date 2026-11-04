@@ -1,6 +1,5 @@
 import { Box, Container, IconButton, Typography } from '@mui/material';
 import { styled, type Theme } from '@mui/material/styles';
-import type { ElementType } from 'react';
 
 export const PageTitle = styled(Typography)({ flexGrow: 1 });
 
@@ -16,7 +15,7 @@ export const LayoutBody = styled(Box)({
   minHeight: 0,
   overflow: 'hidden',
 });
-export const LayoutMain = styled(Box)<{ component?: ElementType }>({
+export const LayoutMain = styled('main')({
   flexGrow: 1,
   minWidth: 0,
   overflowY: 'auto',
