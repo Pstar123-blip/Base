@@ -24,7 +24,7 @@ export const LayoutMain = styled(Box)<{ component?: ElementType }>({
 export const LayoutRoot = styled(Box)({
   display: 'flex',
   flexDirection: 'column',
-  height: '100vh',
+  height: '100dvh',
 });
 
 const menuButtonStyles = ({ theme }: { theme: Theme }) => ({

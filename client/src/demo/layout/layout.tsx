@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { logout } from '@/api/http';
 import { ConfirmationDialog } from '@/demo/ui/confirmation-dialog';
 import { queryClient } from '@/lib/query';
-import { useSession } from '@/lib/store';
+import { selectAccessToken, selectSignedOut, useSession } from '@/lib/store';
 import { ColorModeToggle } from '@/shared/ui/color-mode-toggle';
 
 import {
@@ -19,11 +19,6 @@ import {
   PageTitle,
 } from './layout.styles';
 import { Sidebar } from './sidebar';
-
-const selectAccessToken = (state: ReturnType<typeof useSession.getState>) =>
-  state.accessToken;
-const selectSignedOut = (state: ReturnType<typeof useSession.getState>) =>
-  state.signedOut;
 
 export const Layout = () => {
   const [confirm, setConfirm] = useState(false);
@@ -50,12 +45,20 @@ export const Layout = () => {
   const finishSignOut = () => setSigningOut(false);
 
   const completeSignOut = async () => {
-    // Leave the layout first and clear queries before dropping the token, so
-    // nothing in flight can fire with a null token.
-    await navigate({ to: '/unauthorized', replace: true });
-    await queryClient.cancelQueries();
-    queryClient.clear();
-    await logout();
+    // Flag the sign-out first so the destination page never shows the error
+    // state, then leave the layout and clear queries before dropping the token
+    // so nothing in flight can fire with a null token.
+    useSession.getState().beginSignOut();
+
+    try {
+      await navigate({ to: '/unauthorized', replace: true });
+      await queryClient.cancelQueries();
+      queryClient.clear();
+    } finally {
+      // Always drop the token, otherwise the user is left on the signed-out
+      // page while still authenticated.
+      await logout();
+    }
   };
 
   const reportSignOutError = () =>

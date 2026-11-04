@@ -2,23 +2,26 @@ import { Alert, Button, Stack, Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 
-import { useSession } from '@/lib/store';
+import { selectSignedOut, useSession } from '@/lib/store';
 
 import { ensureSession } from '../auth/auth';
 import { SigningIn } from './signing-in';
 import { AuthContainer } from './unauthorized-route.styles';
 
-const selectSignedOut = (state: ReturnType<typeof useSession.getState>) =>
-  state.signedOut;
-
 export const UnauthorizedRoute = () => {
   const navigate = useNavigate();
   const [signingIn, setSigningIn] = useState(false);
+  const signedOut = useSession(selectSignedOut);
 
   const relogin = async () => {
     setSigningIn(true);
 
     try {
+      // A stale token would make ensureSession a no-op; force a fresh sign-in.
+      if (!signedOut) {
+        useSession.getState().setToken(null);
+      }
+
       // Keep signedOut set until sign-in succeeds so the guards stay quiet.
       await ensureSession();
       useSession.getState().clearSignedOut();
@@ -29,8 +32,6 @@ export const UnauthorizedRoute = () => {
       setSigningIn(false);
     }
   };
-
-  const signedOut = useSession(selectSignedOut);
 
   if (signingIn) {
     return <SigningIn />;
