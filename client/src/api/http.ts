@@ -55,7 +55,3 @@ export const request = async <T>(
   const response = await http.request<T>({ ...config, ...options, url });
   return response.data;
 };
-
-export const logout = async () => {
-  useSession.getState().setToken(null);
-};
