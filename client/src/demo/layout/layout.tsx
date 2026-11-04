@@ -22,22 +22,26 @@ import { Sidebar } from './sidebar';
 
 const selectAccessToken = (state: ReturnType<typeof useSession.getState>) =>
   state.accessToken;
+const selectSignedOut = (state: ReturnType<typeof useSession.getState>) =>
+  state.signedOut;
 
 export const Layout = () => {
   const [confirm, setConfirm] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const token = useSession(selectAccessToken);
+  const signedOut = useSession(selectSignedOut);
   const navigate = useNavigate();
   const router = useRouter();
 
   const redirectWithoutSession = () => {
-    if (!token) {
+    // Deliberate sign-out navigates itself; only an expired session needs this.
+    if (!token && !signedOut) {
       void router.invalidate();
     }
   };
 
-  useEffect(redirectWithoutSession, [token, router]);
+  useEffect(redirectWithoutSession, [token, signedOut, router]);
 
   const openConfirmation = () => setConfirm(true);
   const closeConfirmation = () => setConfirm(false);
@@ -46,12 +50,12 @@ export const Layout = () => {
   const finishSignOut = () => setSigningOut(false);
 
   const completeSignOut = async () => {
-    // The signedOut flag keeps SessionGate and requireSession from starting a
-    // new sign-in popup, so the order of these calls does not matter.
-    await logout();
+    // Leave the layout first and clear queries before dropping the token, so
+    // nothing in flight can fire with a null token.
     await navigate({ to: '/unauthorized', replace: true });
     await queryClient.cancelQueries();
     queryClient.clear();
+    await logout();
   };
 
   const reportSignOutError = () =>

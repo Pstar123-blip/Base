@@ -1,4 +1,4 @@
-import { List } from '@mui/material';
+import { List, useMediaQuery, useTheme } from '@mui/material';
 
 import { SIDEBAR_ENTRIES, type SidebarEntry } from './consts';
 import { MobileSidebarDrawer, SidebarDrawer } from './sidebar.styles';
@@ -18,19 +18,23 @@ const renderEntry = (entry: SidebarEntry) => (
   />
 );
 
-export const Sidebar = ({ open, onClose }: SidebarProps) => (
-  <>
-    <SidebarDrawer variant="permanent">
-      <List>{SIDEBAR_ENTRIES.map(renderEntry)}</List>
-    </SidebarDrawer>
+export const Sidebar = ({ open, onClose }: SidebarProps) => {
+  const theme = useTheme();
+  const desktop = useMediaQuery(theme.breakpoints.up('md'), { noSsr: true });
+  const items = <List>{SIDEBAR_ENTRIES.map(renderEntry)}</List>;
+
+  if (desktop) {
+    return <SidebarDrawer variant="permanent">{items}</SidebarDrawer>;
+  }
+
+  return (
     <MobileSidebarDrawer
       variant="temporary"
       open={open}
       onClose={onClose}
       onClick={onClose}
-      ModalProps={{ keepMounted: true }}
     >
-      <List>{SIDEBAR_ENTRIES.map(renderEntry)}</List>
+      {items}
     </MobileSidebarDrawer>
-  </>
-);
+  );
+};

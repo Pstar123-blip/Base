@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import { useSession } from '@/lib/store';
 
+import { ensureSession } from '../auth/auth';
 import { SigningIn } from './signing-in';
 import { AuthContainer } from './unauthorized-route.styles';
 
@@ -16,11 +17,14 @@ export const UnauthorizedRoute = () => {
 
   const relogin = async () => {
     setSigningIn(true);
-    useSession.getState().clearSignedOut();
-    useSession.getState().setToken(null);
 
     try {
+      // Keep signedOut set until sign-in succeeds so the guards stay quiet.
+      await ensureSession();
+      useSession.getState().clearSignedOut();
       await navigate({ to: '/', replace: true });
+    } catch {
+      // Cancelled or failed sign-in: stay on this page in its current state.
     } finally {
       setSigningIn(false);
     }

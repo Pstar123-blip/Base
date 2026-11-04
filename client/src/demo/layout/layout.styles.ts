@@ -10,15 +10,21 @@ const pageContentStyles = ({ theme }: { theme: Theme }) => ({
 });
 export const PageContent = styled(Container)(pageContentStyles);
 
-export const LayoutBody = styled(Box)({ display: 'flex', flexGrow: 1 });
+export const LayoutBody = styled(Box)({
+  display: 'flex',
+  flexGrow: 1,
+  minHeight: 0,
+  overflow: 'hidden',
+});
 export const LayoutMain = styled(Box)<{ component?: ElementType }>({
   flexGrow: 1,
   minWidth: 0,
+  overflowY: 'auto',
 });
 export const LayoutRoot = styled(Box)({
   display: 'flex',
   flexDirection: 'column',
-  minHeight: '100vh',
+  height: '100vh',
 });
 
 const menuButtonStyles = ({ theme }: { theme: Theme }) => ({
