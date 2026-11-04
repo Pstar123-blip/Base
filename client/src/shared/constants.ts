@@ -15,3 +15,9 @@ export const AUTH_MAX_ATTEMPTS = 3;
 export const AUTH_POPUP_TIMEOUT_MS = 5 * 60_000;
 export const AUTH_POPUP_POLL_MS = 300;
 export const AUTH_POPUP_REOPEN_MS = 1000;
+
+export const COLOR_MODE_STORAGE_KEY = 'color-mode';
+export const COLOR_SCHEME_BACKGROUNDS = {
+  light: '#f6f7fb',
+  dark: '#0f111a',
+} as const;

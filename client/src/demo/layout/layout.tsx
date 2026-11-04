@@ -49,8 +49,8 @@ export const Layout = () => {
     // cancel throws we stay signed in and report the failure.
     await queryClient.cancelQueries();
     useSession.getState().signOut();
-    await navigate({ to: '/unauthorized', replace: true });
     queryClient.clear();
+    await navigate({ to: '/unauthorized', replace: true });
   };
 
   const reportSignOutError = () =>

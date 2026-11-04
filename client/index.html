@@ -5,19 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Project</title>
     <style>
-      /* Keep these backgrounds in sync with background.default in src/lib/theme.ts. */
+      /* Values are injected from src/shared/constants.ts by vite.config.ts. */
       html[data-mui-color-scheme='light'] {
-        background: #f6f7fb;
+        background: __BACKGROUND_LIGHT__;
       }
       html[data-mui-color-scheme='dark'] {
-        background: #0f111a;
+        background: __BACKGROUND_DARK__;
       }
     </style>
     <script>
-      // Apply the stored/system color scheme before first paint. 'mui-mode' is
-      // MUI's default modeStorageKey; update it if the theme ever overrides that.
+      // Apply the stored/system color scheme before first paint. The key is
+      // injected from COLOR_MODE_STORAGE_KEY and passed to ThemeProvider.
       try {
-        var mode = localStorage.getItem('mui-mode') || 'system';
+        var mode =
+          localStorage.getItem('__COLOR_MODE_STORAGE_KEY__') || 'system';
         var dark =
           mode === 'dark' ||
           (mode === 'system' &&
