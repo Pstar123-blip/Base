@@ -14,7 +14,7 @@ import { EmptyState } from '@/shared/ui/empty-state';
 import { SESSION_COLUMNS } from '../consts';
 import type { Session } from '../utils/map-session';
 import { SessionRow } from './session-row';
-import { FetchIndicator, FitTable, TablePanel } from './sessions-table.styles';
+import { FitTable, TablePanel } from './sessions-table.styles';
 
 type Column = (typeof SESSION_COLUMNS)[number];
 
@@ -23,7 +23,6 @@ export const SessionsTable = ({
   total,
   page,
   pageSize,
-  fetching,
   onPageChange,
   onPageSizeChange,
   onDelete,
@@ -32,7 +31,6 @@ export const SessionsTable = ({
   total: number;
   page: number;
   pageSize: number;
-  fetching: boolean;
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: number) => void;
   onDelete: (session: Session) => void;
@@ -55,11 +53,6 @@ export const SessionsTable = ({
 
   return (
     <TablePanel>
-      {fetching ? (
-        <FetchIndicator />
-      ) : (
-        <FetchIndicator variant="determinate" value={0} />
-      )}
       <TableContainer>
         <FitTable size="small">
           <TableHead>

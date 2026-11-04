@@ -58,7 +58,7 @@ export const SessionsPage = () => {
 
   const retry = () => void table.query.refetch();
 
-  const { data, isPending, isError, isFetching } = table.query;
+  const { data, isPending, isError } = table.query;
   const { total } = table;
 
   return (
@@ -88,7 +88,6 @@ export const SessionsPage = () => {
             total={total}
             page={table.page}
             pageSize={table.pageSize}
-            fetching={isFetching}
             onPageChange={table.setPage}
             onPageSizeChange={table.changePageSize}
             onDelete={setPendingDelete}
