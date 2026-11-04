@@ -10,9 +10,9 @@ import { useSession } from '@/lib/store';
 import { ColorModeToggle } from '@/shared/ui/color-mode-toggle';
 
 import {
-  LayoutRoot,
   LayoutBody,
   LayoutMain,
+  LayoutRoot,
   PageContent,
   PageTitle,
 } from './layout.styles';
@@ -72,7 +72,7 @@ export const Layout = () => {
       </AppBar>
       <LayoutBody>
         <Sidebar />
-        <LayoutMain>
+        <LayoutMain component="main">
           <PageContent>
             <Outlet />
           </PageContent>
