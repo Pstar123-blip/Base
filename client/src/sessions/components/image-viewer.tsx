@@ -24,6 +24,15 @@ const clampZoom = (zoom: number) =>
 
 const ORIGIN = { x: 0, y: 0 };
 
+// Max pan distance on one axis. The black margin allowed beside the image
+// scales with the image (same proportion as when fully zoomed out), which
+// works out to half the viewport size per zoom step beyond ZOOM_MIN.
+const getLimit = (viewportSize: number, zoom: number) =>
+  Math.max(0, (viewportSize * (zoom - ZOOM_MIN)) / 2);
+
+const clamp = (value: number, limit: number) =>
+  Math.min(limit, Math.max(-limit, value));
+
 export const ImageViewer = ({
   open,
   src,
@@ -48,17 +57,26 @@ export const ImageViewer = ({
     }
   }, [open]);
 
+  const clampOffset = (value: typeof ORIGIN, targetZoom: number) => {
+    return {
+      x: clamp(value.x, getLimit(window.innerWidth, targetZoom)),
+      y: clamp(value.y, getLimit(window.innerHeight, targetZoom)),
+    };
+  };
+
   const handleWheel = (event: WheelEvent) => {
     const direction = event.deltaY < 0 ? 1 : -1;
     const next = clampZoom(zoom * (1 + direction * ZOOM_STEP));
     setZoom(next);
-
-    if (next === ZOOM_MIN) {
-      setOffset(ORIGIN);
-    }
+    setOffset(next === ZOOM_MIN ? ORIGIN : clampOffset(offset, next));
   };
 
-  const startDrag = (event: PointerEvent<HTMLImageElement>) => {
+  const startDrag = (event: PointerEvent<HTMLElement>) => {
+    // Let the close/download buttons receive their clicks.
+    if (event.target instanceof Element && event.target.closest('button')) {
+      return;
+    }
+
     event.currentTarget.setPointerCapture(event.pointerId);
     dragStart.current = {
       x: event.clientX - offset.x,
@@ -67,15 +85,20 @@ export const ImageViewer = ({
     setDragging(true);
   };
 
-  const drag = (event: PointerEvent<HTMLImageElement>) => {
+  const drag = (event: PointerEvent<HTMLElement>) => {
     if (!dragging) {
       return;
     }
 
-    setOffset({
-      x: event.clientX - dragStart.current.x,
-      y: event.clientY - dragStart.current.y,
-    });
+    setOffset(
+      clampOffset(
+        {
+          x: event.clientX - dragStart.current.x,
+          y: event.clientY - dragStart.current.y,
+        },
+        zoom,
+      ),
+    );
   };
 
   const endDrag = () => setDragging(false);
@@ -101,20 +124,23 @@ export const ImageViewer = ({
 
   return (
     <Modal open={open} onClose={onClose}>
-      <Stage onWheel={handleWheel}>
+      <Stage
+        dragging={dragging}
+        pannable={zoom > ZOOM_MIN}
+        onWheel={handleWheel}
+        onPointerDown={startDrag}
+        onPointerMove={drag}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+      >
         <ViewerImage
           src={src}
           alt={alt}
           draggable={false}
           dragging={dragging}
-          pannable={zoom > ZOOM_MIN}
           style={{
             transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})`,
           }}
-          onPointerDown={startDrag}
-          onPointerMove={drag}
-          onPointerUp={endDrag}
-          onPointerCancel={endDrag}
         />
         <CloseButton>
           <IconButton color="inherit" aria-label="Close" onClick={onClose}>

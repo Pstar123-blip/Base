@@ -1,7 +1,10 @@
 import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-export const Stage = styled(Box)({
+export const Stage = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'dragging' && prop !== 'pannable',
+})<{ dragging: boolean; pannable: boolean }>(({ dragging, pannable }) => ({
+  cursor: dragging ? 'grabbing' : pannable ? 'grab' : 'default',
   position: 'fixed',
   inset: 0,
   display: 'flex',
@@ -9,17 +12,17 @@ export const Stage = styled(Box)({
   justifyContent: 'center',
   overflow: 'hidden',
   backgroundColor: 'rgba(0, 0, 0, 0.92)',
-});
+}));
 
 export const ViewerImage = styled('img', {
-  shouldForwardProp: (prop) => prop !== 'dragging' && prop !== 'pannable',
-})<{ dragging: boolean; pannable: boolean }>(({ dragging, pannable }) => ({
+  shouldForwardProp: (prop) => prop !== 'dragging',
+})<{ dragging: boolean }>(({ dragging }) => ({
   maxWidth: '100%',
   maxHeight: '100%',
   objectFit: 'contain',
   userSelect: 'none',
   touchAction: 'none',
-  cursor: dragging ? 'grabbing' : pannable ? 'grab' : 'default',
+  cursor: 'inherit',
   transition: dragging ? 'none' : 'transform 0.08s ease-out',
 }));
 
