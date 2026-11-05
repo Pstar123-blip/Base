@@ -8,9 +8,11 @@ import {
 } from '../consts';
 
 export const Stage = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'dragging' && prop !== 'pannable',
-})<{ dragging: boolean; pannable: boolean }>(({ dragging, pannable }) => ({
-  cursor: dragging ? 'grabbing' : pannable ? 'grab' : 'default',
+  shouldForwardProp: (prop) => prop !== 'dragging',
+})<{ dragging: boolean }>(({ dragging }) => ({
+  // Only a hand while dragging; the image shows its own cursor.
+  cursor: dragging ? 'grabbing' : 'default',
+  userSelect: 'none',
   position: 'fixed',
   inset: 0,
   display: 'flex',
@@ -21,14 +23,14 @@ export const Stage = styled(Box, {
 }));
 
 export const ViewerImage = styled('img', {
-  shouldForwardProp: (prop) => prop !== 'dragging',
-})<{ dragging: boolean }>(({ dragging }) => ({
+  shouldForwardProp: (prop) => prop !== 'dragging' && prop !== 'pannable',
+})<{ dragging: boolean; pannable: boolean }>(({ dragging, pannable }) => ({
   maxWidth: '100%',
   maxHeight: '100%',
   objectFit: 'contain',
   userSelect: 'none',
   touchAction: 'none',
-  cursor: 'inherit',
+  cursor: dragging ? 'grabbing' : pannable ? 'grab' : 'default',
   transition: dragging ? 'none' : 'transform 0.08s ease-out',
 }));
 

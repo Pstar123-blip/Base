@@ -31,6 +31,7 @@ export const TABLE_CELL_PADDING_PX = 8;
 export const VIEWER_BACKDROP_COLOR = 'rgba(0, 0, 0, 0.92)';
 export const VIEWER_FOOTER_COLOR = 'rgba(30, 30, 30, 0.9)';
 export const VIEWER_FOOTER_RADIUS_PX = 2;
+export const DRAG_THRESHOLD_PX = 4;
 export const ORIGIN = { x: 0, y: 0 };
 
 export const SESSION_TYPES = Object.values(SessionType);

@@ -1,15 +1,15 @@
 import CloseIcon from '@mui/icons-material/Close';
 import DownloadIcon from '@mui/icons-material/Download';
 import { IconButton, Modal } from '@mui/material';
-import {
-  type MouseEvent,
-  type PointerEvent,
-  useRef,
-  useState,
-  type WheelEvent,
-} from 'react';
+import { type PointerEvent, useRef, useState, type WheelEvent } from 'react';
 
-import { ORIGIN, ZOOM_MAX, ZOOM_MIN, ZOOM_WHEEL_SENSITIVITY } from '../consts';
+import {
+  DRAG_THRESHOLD_PX,
+  ORIGIN,
+  ZOOM_MAX,
+  ZOOM_MIN,
+  ZOOM_WHEEL_SENSITIVITY,
+} from '../consts';
 import { getImageName } from '../utils/get-image-name';
 import { downloadFile } from '../utils/trigger-download';
 import {
@@ -48,7 +48,8 @@ export const ImageViewer = ({
   const [offset, setOffset] = useState(ORIGIN);
   const [dragging, setDragging] = useState(false);
   const dragStart = useRef(ORIGIN);
-  const moved = useRef(false);
+  // The current press, to tell a click on the backdrop from a drag.
+  const press = useRef({ x: 0, y: 0, onBackdrop: false, moved: false });
   const name = getImageName(src, alt);
 
   const clampOffset = (value: typeof ORIGIN, targetZoom: number) => ({
@@ -67,6 +68,13 @@ export const ImageViewer = ({
   };
 
   const startDrag = (event: PointerEvent<HTMLElement>) => {
+    press.current = {
+      x: event.clientX,
+      y: event.clientY,
+      onBackdrop: event.target === event.currentTarget,
+      moved: false,
+    };
+
     // Let the close/download buttons receive their clicks.
     if (event.target instanceof Element && event.target.closest('button')) {
       return;
@@ -77,7 +85,6 @@ export const ImageViewer = ({
     }
 
     event.currentTarget.setPointerCapture(event.pointerId);
-    moved.current = false;
     dragStart.current = {
       x: event.clientX - offset.x,
       y: event.clientY - offset.y,
@@ -86,11 +93,19 @@ export const ImageViewer = ({
   };
 
   const drag = (event: PointerEvent<HTMLElement>) => {
+    const { x, y } = press.current;
+
+    if (
+      event.buttons &&
+      Math.hypot(event.clientX - x, event.clientY - y) > DRAG_THRESHOLD_PX
+    ) {
+      press.current.moved = true;
+    }
+
     if (!dragging) {
       return;
     }
 
-    moved.current = true;
     setOffset(
       clampOffset(
         {
@@ -104,10 +119,10 @@ export const ImageViewer = ({
 
   const endDrag = () => setDragging(false);
 
-  // A click on the stage itself (not the image or buttons) is a click on the
-  // backdrop; ignore the click that ends a drag.
-  const closeOnBackdrop = (event: MouseEvent) => {
-    if (event.target === event.currentTarget && !moved.current) {
+  // Closes only when the press started on the stage itself (not the image or
+  // buttons) and wasn't dragged, at any zoom level.
+  const closeOnBackdrop = () => {
+    if (press.current.onBackdrop && !press.current.moved) {
       onClose();
     }
   };
@@ -118,7 +133,6 @@ export const ImageViewer = ({
     <Modal open onClose={onClose}>
       <Stage
         dragging={dragging}
-        pannable={zoom > ZOOM_MIN}
         onWheel={handleWheel}
         onPointerDown={startDrag}
         onPointerMove={drag}
@@ -132,6 +146,7 @@ export const ImageViewer = ({
           alt={alt}
           draggable={false}
           dragging={dragging}
+          pannable={zoom > ZOOM_MIN}
           style={{
             transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})`,
           }}
