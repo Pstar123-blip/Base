@@ -37,7 +37,8 @@ export class SessionDto {
 
   @ApiProperty({ format: 'date-time' }) last_update!: string;
 
-  @ApiProperty({ minimum: 0, maximum: 100 }) progress!: number;
+  @ApiProperty({ type: Number, nullable: true, minimum: 0, maximum: 100 })
+  progress!: number | null;
 
   @ApiProperty({ enum: SESSION_STATUSES, enumName: 'SessionStatus' })
   status!: (typeof SESSION_STATUSES)[number];

@@ -25,7 +25,7 @@ export const sessions = pgTable(
       .notNull()
       .defaultNow()
       .$onUpdate(() => new Date()),
-    progress: integer('progress').notNull().default(0),
+    progress: integer('progress'),
     status: varchar('status', { length: 32 }).notNull().default('pending'),
     notes: text('notes').notNull().default(''),
     logs: text('logs'),

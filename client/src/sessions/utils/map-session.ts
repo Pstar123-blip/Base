@@ -15,7 +15,7 @@ export interface Session {
   imageBUrl: string;
   createdAt: Date;
   updatedAt: Date;
-  progress: number;
+  progress: number | null;
   status: SessionStatus;
   notes: string;
   logs: string | null;

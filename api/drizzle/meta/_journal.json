@@ -22,6 +22,13 @@
       "when": 1793543653823,
       "tag": "0002_sessions_notes_logs",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793544653823,
+      "tag": "0003_sessions_progress_nullable",
+      "breakpoints": true
     }
   ]
 }

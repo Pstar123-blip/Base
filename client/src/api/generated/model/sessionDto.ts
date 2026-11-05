@@ -18,8 +18,9 @@ export interface SessionDto {
   /**
      * @minimum 0
      * @maximum 100
+     * @nullable
      */
-  progress: number;
+  progress: number | null;
   status: SessionStatus;
   notes: string;
   /** @nullable */
