@@ -15,7 +15,17 @@ const SESSION_COUNT = 500;
 const INSERT_BATCH_SIZE = 100;
 const MAX_AGE_DAYS = 90;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
-const IMAGE_SIZE_PX = 80;
+const NULL_PROGRESS_CHANCE = 0.25;
+const IMAGE_SIZES_PX: readonly (readonly [number, number])[] = [
+  [40, 40],
+  [80, 80],
+  [120, 80],
+  [80, 160],
+  [200, 120],
+  [320, 240],
+  [64, 256],
+  [400, 400],
+];
 const RANDOM_SEED = 20260101;
 const OWNERS = [
   'alice',
@@ -58,8 +68,11 @@ const progressFor = (status: (typeof SESSION_STATUSES)[number]) => {
   }
 };
 
-const imageUrl = (seed: string) =>
-  `https://picsum.photos/seed/${seed}/${IMAGE_SIZE_PX}`;
+const imageUrl = (seed: string) => {
+  const [width, height] = pick(IMAGE_SIZES_PX);
+
+  return `https://picsum.photos/seed/${seed}/${width}/${height}`;
+};
 
 const createMockSession = (index: number) => {
   const now = Date.now();
@@ -76,7 +89,7 @@ const createMockSession = (index: number) => {
     imageBUrl: imageUrl(`session-${index}-b`),
     createdAt,
     updatedAt,
-    progress: progressFor(status),
+    progress: random() < NULL_PROGRESS_CHANCE ? null : progressFor(status),
     status,
     notes: '',
     logs: status === 'failed' ? 'Session failed unexpectedly' : null,
