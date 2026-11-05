@@ -2,15 +2,16 @@ import CloseIcon from '@mui/icons-material/Close';
 import DownloadIcon from '@mui/icons-material/Download';
 import { IconButton, Modal } from '@mui/material';
 import {
+  type MouseEvent,
   type PointerEvent,
-  useEffect,
   useRef,
   useState,
   type WheelEvent,
 } from 'react';
 
-import { ZOOM_MAX, ZOOM_MIN, ZOOM_STEP } from '../consts';
+import { ORIGIN, ZOOM_MAX, ZOOM_MIN, ZOOM_WHEEL_SENSITIVITY } from '../consts';
 import { getImageName } from '../utils/get-image-name';
+import { downloadFile } from '../utils/trigger-download';
 import {
   CloseButton,
   Footer,
@@ -22,7 +23,7 @@ import {
 const clampZoom = (zoom: number) =>
   Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, zoom));
 
-const ORIGIN = { x: 0, y: 0 };
+const PRIMARY_BUTTON = 0;
 
 // Max pan distance on one axis. The black margin allowed beside the image
 // scales with the image (same proportion as when fully zoomed out), which
@@ -33,13 +34,12 @@ const getLimit = (viewportSize: number, zoom: number) =>
 const clamp = (value: number, limit: number) =>
   Math.min(limit, Math.max(-limit, value));
 
+// Mounted only while open, so its zoom and drag state always start fresh.
 export const ImageViewer = ({
-  open,
   src,
   alt,
   onClose,
 }: {
-  open: boolean;
   src: string;
   alt: string;
   onClose: () => void;
@@ -48,25 +48,20 @@ export const ImageViewer = ({
   const [offset, setOffset] = useState(ORIGIN);
   const [dragging, setDragging] = useState(false);
   const dragStart = useRef(ORIGIN);
+  const moved = useRef(false);
   const name = getImageName(src, alt);
 
-  useEffect(() => {
-    if (open) {
-      setZoom(ZOOM_MIN);
-      setOffset(ORIGIN);
-    }
-  }, [open]);
-
-  const clampOffset = (value: typeof ORIGIN, targetZoom: number) => {
-    return {
-      x: clamp(value.x, getLimit(window.innerWidth, targetZoom)),
-      y: clamp(value.y, getLimit(window.innerHeight, targetZoom)),
-    };
-  };
+  const clampOffset = (value: typeof ORIGIN, targetZoom: number) => ({
+    x: clamp(value.x, getLimit(window.innerWidth, targetZoom)),
+    y: clamp(value.y, getLimit(window.innerHeight, targetZoom)),
+  });
 
   const handleWheel = (event: WheelEvent) => {
-    const direction = event.deltaY < 0 ? 1 : -1;
-    const next = clampZoom(zoom * (1 + direction * ZOOM_STEP));
+    if (event.deltaY === 0) {
+      return;
+    }
+
+    const next = clampZoom(zoom * (1 - event.deltaY * ZOOM_WHEEL_SENSITIVITY));
     setZoom(next);
     setOffset(next === ZOOM_MIN ? ORIGIN : clampOffset(offset, next));
   };
@@ -77,7 +72,12 @@ export const ImageViewer = ({
       return;
     }
 
+    if (zoom <= ZOOM_MIN || event.button !== PRIMARY_BUTTON) {
+      return;
+    }
+
     event.currentTarget.setPointerCapture(event.pointerId);
+    moved.current = false;
     dragStart.current = {
       x: event.clientX - offset.x,
       y: event.clientY - offset.y,
@@ -90,6 +90,7 @@ export const ImageViewer = ({
       return;
     }
 
+    moved.current = true;
     setOffset(
       clampOffset(
         {
@@ -103,27 +104,18 @@ export const ImageViewer = ({
 
   const endDrag = () => setDragging(false);
 
-  const download = async () => {
-    try {
-      const blob = await (await fetch(src)).blob();
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = name;
-      link.click();
-      URL.revokeObjectURL(url);
-    } catch {
-      // Fetch can be blocked cross-origin; fall back to a plain link.
-      const link = document.createElement('a');
-      link.href = src;
-      link.download = name;
-      link.target = '_blank';
-      link.click();
+  // A click on the stage itself (not the image or buttons) is a click on the
+  // backdrop; ignore the click that ends a drag.
+  const closeOnBackdrop = (event: MouseEvent) => {
+    if (event.target === event.currentTarget && !moved.current) {
+      onClose();
     }
   };
 
+  const download = () => void downloadFile(src, name);
+
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal open onClose={onClose}>
       <Stage
         dragging={dragging}
         pannable={zoom > ZOOM_MIN}
@@ -132,6 +124,8 @@ export const ImageViewer = ({
         onPointerMove={drag}
         onPointerUp={endDrag}
         onPointerCancel={endDrag}
+        onLostPointerCapture={endDrag}
+        onClick={closeOnBackdrop}
       >
         <ViewerImage
           src={src}

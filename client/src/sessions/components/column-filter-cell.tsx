@@ -1,7 +1,7 @@
 import { MenuItem, TableCell } from '@mui/material';
 import type { ChangeEvent } from 'react';
 
-import { SessionStatus, SessionType } from '@/api/generated/model';
+import type { SessionStatus, SessionType } from '@/api/generated/model';
 
 import {
   ALL_STATUSES,
@@ -10,14 +10,13 @@ import {
   FILTER_INPUT_SIZE,
   SEARCH_MAX_LENGTH,
   SESSION_STATUS_LABELS,
+  SESSION_STATUSES,
   SESSION_TYPE_LABELS,
+  SESSION_TYPES,
   type SessionColumnId,
   type SessionFilters,
 } from '../consts';
 import { FilterInput } from './column-filter-cell.styles';
-
-const sessionTypes = Object.values(SessionType);
-const sessionStatuses = Object.values(SessionStatus);
 
 const renderType = (type: SessionType) => (
   <MenuItem key={type} value={type}>
@@ -87,7 +86,7 @@ export const ColumnFilterCell = ({
           onChange={changeType}
         >
           <MenuItem value={ALL_TYPES}>All</MenuItem>
-          {sessionTypes.map(renderType)}
+          {SESSION_TYPES.map(renderType)}
         </FilterInput>
       </TableCell>
     );
@@ -110,7 +109,7 @@ export const ColumnFilterCell = ({
         onChange={changeStatus}
       >
         <MenuItem value={ALL_STATUSES}>All</MenuItem>
-        {sessionStatuses.map(renderStatus)}
+        {SESSION_STATUSES.map(renderStatus)}
       </FilterInput>
     </TableCell>
   );

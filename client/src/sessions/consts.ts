@@ -1,7 +1,7 @@
 import {
   type SessionSearchValuesDto,
-  type SessionStatus,
-  type SessionType,
+  SessionStatus,
+  SessionType,
 } from '@/api/generated/model';
 
 export const SEARCH_DEBOUNCE_MS = 300;
@@ -13,11 +13,6 @@ export const ALL_STATUSES = 'all';
 export const DISPLAY_TIME_OFFSET_MS = 2 * 60 * 60 * 1000;
 
 export const SESSIONS_PATH = '/sessions';
-// Both are POST queries, so they differ from other keys by method + path.
-export const SESSIONS_QUERY_PATH_SUFFIXES = [
-  '/sessions/group',
-  '/sessions/count',
-];
 export const getResultsPath = (id: string) => `${SESSIONS_PATH}/${id}/results`;
 
 export const TABLE_FONT_SIZE = '1rem';
@@ -28,6 +23,18 @@ export const ZOOM_MAX = 8;
 export const ZOOM_STEP = 0.15;
 export const TYPE_TAG_FILL_ALPHA = 0.16;
 export const TYPE_TAG_BORDER_ALPHA = 0.4;
+export const UNKNOWN_TYPE_COLOR = '#757575';
+export const UNKNOWN_TYPE_LABEL = 'Unknown';
+export const ZOOM_WHEEL_SENSITIVITY = 0.002;
+export const DOWNLOAD_REVOKE_DELAY_MS = 1000;
+export const TABLE_CELL_PADDING_PX = 8;
+export const VIEWER_BACKDROP_COLOR = 'rgba(0, 0, 0, 0.92)';
+export const VIEWER_FOOTER_COLOR = 'rgba(30, 30, 30, 0.9)';
+export const VIEWER_FOOTER_RADIUS_PX = 2;
+export const ORIGIN = { x: 0, y: 0 };
+
+export const SESSION_TYPES = Object.values(SessionType);
+export const SESSION_STATUSES = Object.values(SessionStatus);
 
 export const SESSION_TYPE_LABELS: Record<SessionType, string> = {
   training: 'Training',

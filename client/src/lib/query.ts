@@ -24,7 +24,14 @@ const shouldRetryQuery = (count: number, error: Error) =>
     error.response.status >= HttpStatusCode.InternalServerError);
 
 export const queryClient = new QueryClient({
-  queryCache: new QueryCache({ onError: notify }),
+  // A failed background refetch keeps its data, so it stays silent.
+  queryCache: new QueryCache({
+    onError: (error, query) => {
+      if (query.state.data === undefined) {
+        notify(error);
+      }
+    },
+  }),
   mutationCache: new MutationCache({ onError: notify }),
   defaultOptions: {
     queries: {

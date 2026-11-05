@@ -1,2 +1,16 @@
-export const getImageName = (src: string, fallback: string) =>
-  decodeURIComponent(src.split(/[?#]/)[0]?.split('/').pop() ?? '') || fallback;
+const FILE_NAME_PATTERN = /\.[a-z0-9]+$/i;
+
+const decode = (segment: string) => {
+  try {
+    return decodeURIComponent(segment);
+  } catch {
+    return segment;
+  }
+};
+
+// The last URL segment when it looks like a file name, otherwise the fallback.
+export const getImageName = (src: string, fallback: string) => {
+  const segment = decode(src.split(/[?#]/)[0]?.split('/').pop() ?? '');
+
+  return FILE_NAME_PATTERN.test(segment) ? segment : fallback;
+};

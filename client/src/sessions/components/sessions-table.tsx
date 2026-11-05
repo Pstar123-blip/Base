@@ -14,6 +14,7 @@ import { EmptyState } from '@/shared/ui/empty-state';
 import { SESSION_COLUMNS, type SessionFilters } from '../consts';
 import type { Session } from '../utils/map-session';
 import { ColumnFilterCell } from './column-filter-cell';
+import type { ImageOpener } from './session-image';
 import { SessionRow } from './session-row';
 import { FilterRow, FitTable, TablePanel } from './sessions-table.styles';
 
@@ -29,6 +30,7 @@ export const SessionsTable = ({
   onPageChange,
   onPageSizeChange,
   onDelete,
+  onOpenImage,
 }: {
   sessions: Session[];
   total: number;
@@ -39,6 +41,7 @@ export const SessionsTable = ({
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: number) => void;
   onDelete: (session: Session) => void;
+  onOpenImage: ImageOpener;
 }) => {
   const changePage = (
     _event: MouseEvent<HTMLButtonElement> | null,
@@ -62,7 +65,12 @@ export const SessionsTable = ({
   );
 
   const renderRow = (session: Session) => (
-    <SessionRow key={session.id} session={session} onDelete={onDelete} />
+    <SessionRow
+      key={session.id}
+      session={session}
+      onDelete={onDelete}
+      onOpenImage={onOpenImage}
+    />
   );
 
   return (

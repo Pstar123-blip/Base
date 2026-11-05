@@ -12,6 +12,7 @@ import { SigningIn } from '@/core/pages/signing-in';
 import { UnauthorizedRoute } from '@/core/pages/unauthorized-route';
 import { Dashboard } from '@/demo/dashboard/dashboard';
 import { Layout } from '@/demo/layout/layout';
+import { SESSIONS_PATH } from '@/sessions/consts';
 import { SessionsPage } from '@/sessions/pages/sessions-page';
 import { ErrorState } from '@/shared/ui/states';
 
@@ -59,7 +60,7 @@ const index = createRoute({
 });
 const sessions = createRoute({
   getParentRoute: () => layoutRoute,
-  path: '/sessions',
+  path: SESSIONS_PATH,
   component: SessionsPage,
 });
 

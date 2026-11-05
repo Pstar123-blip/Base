@@ -1,6 +1,12 @@
 import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
+import {
+  VIEWER_BACKDROP_COLOR,
+  VIEWER_FOOTER_COLOR,
+  VIEWER_FOOTER_RADIUS_PX,
+} from '../consts';
+
 export const Stage = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'dragging' && prop !== 'pannable',
 })<{ dragging: boolean; pannable: boolean }>(({ dragging, pannable }) => ({
@@ -11,7 +17,7 @@ export const Stage = styled(Box, {
   alignItems: 'center',
   justifyContent: 'center',
   overflow: 'hidden',
-  backgroundColor: 'rgba(0, 0, 0, 0.92)',
+  backgroundColor: VIEWER_BACKDROP_COLOR,
 }));
 
 export const ViewerImage = styled('img', {
@@ -42,8 +48,8 @@ export const Footer = styled(Box)(({ theme }) => ({
   alignItems: 'center',
   gap: theme.spacing(2),
   padding: theme.spacing(1.5, 3),
-  borderRadius: 2,
-  backgroundColor: 'rgba(30, 30, 30, 0.9)',
+  borderRadius: VIEWER_FOOTER_RADIUS_PX,
+  backgroundColor: VIEWER_FOOTER_COLOR,
   border: `1px solid ${theme.palette.grey[700]}`,
   boxShadow: theme.shadows[8],
   color: theme.palette.common.white,

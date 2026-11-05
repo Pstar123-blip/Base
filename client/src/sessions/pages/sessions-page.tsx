@@ -7,40 +7,37 @@ import { useDeleteSession } from '@/api/generated/api';
 import { ConfirmationDialog } from '@/shared/ui/confirmation-dialog';
 import { ErrorState, LoadingState } from '@/shared/ui/states';
 
+import { ImageViewer } from '../components/image-viewer';
+import type { ViewedImage } from '../components/session-image';
 import { SessionsTable } from '../components/sessions-table';
-import { SESSIONS_QUERY_PATH_SUFFIXES } from '../consts';
 import { useSessionsTable } from '../hooks/use-sessions-table';
 import type { Session } from '../utils/map-session';
 
 export const SessionsPage = () => {
   const table = useSessionsTable();
   const queryClient = useQueryClient();
+  // The session stays set while the dialog fades out so its text doesn't blank.
   const [pendingDelete, setPendingDelete] = useState<Session | null>(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  // Held here, not in the row, so polling can't unmount the viewer.
+  const [viewedImage, setViewedImage] = useState<ViewedImage | null>(null);
 
-  const closeDialog = () => setPendingDelete(null);
-  // Every type variant of the group and count endpoints has its own query
-  // key: [method, path, ...].
-  const refreshSessions = () =>
-    queryClient.invalidateQueries({
-      predicate: ({ queryKey: [, path] }) =>
-        typeof path === 'string' &&
-        SESSIONS_QUERY_PATH_SUFFIXES.some((suffix) => path.endsWith(suffix)),
-    });
+  const closeDialog = () => setDeleteOpen(false);
 
-  const reportDeleted = () => {
-    enqueueSnackbar('Session deleted', { variant: 'success' });
-    void refreshSessions();
+  const askDelete = (session: Session) => {
+    setPendingDelete(session);
+    setDeleteOpen(true);
   };
 
-  const reportDeleteError = () =>
-    enqueueSnackbar('Unable to delete the session. Please try again.', {
-      variant: 'error',
-    });
+  // Refetches the active queries, i.e. the current page and its count.
+  const reportDeleted = () => {
+    enqueueSnackbar('Session deleted', { variant: 'success' });
+    void queryClient.invalidateQueries();
+  };
 
   const deletion = useDeleteSession({
     mutation: {
       onSuccess: reportDeleted,
-      onError: reportDeleteError,
       onSettled: closeDialog,
     },
   });
@@ -55,10 +52,18 @@ export const SessionsPage = () => {
     }
   };
 
-  const retry = () => void table.query.refetch();
+  const retry = () => {
+    void table.query.refetch();
+    void table.countQuery.refetch();
+  };
 
-  const { data, isPending, isError } = table.query;
+  const { data } = table.query;
   const { total } = table;
+  const isPending = table.query.isPending || table.countQuery.isPending;
+  // A failed background refetch keeps its data, so the table stays up.
+  const isError =
+    (table.query.isError && !data) ||
+    (table.countQuery.isError && total === undefined);
 
   return (
     <Stack spacing={3}>
@@ -69,7 +74,7 @@ export const SessionsPage = () => {
         </Typography>
       </Box>
       <Box>
-        {isPending && <LoadingState />}
+        {isPending && !isError && <LoadingState />}
         {isError && (
           <ErrorState message="Unable to load sessions" retry={retry} />
         )}
@@ -83,18 +88,26 @@ export const SessionsPage = () => {
             onFilterChange={table.changeFilters}
             onPageChange={table.setPage}
             onPageSizeChange={table.changePageSize}
-            onDelete={setPendingDelete}
+            onDelete={askDelete}
+            onOpenImage={setViewedImage}
           />
         )}
       </Box>
       <ConfirmationDialog
-        open={Boolean(pendingDelete)}
+        open={deleteOpen}
         busy={deletion.isPending}
         title="Delete session?"
         description={`Session ${pendingDelete?.id ?? ''} will be permanently deleted.`}
         onCancel={closeDialog}
         onConfirm={confirmDelete}
       />
+      {viewedImage && (
+        <ImageViewer
+          src={viewedImage.src}
+          alt={viewedImage.alt}
+          onClose={() => setViewedImage(null)}
+        />
+      )}
     </Stack>
   );
 };
