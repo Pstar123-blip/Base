@@ -1,6 +1,10 @@
-import { DOWNLOAD_REVOKE_DELAY_MS } from '../consts';
+import { enqueueSnackbar } from 'notistack';
 
-const HTTP_PROTOCOLS = ['http:', 'https:'];
+import {
+  DOWNLOAD_ERROR_MESSAGE,
+  DOWNLOAD_REVOKE_DELAY_MS,
+  HTTP_PROTOCOLS,
+} from '../consts';
 
 const isHttpUrl = (url: string) => {
   try {
@@ -24,7 +28,8 @@ const clickLink = (href: string, name: string, newTab = false) => {
 };
 
 // Downloads the file; when it can't be fetched (e.g. blocked cross-origin)
-// falls back to opening a plain link, but only for http(s) URLs.
+// falls back to opening a plain link, but only for http(s) URLs. Otherwise
+// the user is told it failed.
 export const downloadFile = async (src: string, name: string) => {
   try {
     const response = await fetch(src);
@@ -39,6 +44,8 @@ export const downloadFile = async (src: string, name: string) => {
   } catch {
     if (isHttpUrl(src)) {
       clickLink(src, name, true);
+    } else {
+      enqueueSnackbar(DOWNLOAD_ERROR_MESSAGE, { variant: 'error' });
     }
   }
 };

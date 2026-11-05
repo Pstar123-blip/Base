@@ -1,4 +1,4 @@
-const FILE_NAME_PATTERN = /\.[a-z0-9]+$/i;
+import { FILE_NAME_PATTERN } from '../consts';
 
 const decode = (segment: string) => {
   try {

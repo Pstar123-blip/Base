@@ -84,7 +84,8 @@ export const SessionsTable = ({
           <TableBody>{sessions.map(renderRow)}</TableBody>
         </FitTable>
       </TableContainer>
-      {!sessions.length && <EmptyState message="No sessions found" />}
+      {/* total is authoritative: an empty page with a non-zero total is a stale page mid-refetch */}
+      {!sessions.length && !total && <EmptyState message="No sessions found" />}
       <TablePagination
         component="div"
         count={total}

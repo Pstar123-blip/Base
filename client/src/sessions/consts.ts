@@ -20,7 +20,13 @@ export const IMAGE_SIZE_PX = 40;
 export const IMAGE_PREVIEW_SIZE_PX = 320;
 export const ZOOM_MIN = 1;
 export const ZOOM_MAX = 8;
-export const ZOOM_STEP = 0.15;
+export const PRIMARY_BUTTON = 0;
+export const FILE_NAME_PATTERN = /\.[a-z0-9]+$/i;
+export const HTTP_PROTOCOLS = ['http:', 'https:'];
+export const DOWNLOAD_ERROR_MESSAGE = 'Unable to download the image';
+export const TYPE_TAG_FONT_WEIGHT = 600;
+export const VIEWER_FOOTER_MAX_WIDTH = '90vw';
+export const VIEWER_TRANSITION = 'transform 0.08s ease-out';
 export const TYPE_TAG_FILL_ALPHA = 0.16;
 export const TYPE_TAG_BORDER_ALPHA = 0.4;
 export const UNKNOWN_TYPE_COLOR = '#757575';
@@ -90,6 +96,10 @@ export const SEARCH_FIELD_LABELS: Record<SessionSearchField, string> = {
   session_id: 'ID',
   session_owner: 'Owner',
 };
+
+export const SEARCH_FIELDS = Object.keys(
+  SEARCH_FIELD_LABELS,
+) as SessionSearchField[];
 
 export type SessionColumnId =
   | 'id'

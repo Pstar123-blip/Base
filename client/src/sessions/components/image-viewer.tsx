@@ -6,12 +6,13 @@ import { type PointerEvent, useRef, useState, type WheelEvent } from 'react';
 import {
   DRAG_THRESHOLD_PX,
   ORIGIN,
+  PRIMARY_BUTTON,
   ZOOM_MAX,
   ZOOM_MIN,
   ZOOM_WHEEL_SENSITIVITY,
 } from '../consts';
+import { downloadFile } from '../utils/download-file';
 import { getImageName } from '../utils/get-image-name';
-import { downloadFile } from '../utils/trigger-download';
 import {
   CloseButton,
   Footer,
@@ -22,8 +23,6 @@ import {
 
 const clampZoom = (zoom: number) =>
   Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, zoom));
-
-const PRIMARY_BUTTON = 0;
 
 // Max pan distance on one axis. The black margin allowed beside the image
 // scales with the image (same proportion as when fully zoomed out), which

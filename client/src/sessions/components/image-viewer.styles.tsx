@@ -4,7 +4,9 @@ import { styled } from '@mui/material/styles';
 import {
   VIEWER_BACKDROP_COLOR,
   VIEWER_FOOTER_COLOR,
+  VIEWER_FOOTER_MAX_WIDTH,
   VIEWER_FOOTER_RADIUS_PX,
+  VIEWER_TRANSITION,
 } from '../consts';
 
 export const Stage = styled(Box, {
@@ -31,7 +33,7 @@ export const ViewerImage = styled('img', {
   userSelect: 'none',
   touchAction: 'none',
   cursor: dragging ? 'grabbing' : pannable ? 'grab' : 'default',
-  transition: dragging ? 'none' : 'transform 0.08s ease-out',
+  transition: dragging ? 'none' : VIEWER_TRANSITION,
 }));
 
 export const CloseButton = styled(Box)(({ theme }) => ({
@@ -55,7 +57,7 @@ export const Footer = styled(Box)(({ theme }) => ({
   border: `1px solid ${theme.palette.grey[700]}`,
   boxShadow: theme.shadows[8],
   color: theme.palette.common.white,
-  maxWidth: '90vw',
+  maxWidth: VIEWER_FOOTER_MAX_WIDTH,
 }));
 
 export const ImageName = styled(Typography)({
