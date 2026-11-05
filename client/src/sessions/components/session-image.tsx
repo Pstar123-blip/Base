@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { type SyntheticEvent, useState } from 'react';
 
 import { ImageViewer } from './image-viewer';
 import {
@@ -9,11 +9,17 @@ import {
 
 export const SessionImage = ({ src, alt }: { src: string; alt: string }) => {
   const [viewerOpen, setViewerOpen] = useState(false);
+  const [portrait, setPortrait] = useState(false);
+
+  const handleLoad = (event: SyntheticEvent<HTMLImageElement>) => {
+    const { naturalWidth, naturalHeight } = event.currentTarget;
+    setPortrait(naturalHeight > naturalWidth);
+  };
 
   return (
     <>
       <PreviewTooltip
-        title={<PreviewImage src={src} alt={alt} />}
+        title={<PreviewImage src={src} alt={alt} portrait={portrait} />}
         placement="top"
         disableInteractive
       >
@@ -21,7 +27,7 @@ export const SessionImage = ({ src, alt }: { src: string; alt: string }) => {
           variant="rounded"
           src={src}
           alt={alt}
-          slotProps={{ img: { loading: 'lazy' } }}
+          slotProps={{ img: { loading: 'lazy', onLoad: handleLoad } }}
           onClick={() => setViewerOpen(true)}
         />
       </PreviewTooltip>

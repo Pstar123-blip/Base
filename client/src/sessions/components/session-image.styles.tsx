@@ -14,12 +14,13 @@ export const Thumbnail = styled(Avatar)({
   cursor: 'zoom-in',
 });
 
-export const PreviewImage = styled('img')({
+export const PreviewImage = styled('img', {
+  shouldForwardProp: (prop) => prop !== 'portrait',
+})<{ portrait: boolean }>(({ portrait }) => ({
   display: 'block',
-  width: IMAGE_PREVIEW_SIZE_PX,
-  height: IMAGE_PREVIEW_SIZE_PX,
-  objectFit: 'cover',
-});
+  width: portrait ? 'auto' : IMAGE_PREVIEW_SIZE_PX,
+  height: portrait ? IMAGE_PREVIEW_SIZE_PX : 'auto',
+}));
 
 export const PreviewTooltip = styled(
   ({ className, ...props }: TooltipProps) => (
