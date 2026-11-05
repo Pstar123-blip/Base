@@ -8,7 +8,6 @@ import { ConfirmationDialog } from '@/shared/ui/confirmation-dialog';
 import { ErrorState, LoadingState } from '@/shared/ui/states';
 
 import { SessionsTable } from '../components/sessions-table';
-import { SessionsToolbar } from '../components/sessions-toolbar';
 import { SESSIONS_QUERY_PATH_SUFFIXES } from '../consts';
 import { useSessionsTable } from '../hooks/use-sessions-table';
 import type { Session } from '../utils/map-session';
@@ -70,16 +69,6 @@ export const SessionsPage = () => {
         </Typography>
       </Box>
       <Box>
-        <SessionsToolbar
-          search={table.search}
-          searchField={table.searchField}
-          type={table.type}
-          status={table.status}
-          onSearchChange={table.changeSearch}
-          onSearchFieldChange={table.changeSearchField}
-          onTypeChange={table.changeType}
-          onStatusChange={table.changeStatus}
-        />
         {isPending && <LoadingState />}
         {isError && (
           <ErrorState message="Unable to load sessions" retry={retry} />
@@ -88,8 +77,10 @@ export const SessionsPage = () => {
           <SessionsTable
             sessions={data}
             total={total}
+            filters={table.filters}
             page={table.page}
             pageSize={table.pageSize}
+            onFilterChange={table.changeFilters}
             onPageChange={table.setPage}
             onPageSizeChange={table.changePageSize}
             onDelete={setPendingDelete}

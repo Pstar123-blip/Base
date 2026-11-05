@@ -7,6 +7,7 @@ import {
 export const SEARCH_DEBOUNCE_MS = 300;
 export const REFETCH_INTERVAL_MS = 5000;
 export const SEARCH_MAX_LENGTH = 200;
+export const FILTER_INPUT_SIZE = 8;
 export const ALL_TYPES = 'all';
 export const ALL_STATUSES = 'all';
 export const DISPLAY_TIME_OFFSET_MS = 2 * 60 * 60 * 1000;
@@ -70,7 +71,12 @@ export type SessionSearchField = Exclude<
   'status'
 >;
 
-export const DEFAULT_SEARCH_FIELD: SessionSearchField = 'session_id';
+export type SessionSearchFilters = Partial<Record<SessionSearchField, string>>;
+
+export interface SessionFilters extends SessionSearchFilters {
+  type?: SessionType;
+  status?: SessionStatus;
+}
 
 export const SEARCH_FIELD_LABELS: Record<SessionSearchField, string> = {
   session_id: 'ID',
@@ -108,3 +114,16 @@ export const SESSION_COLUMNS: SessionColumn[] = [
   { id: 'results', label: 'Results' },
   { id: 'options', label: '' },
 ];
+
+// Which columns have a filter input in the row under the header.
+export type ColumnFilter =
+  | { kind: 'text'; field: SessionSearchField }
+  | { kind: 'type' }
+  | { kind: 'status' };
+
+export const COLUMN_FILTERS: Partial<Record<SessionColumnId, ColumnFilter>> = {
+  id: { kind: 'text', field: 'session_id' },
+  type: { kind: 'type' },
+  owner: { kind: 'text', field: 'session_owner' },
+  status: { kind: 'status' },
+};

@@ -10,17 +10,16 @@ import {
 import {
   type GroupSessionsParams,
   type SessionSearchValuesDto,
-  type SessionStatus,
   SessionType,
 } from '@/api/generated/model';
 import { DEFAULT_TABLE_PAGE_SIZE } from '@/shared/constants';
 
 import {
-  DEFAULT_SEARCH_FIELD,
   REFETCH_INTERVAL_MS,
   SEARCH_DEBOUNCE_MS,
-  type SessionSearchField,
+  type SessionFilters,
 } from '../consts';
+import { getActiveSearchFilters } from '../utils/get-active-search-filters';
 import { mapSessions } from '../utils/map-session';
 import { useDebouncedValue } from './use-debounced-value';
 
@@ -29,16 +28,16 @@ import { useDebouncedValue } from './use-debounced-value';
 export const useSessionsTable = () => {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(DEFAULT_TABLE_PAGE_SIZE);
-  const [search, setSearch] = useState('');
-  const [searchField, setSearchField] =
-    useState<SessionSearchField>(DEFAULT_SEARCH_FIELD);
-  const [type, setType] = useState<SessionType | undefined>();
-  const [status, setStatus] = useState<SessionStatus | undefined>();
+  const [filters, setFilters] = useState<SessionFilters>({});
 
-  const debouncedSearch = useDebouncedValue(search.trim(), SEARCH_DEBOUNCE_MS);
+  // The inputs follow `filters` immediately; the server sees the debounced one.
+  const { type, status, ...searchFilters } = useDebouncedValue(
+    filters,
+    SEARCH_DEBOUNCE_MS,
+  );
 
   const searchValues: SessionSearchValuesDto = {
-    ...(debouncedSearch && { [searchField]: debouncedSearch }),
+    ...getActiveSearchFilters(searchFilters),
     ...(status && { status }),
   };
   const params: GroupSessionsParams = {
@@ -84,23 +83,8 @@ export const useSessionsTable = () => {
   // E.g. after deleting the last row of the last page.
   useEffect(clampPage, [total, page, pageSize]);
 
-  const changeSearch = (value: string) => {
-    setSearch(value);
-    setPage(0);
-  };
-
-  const changeSearchField = (value: SessionSearchField) => {
-    setSearchField(value);
-    setPage(0);
-  };
-
-  const changeType = (value: SessionType | undefined) => {
-    setType(value);
-    setPage(0);
-  };
-
-  const changeStatus = (value: SessionStatus | undefined) => {
-    setStatus(value);
+  const changeFilters = (patch: SessionFilters) => {
+    setFilters((current) => ({ ...current, ...patch }));
     setPage(0);
   };
 
@@ -114,15 +98,9 @@ export const useSessionsTable = () => {
     total,
     page,
     pageSize,
-    search,
-    searchField,
-    type,
-    status,
+    filters,
     setPage,
-    changeSearch,
-    changeSearchField,
-    changeType,
-    changeStatus,
+    changeFilters,
     changePageSize,
   };
 };
