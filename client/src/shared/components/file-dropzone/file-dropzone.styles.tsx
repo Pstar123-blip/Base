@@ -3,10 +3,14 @@ import { Box, Typography } from '@mui/material';
 import { keyframes, styled } from '@mui/material/styles';
 
 import {
+  DOT_GRID_SPACING,
   DOT_SIZE,
+  DRAG_ACTIVE_SCALE,
   DROP_AREA_MAX_WIDTH,
   DROP_AREA_MIN_HEIGHT,
+  HALO_PULSE_DURATION,
   ICON_FLOAT_DISTANCE,
+  ICON_FLOAT_DURATION,
   ICON_SIZE,
 } from './consts';
 
@@ -43,7 +47,7 @@ export const IconBadge = styled(Box)(({ theme }) => {
     color: palette.primary.contrastText,
     backgroundImage: `linear-gradient(135deg, ${palette.primary.main}, ${palette.secondary.main})`,
     boxShadow: `0 12px 32px -8px ${theme.alpha(palette.primary.main, 0.55)}`,
-    animation: `${float} 3.2s ease-in-out infinite`,
+    animation: `${float} ${ICON_FLOAT_DURATION}ms ease-in-out infinite`,
     transition: theme.transitions.create(['box-shadow', 'background-image']),
 
     // Soft halo behind the badge; pulses while files are dragged over.
@@ -124,7 +128,7 @@ export const DropArea = styled(Box)(({ theme }) => {
       `radial-gradient(ellipse at top, ${theme.alpha(palette.primary.main, 0.12)}, transparent 65%)`,
       `radial-gradient(${theme.alpha(palette.text.primary, 0.09)} ${DOT_SIZE}px, transparent ${DOT_SIZE}px)`,
     ].join(', '),
-    backgroundSize: `100% 100%, ${theme.spacing(2.5)} ${theme.spacing(2.5)}`,
+    backgroundSize: `100% 100%, ${theme.spacing(DOT_GRID_SPACING)} ${theme.spacing(DOT_GRID_SPACING)}`,
     transition: theme.transitions.create([
       'border-color',
       'background-color',
@@ -147,12 +151,12 @@ export const DropArea = styled(Box)(({ theme }) => {
       borderColor: palette.primary.main,
       backgroundColor: theme.alpha(palette.primary.main, 0.06),
       boxShadow: `0 0 0 6px ${theme.alpha(palette.primary.main, 0.15)}`,
-      transform: 'scale(1.01)',
+      transform: `scale(${DRAG_ACTIVE_SCALE})`,
       [`& ${IconBadge}`]: {
         animationPlayState: 'paused',
         boxShadow: `0 16px 40px -6px ${theme.alpha(palette.primary.main, 0.7)}`,
         '&::before': {
-          animation: `${pulse} 1.2s ease-out infinite`,
+          animation: `${pulse} ${HALO_PULSE_DURATION}ms ease-out infinite`,
         },
       },
     },

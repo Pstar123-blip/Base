@@ -1,4 +1,4 @@
-import { Alert, Box } from '@mui/material';
+import { Alert } from '@mui/material';
 import { type DropzoneOptions, useDropzone } from 'react-dropzone';
 
 import {
@@ -17,6 +17,7 @@ import {
   RejectionLine,
   UploadIcon,
 } from './file-dropzone.styles';
+import { mergeFiles } from './utils/merge-files';
 
 export interface FileDropzoneProps extends Omit<
   DropzoneOptions,
@@ -54,10 +55,10 @@ export const FileDropzone = ({
     ...options,
     multiple,
     // react-dropzone counts per drop, so only offer the slots that are left.
-    maxFiles: maxFiles - value.length,
+    maxFiles: maxFiles > 0 ? maxFiles - value.length : 0,
     disabled: disabled || isFull,
     onDropAccepted: (files) =>
-      onChange(multiple ? [...value, ...files] : files),
+      onChange(multiple ? mergeFiles(value, files) : files),
   });
 
   const title = isDragReject
@@ -74,7 +75,7 @@ export const FileDropzone = ({
         data-drag-reject={isDragReject}
       >
         {/* react-dropzone hides the native input itself. */}
-        <Box component="input" {...getInputProps()} />
+        <input {...getInputProps()} />
         <IconBadge>
           <UploadIcon />
         </IconBadge>
