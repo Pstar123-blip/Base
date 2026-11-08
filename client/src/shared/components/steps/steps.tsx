@@ -1,0 +1,114 @@
+import { Box, Step, StepButton, Typography } from '@mui/material';
+
+import { DEFAULT_STEPS_LABELS } from './consts';
+import { useStepNavigation } from './hooks/use-step-navigation';
+import { StepIndicator } from './step-indicator/step-indicator';
+import {
+  StepPanel,
+  StepsConnector,
+  StepsRoot,
+  StepsStepper,
+} from './steps.styles';
+import { StepsActions } from './steps-actions/steps-actions';
+import { type StepItem, type StepsLabels } from './types';
+
+export type StepsProps = {
+  steps: readonly StepItem[];
+  /** Controlled active step index. Omit to let the component manage it. */
+  activeStep?: number;
+  /** Initial step when uncontrolled. Defaults to `0`. */
+  defaultActiveStep?: number;
+  /** Called with the new index whenever the user navigates. */
+  onStepChange?: (index: number) => void;
+  /** Called when the user clicks the finish button on the last step. */
+  onFinish: () => void;
+  /** Shows a loading state on the finish button, e.g. while submitting. */
+  isFinishing?: boolean;
+  labels?: Partial<StepsLabels>;
+};
+
+export const Steps = ({
+  steps,
+  activeStep,
+  defaultActiveStep,
+  onStepChange,
+  onFinish,
+  isFinishing = false,
+  labels,
+}: StepsProps) => {
+  const navigation = useStepNavigation({
+    steps,
+    activeStep,
+    defaultActiveStep,
+    onStepChange,
+  });
+  const { activeIndex, currentStep } = navigation;
+
+  if (!currentStep) {
+    return null;
+  }
+
+  const resolvedLabels = { ...DEFAULT_STEPS_LABELS, ...labels };
+
+  const renderStep = (step: StepItem, index: number) => (
+    <Step
+      key={step.id}
+      completed={step.isComplete}
+      disabled={isFinishing || !navigation.isReachable(index)}
+    >
+      <StepButton
+        onClick={() => navigation.goTo(index)}
+        icon={
+          <StepIndicator
+            status={navigation.getStatus(step, index)}
+            completed={step.isComplete}
+            index={index}
+          />
+        }
+        optional={
+          step.optional && (
+            <Typography variant="caption" color="text.secondary">
+              {resolvedLabels.optional}
+            </Typography>
+          )
+        }
+      >
+        {step.label}
+      </StepButton>
+    </Step>
+  );
+
+  return (
+    <StepsRoot>
+      <StepsStepper
+        nonLinear
+        activeStep={activeIndex}
+        connector={<StepsConnector />}
+      >
+        {steps.map(renderStep)}
+      </StepsStepper>
+      {/* Keyed so the enter animation replays on every step change. */}
+      <StepPanel key={currentStep.id}>
+        <Box component="header">
+          <Typography variant="overline" color="primary">
+            {resolvedLabels.progress(activeIndex + 1, steps.length)}
+          </Typography>
+          <Typography variant="h5" component="h2">
+            {currentStep.label}
+          </Typography>
+        </Box>
+        {currentStep.content}
+      </StepPanel>
+      <StepsActions
+        isFirstStep={navigation.isFirstStep}
+        isLastStep={navigation.isLastStep}
+        canProceed={navigation.canProceed}
+        isFinishing={isFinishing}
+        labels={resolvedLabels}
+        onBack={navigation.goBack}
+        onNext={navigation.goNext}
+        onFinish={onFinish}
+      />
+    </StepsRoot>
+  );
+};
