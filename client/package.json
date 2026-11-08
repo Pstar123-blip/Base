@@ -29,6 +29,7 @@
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-hook-form": "^7.62.0",
+    "react-zoom-pan-pinch": "^4.2.0",
     "serve": "^14.2.6",
     "zustand": "^5.0.8"
   },
