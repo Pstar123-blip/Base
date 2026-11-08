@@ -17,8 +17,6 @@ export interface Session {
   updatedAt: Date;
   progress: number | null;
   status: SessionStatus;
-  notes: string;
-  logs: string | null;
 }
 
 // Parses the server's ISO-8601 string and shifts it by the display offset.
@@ -35,8 +33,6 @@ const mapSession = (dto: SessionDto): Session => ({
   updatedAt: mapDate(dto.last_update),
   progress: dto.progress,
   status: dto.status,
-  notes: dto.notes,
-  logs: dto.logs,
 });
 
 export const mapSessions = (dtos: SessionDto[]): Session[] =>
