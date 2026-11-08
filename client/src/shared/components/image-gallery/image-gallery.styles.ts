@@ -19,6 +19,6 @@ const emptyMessageStyles = ({ theme }: { theme: Theme }) => ({
   ...theme.typography.body1,
   padding: theme.spacing(4),
   textAlign: 'center' as const,
-  color: theme.palette.text.secondary,
+  color: (theme.vars ?? theme).palette.text.secondary,
 });
 export const EmptyMessage = styled(Typography)(emptyMessageStyles);

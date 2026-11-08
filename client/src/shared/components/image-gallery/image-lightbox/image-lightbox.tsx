@@ -21,7 +21,7 @@ import {
   NextButton,
   PreviousButton,
 } from './image-lightbox.styles';
-import { LightboxZoomControls } from './lightbox-zoom-controls/lightbox-zoom-controls';
+import { LightboxControls } from './lightbox-controls/lightbox-controls';
 
 type ImageLightboxProps = {
   /** The open image, or `null` when the lightbox is closed. */
@@ -75,7 +75,7 @@ export const ImageLightbox = ({
             <LightboxCounter aria-live="polite">
               {index + 1} / {total}
             </LightboxCounter>
-            <LightboxZoomControls />
+            <LightboxControls image={image} />
             <IconButton aria-label="Close" onClick={onClose}>
               <CloseIcon />
             </IconButton>

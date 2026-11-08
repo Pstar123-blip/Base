@@ -7,7 +7,7 @@ const lightboxDialogStyles = ({ theme }: { theme: Theme }) => ({
   '& .MuiDialog-paper': {
     display: 'flex',
     flexDirection: 'column' as const,
-    backgroundColor: theme.palette.background.default,
+    backgroundColor: (theme.vars ?? theme).palette.background.default,
   },
 });
 export const LightboxDialog = styled(Dialog)(lightboxDialogStyles);
@@ -19,7 +19,7 @@ export const LightboxToolbar = styled(Toolbar)(lightboxToolbarStyles);
 
 const lightboxCounterStyles = ({ theme }: { theme: Theme }) => ({
   ...theme.typography.body2,
-  color: theme.palette.text.secondary,
+  color: (theme.vars ?? theme).palette.text.secondary,
 });
 export const LightboxCounter = styled(Typography)(lightboxCounterStyles);
 
@@ -63,10 +63,10 @@ const navButtonStyles = ({ theme }: { theme: Theme }) => ({
   transform: 'translateY(-50%)',
   // Keep above the zoom wrapper, which is itself positioned.
   zIndex: theme.zIndex.fab,
-  backgroundColor: theme.palette.background.paper,
+  backgroundColor: (theme.vars ?? theme).palette.background.paper,
   boxShadow: theme.shadows[2],
   '&:hover': {
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: (theme.vars ?? theme).palette.background.paper,
     boxShadow: theme.shadows[4],
   },
 });

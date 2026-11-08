@@ -10,7 +10,7 @@ const tileMediaStyles = ({ theme }: { theme: Theme }) => ({
   aspectRatio: TILE_ASPECT_RATIO,
   width: '100%',
   objectFit: 'cover' as const,
-  backgroundColor: theme.palette.action.hover,
+  backgroundColor: (theme.vars ?? theme).palette.action.hover,
 });
 
 const tileCardStyles = ({ theme }: { theme: Theme }) => ({
@@ -47,7 +47,7 @@ const tileFallbackStyles = ({ theme }: { theme: Theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  color: theme.palette.text.disabled,
+  color: (theme.vars ?? theme).palette.text.disabled,
 });
 export const TileFallback = styled(Box)(tileFallbackStyles);
 
@@ -59,6 +59,6 @@ export const TileCaption = styled(CardContent)(tileCaptionStyles);
 
 const tileCaptionTextStyles = ({ theme }: { theme: Theme }) => ({
   ...theme.typography.body2,
-  color: theme.palette.text.secondary,
+  color: (theme.vars ?? theme).palette.text.secondary,
 });
 export const TileCaptionText = styled(Typography)(tileCaptionTextStyles);
