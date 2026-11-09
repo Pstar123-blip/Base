@@ -25,10 +25,12 @@ export const useStepNavigation = ({
   const isControlled = activeStep !== undefined;
   const requestedIndex = activeStep ?? uncontrolledStep;
 
+  const hasSteps = steps.length > 0;
   const lastReachableIndex = getLastReachableIndex(steps);
   // Never show a step whose predecessors are incomplete, even if requested.
-  const activeIndex = Math.min(Math.max(requestedIndex, 0), lastReachableIndex);
-  const currentStep = steps[activeIndex];
+  // Floored at 0 so an empty list still yields a valid (if stepless) index.
+  const activeIndex = Math.max(Math.min(requestedIndex, lastReachableIndex), 0);
+  const currentStep = steps.at(activeIndex);
 
   const isReachable = (index: number) =>
     index >= 0 && index <= lastReachableIndex;
@@ -44,13 +46,15 @@ export const useStepNavigation = ({
   // When the requested step gets clamped (e.g. an earlier step became
   // incomplete), commit the clamped index so the stored / parent state matches
   // what is shown and doesn't jump forward again once the step is fixed.
+  // Skipped while there are no steps (e.g. still loading), so the requested
+  // step survives until they arrive.
   const syncClampedStep = useEffectEvent(changeStep);
 
   useEffect(() => {
-    if (activeIndex >= 0 && activeIndex !== requestedIndex) {
+    if (hasSteps && activeIndex !== requestedIndex) {
       syncClampedStep(activeIndex);
     }
-  }, [activeIndex, requestedIndex]);
+  }, [hasSteps, activeIndex, requestedIndex]);
 
   const goTo = (index: number) => {
     if (index !== activeIndex && isReachable(index)) {
@@ -65,7 +69,7 @@ export const useStepNavigation = ({
     activeIndex,
     currentStep,
     isFirstStep: activeIndex === 0,
-    isLastStep: activeIndex === steps.length - 1,
+    isLastStep: hasSteps && activeIndex === steps.length - 1,
     canProceed: !!currentStep && canProceedFrom(currentStep),
     isReachable,
     getStatus,

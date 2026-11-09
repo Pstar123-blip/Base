@@ -1,6 +1,5 @@
 import { Box, Step, StepButton, Typography } from '@mui/material';
 
-import { DEFAULT_STEPS_LABELS } from './consts';
 import { useStepNavigation } from './hooks/use-step-navigation';
 import { StepIndicator } from './step-indicator/step-indicator';
 import {
@@ -11,6 +10,7 @@ import {
 } from './steps.styles';
 import { StepsActions } from './steps-actions/steps-actions';
 import { type StepItem, type StepsLabels } from './types';
+import { resolveLabels } from './utils/resolve-labels';
 
 export type StepsProps = {
   steps: readonly StepItem[];
@@ -24,9 +24,15 @@ export type StepsProps = {
    * step became incomplete.
    */
   onStepChange?: (index: number) => void;
-  /** Called when the user clicks the finish button on the last step. */
+  /**
+   * Called when the user clicks the finish button on the last step. Not
+   * guarded against repeated clicks: set `isFinishing` while handling it.
+   */
   onFinish: () => void;
-  /** Shows a loading state on the finish button, e.g. while submitting. */
+  /**
+   * Shows a loading state on the finish button and locks navigation, e.g.
+   * while submitting. Also what prevents `onFinish` from firing twice.
+   */
   isFinishing?: boolean;
   labels?: Partial<StepsLabels>;
 };
@@ -52,7 +58,7 @@ export const Steps = ({
     return null;
   }
 
-  const resolvedLabels = { ...DEFAULT_STEPS_LABELS, ...labels };
+  const resolvedLabels = resolveLabels(labels);
 
   const renderStep = (step: StepItem, index: number) => {
     const isReachable = navigation.isReachable(index);

@@ -78,6 +78,7 @@ const indicatorCircleStyles = ({
   '& svg': { fontSize: theme.typography.h6.fontSize },
   ...getStatusStyles(theme)[status],
 });
+
 export const IndicatorCircle = styled('span', {
   shouldForwardProp: (prop) => prop !== 'status',
 })<IndicatorCircleProps>(indicatorCircleStyles);

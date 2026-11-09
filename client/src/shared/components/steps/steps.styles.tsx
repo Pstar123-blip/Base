@@ -25,6 +25,7 @@ const stepsRootStyles = ({ theme }: { theme: Theme }): CSSObject => ({
   flexDirection: 'column',
   gap: theme.spacing(4),
 });
+
 export const StepsRoot = styled(Box)(stepsRootStyles);
 
 const stepsStepperStyles = ({ theme }: { theme: Theme }): CSSObject => {
@@ -79,4 +80,5 @@ const stepPanelStyles = ({ theme }: { theme: Theme }): CSSObject => ({
   animation: `${stepEnter} ${STEP_ENTER_DURATION_MS}ms ${theme.transitions.easing.easeOut}`,
   '@media (prefers-reduced-motion: reduce)': { animation: 'none' },
 });
+
 export const StepPanel = styled(Box)(stepPanelStyles);

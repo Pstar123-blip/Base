@@ -8,6 +8,7 @@ const actionsBarStyles = ({ theme }: { theme: Theme }): CSSObject => ({
   paddingTop: theme.spacing(3),
   borderTop: `1px solid ${(theme.vars ?? theme).palette.divider}`,
 });
+
 export const ActionsBar = styled(Box)(actionsBarStyles);
 
 const primaryActionStyles = ({ theme }: { theme: Theme }): CSSObject => {
