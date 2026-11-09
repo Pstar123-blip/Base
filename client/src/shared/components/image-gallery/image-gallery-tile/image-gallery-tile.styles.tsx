@@ -1,10 +1,12 @@
 import { Box, Card, CardContent, Typography } from '@mui/material';
 import { styled, type Theme } from '@mui/material/styles';
 
-const TILE_ASPECT_RATIO = '1 / 1';
-const TILE_HOVER_IMAGE_SCALE = 1.06;
-const TILE_HOVER_LIFT_SPACING = -0.5;
-const TILE_HOVER_SHADOW = 6;
+import {
+  TILE_ASPECT_RATIO,
+  TILE_HOVER_IMAGE_SCALE,
+  TILE_HOVER_LIFT_SPACING,
+  TILE_HOVER_SHADOW,
+} from './consts';
 
 const tileMediaStyles = ({ theme }: { theme: Theme }) => ({
   aspectRatio: TILE_ASPECT_RATIO,
