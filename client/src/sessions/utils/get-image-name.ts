@@ -1,4 +1,4 @@
-import { FILE_NAME_PATTERN } from '../consts';
+import { FILE_NAME_PATTERN } from './get-image-name.consts';
 
 const decode = (segment: string) => {
   try {

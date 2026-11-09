@@ -1,4 +1,5 @@
-import { SEARCH_FIELDS, type SessionSearchFilters } from '../consts';
+import { SEARCH_FIELDS } from '../consts';
+import type { SessionSearchFilters } from '../types';
 
 // The trimmed, non-blank text filters; blank ones are not sent to the server.
 export const getActiveSearchFilters = (

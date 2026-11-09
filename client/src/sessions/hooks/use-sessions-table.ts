@@ -10,45 +10,48 @@ import {
 import type {
   GroupSessionsParams,
   SessionSearchValuesDto,
+  SessionStatus,
+  SessionType,
 } from '@/api/generated/model';
 import { DEFAULT_TABLE_PAGE_SIZE } from '@/shared/constants';
+import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
 
+import type { SessionFilters, SessionSearchFilters } from '../types';
+import { getActiveSearchFilters } from '../utils/get-active-search-filters';
+import { mapSessions } from '../utils/map-session';
 import {
   REFETCH_INTERVAL_MS,
   SEARCH_DEBOUNCE_MS,
-  type SessionFilters,
-  type SessionSearchFilters,
-} from '../consts';
-import { getActiveSearchFilters } from '../utils/get-active-search-filters';
-import { mapSessions } from '../utils/map-session';
-import { useDebouncedValue } from './use-debounced-value';
+} from './use-sessions-table.consts';
 
 // Filtering, sorting and paging all happen on the server, so only the
 // current page is ever fetched no matter how many sessions exist.
 export const useSessionsTable = () => {
   const [requestedPage, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(DEFAULT_TABLE_PAGE_SIZE);
-  const [filters, setFilters] = useState<SessionFilters>({});
+  const [searchFilters, setSearchFilters] = useState<SessionSearchFilters>({});
+  const [type, setType] = useState<SessionType>();
+  const [status, setStatus] = useState<SessionStatus>();
 
   // Only the typed text is debounced; the type and status dropdowns apply at
-  // once. The text is keyed as a string so unchanged values don't count as a
-  // change.
-  const { type, status } = filters;
-  const searchKey = JSON.stringify(getActiveSearchFilters(filters));
-  const debouncedSearchKey = useDebouncedValue(searchKey, SEARCH_DEBOUNCE_MS);
+  // once.
+  const debouncedSearch = useDebouncedValue(searchFilters, SEARCH_DEBOUNCE_MS);
 
   // Go back to the first page when the filters the server sees change, not
   // while the user is still typing.
-  const appliedKey = `${debouncedSearchKey}|${type ?? ''}|${status ?? ''}`;
-  const [lastAppliedKey, setLastAppliedKey] = useState(appliedKey);
+  const [applied, setApplied] = useState({ debouncedSearch, type, status });
 
-  if (lastAppliedKey !== appliedKey) {
-    setLastAppliedKey(appliedKey);
+  if (
+    applied.debouncedSearch !== debouncedSearch ||
+    applied.type !== type ||
+    applied.status !== status
+  ) {
+    setApplied({ debouncedSearch, type, status });
     setPage(0);
   }
 
   const searchValues: SessionSearchValuesDto = {
-    ...(JSON.parse(debouncedSearchKey) as SessionSearchFilters),
+    ...getActiveSearchFilters(debouncedSearch),
     ...(status && { status }),
   };
   const queryOptions = {
@@ -73,6 +76,12 @@ export const useSessionsTable = () => {
       : Math.max(0, Math.ceil(total / pageSize) - 1);
   const page = Math.min(requestedPage, lastPage);
 
+  // Keep the requested page in step, so a later change in the total can't
+  // bring the table back to a page the user has left.
+  if (page !== requestedPage) {
+    setPage(page);
+  }
+
   const params: GroupSessionsParams = {
     first_session_index: page * pageSize,
     number_of_sessions: pageSize,
@@ -92,7 +101,19 @@ export const useSessionsTable = () => {
   );
 
   const changeFilters = (patch: SessionFilters) => {
-    setFilters((current) => ({ ...current, ...patch }));
+    const { type: nextType, status: nextStatus, ...search } = patch;
+
+    if ('type' in patch) {
+      setType(nextType);
+    }
+
+    if ('status' in patch) {
+      setStatus(nextStatus);
+    }
+
+    if (Object.keys(search).length) {
+      setSearchFilters((current) => ({ ...current, ...search }));
+    }
   };
 
   const changePageSize = (value: number) => {
@@ -100,13 +121,25 @@ export const useSessionsTable = () => {
     setPage(0);
   };
 
+  const refetch = () => {
+    void query.refetch();
+    void countQuery.refetch();
+  };
+
   return {
-    query,
-    countQuery,
+    sessions: query.data,
     total,
+    isPending: query.isPending || countQuery.isPending,
+    // A failed background refetch keeps its data, so the table stays up.
+    isError:
+      (query.isError && !query.data) ||
+      (countQuery.isError && total === undefined),
+    isRefetchError: query.isRefetchError || countQuery.isRefetchError,
+    dataUpdatedAt: query.dataUpdatedAt,
     page,
     pageSize,
-    filters,
+    filters: { ...searchFilters, type, status },
+    refetch,
     setPage,
     changeFilters,
     changePageSize,

@@ -2,8 +2,8 @@ import { Link, TableCell, TableRow } from '@mui/material';
 import { Link as RouterLink, type LinkProps } from '@tanstack/react-router';
 
 import { getResultsPath } from '../consts';
+import type { Session } from '../types';
 import { formatDateTime } from '../utils/format';
-import type { Session } from '../utils/map-session';
 import { ProgressCell } from './progress-cell';
 import { RowOptions } from './row-options';
 import { type ImageOpener, SessionImage } from './session-image';

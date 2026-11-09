@@ -3,16 +3,19 @@ import DownloadIcon from '@mui/icons-material/Download';
 import { IconButton, Modal } from '@mui/material';
 import { type PointerEvent, useRef, useState, type WheelEvent } from 'react';
 
+import { useDownloadFile } from '../hooks/use-download-file';
+import { getImageName } from '../utils/get-image-name';
 import {
+  DOM_DELTA_LINE,
+  DOM_DELTA_PAGE,
   DRAG_THRESHOLD_PX,
   ORIGIN,
   PRIMARY_BUTTON,
+  WHEEL_LINE_HEIGHT_PX,
   ZOOM_MAX,
   ZOOM_MIN,
   ZOOM_WHEEL_SENSITIVITY,
-} from '../consts';
-import { downloadFile } from '../utils/download-file';
-import { getImageName } from '../utils/get-image-name';
+} from './image-viewer.consts';
 import {
   CloseButton,
   Footer,
@@ -23,6 +26,18 @@ import {
 
 const clampZoom = (zoom: number) =>
   Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, zoom));
+
+// The wheel delta in pixels, whatever unit the browser reports it in.
+const getWheelDeltaPx = (event: WheelEvent) => {
+  switch (event.deltaMode) {
+    case DOM_DELTA_LINE:
+      return event.deltaY * WHEEL_LINE_HEIGHT_PX;
+    case DOM_DELTA_PAGE:
+      return event.deltaY * window.innerHeight;
+    default:
+      return event.deltaY;
+  }
+};
 
 // Max pan distance on one axis. The black margin allowed beside the image
 // scales with the image (same proportion as when fully zoomed out), which
@@ -50,6 +65,7 @@ export const ImageViewer = ({
   // The current press, to tell a click on the backdrop from a drag.
   const press = useRef({ x: 0, y: 0, onBackdrop: false, moved: false });
   const name = getImageName(src, alt);
+  const downloadFile = useDownloadFile();
 
   const clampOffset = (value: typeof ORIGIN, targetZoom: number) => ({
     x: clamp(value.x, getLimit(window.innerWidth, targetZoom)),
@@ -61,7 +77,10 @@ export const ImageViewer = ({
       return;
     }
 
-    const next = clampZoom(zoom * (1 - event.deltaY * ZOOM_WHEEL_SENSITIVITY));
+    // Exponential, so a large delta zooms a lot but never flips or hits zero.
+    const next = clampZoom(
+      zoom * Math.exp(-getWheelDeltaPx(event) * ZOOM_WHEEL_SENSITIVITY),
+    );
     setZoom(next);
     setOffset(next === ZOOM_MIN ? ORIGIN : clampOffset(offset, next));
   };
@@ -131,6 +150,8 @@ export const ImageViewer = ({
   return (
     <Modal open onClose={onClose}>
       <Stage
+        // Modal's focus trap needs a focusable child.
+        tabIndex={-1}
         dragging={dragging}
         onWheel={handleWheel}
         onPointerDown={startDrag}
@@ -150,10 +171,8 @@ export const ImageViewer = ({
             transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})`,
           }}
         />
-        <CloseButton>
-          <IconButton color="inherit" aria-label="Close" onClick={onClose}>
-            <CloseIcon />
-          </IconButton>
+        <CloseButton color="inherit" aria-label="Close" onClick={onClose}>
+          <CloseIcon />
         </CloseButton>
         <Footer>
           <ImageName variant="h6" title={name}>

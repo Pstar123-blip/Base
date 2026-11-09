@@ -1,18 +1,12 @@
 import { type SyntheticEvent, useState } from 'react';
 
+import type { ImageOpener, ViewedImage } from '../types';
 import {
   PreviewImage,
   PreviewTooltip,
   Thumbnail,
   ThumbnailButton,
 } from './session-image.styles';
-
-export interface ViewedImage {
-  src: string;
-  alt: string;
-}
-
-export type ImageOpener = (image: ViewedImage) => void;
 
 export const SessionImage = ({
   src,

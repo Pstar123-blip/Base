@@ -11,10 +11,9 @@ import type { ChangeEvent, MouseEvent } from 'react';
 import { TABLE_PAGE_SIZE_OPTIONS } from '@/shared/constants';
 import { EmptyState } from '@/shared/ui/empty-state';
 
-import { SESSION_COLUMNS, type SessionFilters } from '../consts';
-import type { Session } from '../utils/map-session';
+import { SESSION_COLUMNS } from '../consts';
+import type { ImageOpener, Session, SessionFilters } from '../types';
 import { ColumnFilterCell } from './column-filter-cell';
-import type { ImageOpener } from './session-image';
 import { SessionRow } from './session-row';
 import { FilterRow, FitTable, TablePanel } from './sessions-table.styles';
 

@@ -1,34 +1,22 @@
-import { MenuItem, TableCell } from '@mui/material';
+import { TableCell } from '@mui/material';
 import type { ChangeEvent } from 'react';
 
-import type { SessionStatus, SessionType } from '@/api/generated/model';
+import { assertNever } from '@/shared/utils/assert-never';
 
 import {
-  ALL_STATUSES,
-  ALL_TYPES,
   COLUMN_FILTERS,
-  FILTER_INPUT_SIZE,
-  SEARCH_MAX_LENGTH,
   SESSION_STATUS_LABELS,
   SESSION_STATUSES,
   SESSION_TYPE_LABELS,
   SESSION_TYPES,
-  type SessionColumnId,
-  type SessionFilters,
 } from '../consts';
+import type { SessionColumnId, SessionFilters } from '../types';
+import {
+  FILTER_INPUT_SIZE,
+  SEARCH_MAX_LENGTH,
+} from './column-filter-cell.consts';
 import { FilterInput } from './column-filter-cell.styles';
-
-const renderType = (type: SessionType) => (
-  <MenuItem key={type} value={type}>
-    {SESSION_TYPE_LABELS[type]}
-  </MenuItem>
-);
-
-const renderStatus = (status: SessionStatus) => (
-  <MenuItem key={status} value={status}>
-    {SESSION_STATUS_LABELS[status]}
-  </MenuItem>
-);
+import { SelectFilter } from './select-filter';
 
 export const ColumnFilterCell = ({
   column,
@@ -45,72 +33,53 @@ export const ColumnFilterCell = ({
     return <TableCell />;
   }
 
-  if (filter.kind === 'text') {
-    const { field } = filter;
-    const changeText = (event: ChangeEvent<HTMLInputElement>) =>
-      onChange({ [field]: event.target.value });
+  switch (filter.kind) {
+    case 'text': {
+      const { field } = filter;
+      const changeText = (event: ChangeEvent<HTMLInputElement>) =>
+        onChange({ [field]: event.target.value });
 
-    return (
-      <TableCell>
-        <FilterInput
-          size="small"
-          placeholder="Filter"
-          value={filters[field] ?? ''}
-          onChange={changeText}
-          slotProps={{
-            htmlInput: {
-              maxLength: SEARCH_MAX_LENGTH,
-              size: FILTER_INPUT_SIZE,
-            },
-          }}
-        />
-      </TableCell>
-    );
+      return (
+        <TableCell>
+          <FilterInput
+            size="small"
+            placeholder="Filter"
+            value={filters[field] ?? ''}
+            onChange={changeText}
+            slotProps={{
+              htmlInput: {
+                maxLength: SEARCH_MAX_LENGTH,
+                size: FILTER_INPUT_SIZE,
+              },
+            }}
+          />
+        </TableCell>
+      );
+    }
+
+    case 'type':
+      return (
+        <TableCell>
+          <SelectFilter
+            value={filters.type}
+            options={SESSION_TYPES}
+            labels={SESSION_TYPE_LABELS}
+            onChange={(type) => onChange({ type })}
+          />
+        </TableCell>
+      );
+    case 'status':
+      return (
+        <TableCell>
+          <SelectFilter
+            value={filters.status}
+            options={SESSION_STATUSES}
+            labels={SESSION_STATUS_LABELS}
+            onChange={(status) => onChange({ status })}
+          />
+        </TableCell>
+      );
+    default:
+      return assertNever(filter);
   }
-
-  if (filter.kind === 'type') {
-    const changeType = (event: ChangeEvent<HTMLInputElement>) =>
-      onChange({
-        type:
-          event.target.value === ALL_TYPES
-            ? undefined
-            : (event.target.value as SessionType),
-      });
-
-    return (
-      <TableCell>
-        <FilterInput
-          select
-          size="small"
-          value={filters.type ?? ALL_TYPES}
-          onChange={changeType}
-        >
-          <MenuItem value={ALL_TYPES}>All</MenuItem>
-          {SESSION_TYPES.map(renderType)}
-        </FilterInput>
-      </TableCell>
-    );
-  }
-
-  const changeStatus = (event: ChangeEvent<HTMLInputElement>) =>
-    onChange({
-      status:
-        event.target.value === ALL_STATUSES
-          ? undefined
-          : (event.target.value as SessionStatus),
-    });
-
-  return (
-    <TableCell>
-      <FilterInput
-        select
-        size="small"
-        value={filters.status ?? ALL_STATUSES}
-        onChange={changeStatus}
-      >
-        <MenuItem value={ALL_STATUSES}>All</MenuItem>
-        {SESSION_STATUSES.map(renderStatus)}
-      </FilterInput>
-    </TableCell>
-  );
 };

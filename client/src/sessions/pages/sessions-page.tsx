@@ -1,5 +1,4 @@
 import { Box, Stack, Typography } from '@mui/material';
-import { useQueryClient } from '@tanstack/react-query';
 import { enqueueSnackbar } from 'notistack';
 import { useState } from 'react';
 
@@ -8,14 +7,13 @@ import { ConfirmationDialog } from '@/shared/ui/confirmation-dialog';
 import { ErrorState, LoadingState } from '@/shared/ui/states';
 
 import { ImageViewer } from '../components/image-viewer';
-import type { ViewedImage } from '../components/session-image';
 import { SessionsTable } from '../components/sessions-table';
+import { StaleDataNotice } from '../components/stale-data-notice';
 import { useSessionsTable } from '../hooks/use-sessions-table';
-import type { Session } from '../utils/map-session';
+import type { Session, ViewedImage } from '../types';
 
 export const SessionsPage = () => {
   const table = useSessionsTable();
-  const queryClient = useQueryClient();
   // The session stays set while the dialog fades out so its text doesn't blank.
   const [pendingDelete, setPendingDelete] = useState<Session | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -29,10 +27,9 @@ export const SessionsPage = () => {
     setDeleteOpen(true);
   };
 
-  // Refetches the active queries, i.e. the current page and its count.
   const reportDeleted = () => {
     enqueueSnackbar('Session deleted', { variant: 'success' });
-    void queryClient.invalidateQueries();
+    table.refetch();
   };
 
   const deletion = useDeleteSession({
@@ -52,18 +49,7 @@ export const SessionsPage = () => {
     }
   };
 
-  const retry = () => {
-    void table.query.refetch();
-    void table.countQuery.refetch();
-  };
-
-  const { data } = table.query;
-  const { total } = table;
-  const isPending = table.query.isPending || table.countQuery.isPending;
-  // A failed background refetch keeps its data, so the table stays up.
-  const isError =
-    (table.query.isError && !data) ||
-    (table.countQuery.isError && total === undefined);
+  const { sessions, total, isPending, isError } = table;
 
   return (
     <Stack spacing={3}>
@@ -75,12 +61,15 @@ export const SessionsPage = () => {
       </Box>
       <Box>
         {isPending && !isError && <LoadingState />}
-        {isError && (
-          <ErrorState message="Unable to load sessions" retry={retry} />
+        {table.isRefetchError && (
+          <StaleDataNotice updatedAt={table.dataUpdatedAt} />
         )}
-        {data && total !== undefined && (
+        {isError && (
+          <ErrorState message="Unable to load sessions" retry={table.refetch} />
+        )}
+        {sessions && total !== undefined && (
           <SessionsTable
-            sessions={data}
+            sessions={sessions}
             total={total}
             filters={table.filters}
             page={table.page}

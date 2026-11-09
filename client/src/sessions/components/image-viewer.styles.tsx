@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Box, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import {
@@ -7,7 +7,7 @@ import {
   VIEWER_FOOTER_MAX_WIDTH,
   VIEWER_FOOTER_RADIUS_PX,
   VIEWER_TRANSITION,
-} from '../consts';
+} from './image-viewer.consts';
 
 export const Stage = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'dragging',
@@ -36,7 +36,7 @@ export const ViewerImage = styled('img', {
   transition: dragging ? 'none' : VIEWER_TRANSITION,
 }));
 
-export const CloseButton = styled(Box)(({ theme }) => ({
+export const CloseButton = styled(IconButton)(({ theme }) => ({
   position: 'absolute',
   top: theme.spacing(2),
   right: theme.spacing(2),

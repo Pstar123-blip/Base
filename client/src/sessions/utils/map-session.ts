@@ -1,21 +1,6 @@
-import type {
-  SessionDto,
-  SessionStatus,
-  SessionType,
-} from '@/api/generated/model';
+import type { SessionDto } from '@/api/generated/model';
 
-// The server speaks snake_case; the client works with camelCase.
-export interface Session {
-  id: string;
-  type: SessionType;
-  owner: string;
-  imageAUrl: string;
-  imageBUrl: string;
-  createdAt: Date;
-  updatedAt: Date;
-  progress: number | null;
-  status: SessionStatus;
-}
+import type { Session } from '../types';
 
 // Matches a trailing timezone designator: "Z" or an offset like "+02:00".
 const TIMEZONE_DESIGNATOR = /(Z|[+-]\d{2}(:?\d{2})?)$/i;

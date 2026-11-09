@@ -6,3 +6,7 @@ export const formatDateTime = (date: Date) =>
   `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
 
 export const formatPercent = (value: number) => `${value}%`;
+
+// HH:mm
+export const formatTime = (date: Date) =>
+  `${pad(date.getHours())}:${pad(date.getMinutes())}`;
