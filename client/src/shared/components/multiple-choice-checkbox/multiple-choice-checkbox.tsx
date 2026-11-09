@@ -1,11 +1,5 @@
-import {
-  Button,
-  Checkbox,
-  FormControl,
-  FormHelperText,
-  Typography,
-} from '@mui/material';
-import { type ReactNode, useId } from 'react';
+import { Button, Checkbox, FormControl, FormHelperText } from '@mui/material';
+import { type FocusEvent, type ReactNode, useId } from 'react';
 
 import { CLEAR_ALL_LABEL, SELECT_ALL_LABEL } from './consts';
 import {
@@ -13,6 +7,7 @@ import {
   GroupLabel,
   Header,
   HeaderActions,
+  OptionDescription,
   OptionsList,
   OptionText,
   OptionTile,
@@ -35,7 +30,7 @@ export type MultipleChoiceCheckboxProps<TValue extends MultipleChoiceValue> = {
 };
 
 /**
- * Pick any number of options from a grid of tiles. Controlled, so it plugs
+ * Pick any number of options from a list of tiles. Controlled, so it plugs
  * straight into a react-hook-form `Controller` via `field.value`/`field.onChange`.
  */
 export const MultipleChoiceCheckbox = <TValue extends MultipleChoiceValue>({
@@ -51,6 +46,7 @@ export const MultipleChoiceCheckbox = <TValue extends MultipleChoiceValue>({
   name,
 }: MultipleChoiceCheckboxProps<TValue>) => {
   const labelId = useId();
+  const hasLabel = label != null;
   const selected = new Set(value);
   const selectedCount = options.filter((o) => selected.has(o.value)).length;
   const enabledValues = options.filter((o) => !o.disabled).map((o) => o.value);
@@ -72,18 +68,26 @@ export const MultipleChoiceCheckbox = <TValue extends MultipleChoiceValue>({
         : [...new Set([...value, ...enabledValues])],
     );
 
+  // `onBlur` bubbles in React, so only report it once focus leaves the whole
+  // group, not while moving between its checkboxes and buttons.
+  const handleBlur = (event: FocusEvent<HTMLElement>) => {
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+      onBlur?.();
+    }
+  };
+
   return (
     <FormControl
       role="group"
-      aria-labelledby={label ? labelId : undefined}
+      aria-labelledby={hasLabel ? labelId : undefined}
       error={error}
       disabled={disabled}
       required={required}
-      onBlur={onBlur}
+      onBlur={handleBlur}
       fullWidth
     >
       <Header>
-        {label && (
+        {hasLabel && (
           <GroupLabel id={labelId} focused={false}>
             {label}
           </GroupLabel>
@@ -125,10 +129,8 @@ export const MultipleChoiceCheckbox = <TValue extends MultipleChoiceValue>({
               />
               <OptionText>
                 <OptionTitle>{option.label}</OptionTitle>
-                {option.description && (
-                  <Typography variant="body2" color="text.secondary">
-                    {option.description}
-                  </Typography>
+                {option.description != null && (
+                  <OptionDescription>{option.description}</OptionDescription>
                 )}
               </OptionText>
             </OptionTile>
@@ -136,7 +138,7 @@ export const MultipleChoiceCheckbox = <TValue extends MultipleChoiceValue>({
         })}
       </OptionsList>
 
-      {helperText && <FormHelperText>{helperText}</FormHelperText>}
+      {helperText != null && <FormHelperText>{helperText}</FormHelperText>}
     </FormControl>
   );
 };

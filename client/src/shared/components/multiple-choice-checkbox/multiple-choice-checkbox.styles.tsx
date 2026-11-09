@@ -1,13 +1,9 @@
-import { Box, checkboxClasses, FormLabel, Typography } from '@mui/material';
+import { Box, checkboxClasses, FormLabel } from '@mui/material';
 import { type CSSObject, styled, type Theme } from '@mui/material/styles';
 
-// The app theme enables `cssVariables`, so `vars` (with color channels) is
-// always present at runtime.
-const paletteOf = (theme: Theme) =>
-  (theme.vars as NonNullable<Theme['vars']>).palette;
-
-const tint = (channel: string, opacity: number) =>
-  `rgb(${channel} / ${opacity})`;
+// Prefer CSS theme variables when the theme provides them, so colors follow
+// the active color scheme; fall back to the static palette otherwise.
+const paletteOf = (theme: Theme) => (theme.vars ?? theme).palette;
 
 const headerStyles = ({ theme }: { theme: Theme }): CSSObject => ({
   display: 'flex',
@@ -39,7 +35,7 @@ const countPillStyles = ({ theme }: { theme: Theme }): CSSObject => ({
   padding: theme.spacing(0.25, 1),
   borderRadius: 999,
   color: paletteOf(theme).primary.main,
-  backgroundColor: tint(paletteOf(theme).primary.mainChannel, 0.12),
+  backgroundColor: theme.alpha(paletteOf(theme).primary.main, 0.12),
 });
 export const CountPill = styled('span')(countPillStyles);
 
@@ -71,7 +67,7 @@ const optionTileStyles = ({
     borderRadius: theme.shape.borderRadius,
     border: `1.5px solid ${checked ? accent.main : error ? palette.error.main : palette.divider}`,
     backgroundColor: checked
-      ? tint(accent.mainChannel, 0.08)
+      ? theme.alpha(accent.main, 0.08)
       : palette.background.paper,
     cursor: disabled ? 'not-allowed' : 'pointer',
     opacity: disabled ? 0.5 : 1,
@@ -84,7 +80,7 @@ const optionTileStyles = ({
       '&:hover': {
         borderColor: accent.main,
         transform: 'translateY(-1px)',
-        boxShadow: `0 4px 12px ${tint(accent.mainChannel, 0.15)}`,
+        boxShadow: `0 4px 12px ${theme.alpha(accent.main, 0.15)}`,
       },
       '&:active': { transform: 'translateY(0)' },
     }),
@@ -96,6 +92,8 @@ const optionTileStyles = ({
   };
 };
 
+// A `<label>` accepts phrasing content only, so everything rendered inside
+// the tile below is a `span`.
 export const OptionTile = styled('label', {
   shouldForwardProp: (prop) =>
     prop !== 'checked' && prop !== 'disabled' && prop !== 'error',
@@ -106,10 +104,17 @@ const optionTextStyles = (): CSSObject => ({
   flexDirection: 'column',
   minWidth: 0,
 });
-export const OptionText = styled(Box)(optionTextStyles);
+export const OptionText = styled('span')(optionTextStyles);
 
-const optionTitleStyles = (): CSSObject => ({
+const optionTitleStyles = ({ theme }: { theme: Theme }): CSSObject => ({
+  ...theme.typography.body1,
   fontWeight: 600,
   lineHeight: 1.6,
 });
-export const OptionTitle = styled(Typography)(optionTitleStyles);
+export const OptionTitle = styled('span')(optionTitleStyles);
+
+const optionDescriptionStyles = ({ theme }: { theme: Theme }): CSSObject => ({
+  ...theme.typography.body2,
+  color: paletteOf(theme).text.secondary,
+});
+export const OptionDescription = styled('span')(optionDescriptionStyles);
