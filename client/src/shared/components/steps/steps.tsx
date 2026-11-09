@@ -18,7 +18,11 @@ export type StepsProps = {
   activeStep?: number;
   /** Initial step when uncontrolled. Defaults to `0`. */
   defaultActiveStep?: number;
-  /** Called with the new index whenever the user navigates. */
+  /**
+   * Called with the new index whenever the active step changes: when the user
+   * navigates, or when the requested step is pulled back because an earlier
+   * step became incomplete.
+   */
   onStepChange?: (index: number) => void;
   /** Called when the user clicks the finish button on the last step. */
   onFinish: () => void;
@@ -50,33 +54,36 @@ export const Steps = ({
 
   const resolvedLabels = { ...DEFAULT_STEPS_LABELS, ...labels };
 
-  const renderStep = (step: StepItem, index: number) => (
-    <Step
-      key={step.id}
-      completed={step.isComplete}
-      disabled={isFinishing || !navigation.isReachable(index)}
-    >
-      <StepButton
-        onClick={() => navigation.goTo(index)}
-        icon={
-          <StepIndicator
-            status={navigation.getStatus(step, index)}
-            completed={step.isComplete}
-            index={index}
-          />
-        }
-        optional={
-          step.optional && (
-            <Typography variant="caption" color="text.secondary">
-              {resolvedLabels.optional}
-            </Typography>
-          )
-        }
-      >
-        {step.label}
-      </StepButton>
-    </Step>
-  );
+  const renderStep = (step: StepItem, index: number) => {
+    const isReachable = navigation.isReachable(index);
+
+    return (
+      <Step key={step.id} completed={step.isComplete} disabled={!isReachable}>
+        {/* Only the button is locked while finishing, so the step styling
+            keeps reflecting reachability. */}
+        <StepButton
+          disabled={isFinishing || !isReachable}
+          onClick={() => navigation.goTo(index)}
+          icon={
+            <StepIndicator
+              status={navigation.getStatus(step, index)}
+              completed={step.isComplete}
+              index={index}
+            />
+          }
+          optional={
+            step.optional && (
+              <Typography variant="caption" color="text.secondary">
+                {resolvedLabels.optional}
+              </Typography>
+            )
+          }
+        >
+          {step.label}
+        </StepButton>
+      </Step>
+    );
+  };
 
   return (
     <StepsRoot>
