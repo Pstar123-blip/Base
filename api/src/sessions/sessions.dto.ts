@@ -33,9 +33,17 @@ export class SessionDto {
 
   @ApiProperty() image_b_url!: string;
 
-  @ApiProperty({ format: 'date-time' }) creation_time!: string;
+  @ApiProperty({
+    description: 'Naive ISO-8601 timestamp in UTC (no timezone designator)',
+    example: '2026-11-09T12:00:00.000',
+  })
+  creation_time!: string;
 
-  @ApiProperty({ format: 'date-time' }) last_update!: string;
+  @ApiProperty({
+    description: 'Naive ISO-8601 timestamp in UTC (no timezone designator)',
+    example: '2026-11-09T12:00:00.000',
+  })
+  last_update!: string;
 
   @ApiProperty({ type: Number, nullable: true, minimum: 0, maximum: 100 })
   progress!: number | null;

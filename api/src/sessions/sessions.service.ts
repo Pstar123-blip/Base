@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
+import { toNaiveUtc } from '../common/naive-utc.js';
 import type {
   GroupSessionsQueryDto,
   SessionDto,
@@ -23,8 +24,8 @@ export class SessionsService {
       session_owner: item.owner,
       image_a_url: item.imageAUrl,
       image_b_url: item.imageBUrl,
-      creation_time: item.createdAt.toISOString(),
-      last_update: item.updatedAt.toISOString(),
+      creation_time: toNaiveUtc(item.createdAt),
+      last_update: toNaiveUtc(item.updatedAt),
       progress: item.progress,
       status: item.status as SessionDto['status'],
       notes: item.notes,

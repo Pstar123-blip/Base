@@ -10,7 +10,6 @@ export const SEARCH_MAX_LENGTH = 200;
 export const FILTER_INPUT_SIZE = 8;
 export const ALL_TYPES = 'all';
 export const ALL_STATUSES = 'all';
-export const DISPLAY_TIME_OFFSET_MS = 2 * 60 * 60 * 1000;
 
 export const SESSIONS_PATH = '/sessions';
 export const getResultsPath = (id: string) => `${SESSIONS_PATH}/${id}/results`;

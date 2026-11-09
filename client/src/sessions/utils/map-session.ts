@@ -4,8 +4,6 @@ import type {
   SessionType,
 } from '@/api/generated/model';
 
-import { DISPLAY_TIME_OFFSET_MS } from '../consts';
-
 // The server speaks snake_case; the client works with camelCase.
 export interface Session {
   id: string;
@@ -19,9 +17,14 @@ export interface Session {
   status: SessionStatus;
 }
 
-// Parses the server's ISO-8601 string and shifts it by the display offset.
+// Matches a trailing timezone designator: "Z" or an offset like "+02:00".
+const TIMEZONE_DESIGNATOR = /(Z|[+-]\d{2}(:?\d{2})?)$/i;
+
+// Parses a server timestamp as a UTC instant. Naive strings (no timezone
+// designator) are treated as UTC; strings that carry one are honored as is.
+// Formatting the Date renders it in the viewer's local timezone.
 const mapDate = (iso: string): Date =>
-  new Date(new Date(iso).getTime() + DISPLAY_TIME_OFFSET_MS);
+  new Date(TIMEZONE_DESIGNATOR.test(iso) ? iso : `${iso}Z`);
 
 const mapSession = (dto: SessionDto): Session => ({
   id: dto.session_id,
