@@ -1,7 +1,11 @@
 import { Box, Dialog, IconButton, Toolbar, Typography } from '@mui/material';
 import { styled, type Theme } from '@mui/material/styles';
 
-import { ZOOM_CONTENT_CLASS, ZOOM_WRAPPER_CLASS } from './consts';
+import {
+  LIGHTBOX_STAGE_GUTTER,
+  ZOOM_CONTENT_CLASS,
+  ZOOM_WRAPPER_CLASS,
+} from './consts';
 
 const lightboxDialogStyles = ({ theme }: { theme: Theme }) => ({
   '& .MuiDialog-paper': {
@@ -30,7 +34,7 @@ const lightboxStageStyles = ({ theme }: { theme: Theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  padding: theme.spacing(0, 8),
+  padding: theme.spacing(0, LIGHTBOX_STAGE_GUTTER),
   [theme.breakpoints.down('sm')]: {
     padding: 0,
   },

@@ -9,6 +9,13 @@ import { useControls } from 'react-zoom-pan-pinch';
 import { downloadFile } from '@/shared/utils/download-file';
 
 import { type GalleryImage } from '../../types';
+import {
+  CONTROLS_GROUP_LABEL,
+  DOWNLOAD_LABEL,
+  RESET_ZOOM_LABEL,
+  ZOOM_IN_LABEL,
+  ZOOM_OUT_LABEL,
+} from './consts';
 import { ControlsGroup } from './lightbox-controls.styles';
 
 type LightboxControlsProps = {
@@ -35,18 +42,18 @@ export const LightboxControls = ({ image }: LightboxControlsProps) => {
   };
 
   return (
-    <ControlsGroup role="group" aria-label="Image controls">
-      <IconButton aria-label="Zoom out" onClick={handleZoomOut}>
+    <ControlsGroup role="group" aria-label={CONTROLS_GROUP_LABEL}>
+      <IconButton aria-label={ZOOM_OUT_LABEL} onClick={handleZoomOut}>
         <ZoomOutIcon />
       </IconButton>
-      <IconButton aria-label="Reset zoom" onClick={handleReset}>
+      <IconButton aria-label={RESET_ZOOM_LABEL} onClick={handleReset}>
         <RestartAltIcon />
       </IconButton>
-      <IconButton aria-label="Zoom in" onClick={handleZoomIn}>
+      <IconButton aria-label={ZOOM_IN_LABEL} onClick={handleZoomIn}>
         <ZoomInIcon />
       </IconButton>
       <IconButton
-        aria-label="Download image"
+        aria-label={DOWNLOAD_LABEL}
         onClick={() => void handleDownload()}
         disabled={isDownloading}
       >

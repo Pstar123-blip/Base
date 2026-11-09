@@ -7,10 +7,13 @@ import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 
 import { type GalleryImage } from '../types';
 import {
+  CLOSE_LABEL,
   LIGHTBOX_MAX_SCALE,
   LIGHTBOX_MIN_SCALE,
   LIGHTBOX_NEXT_KEY,
   LIGHTBOX_PREVIOUS_KEY,
+  NEXT_IMAGE_LABEL,
+  PREVIOUS_IMAGE_LABEL,
 } from './consts';
 import {
   LightboxCaption,
@@ -24,8 +27,11 @@ import {
 import { LightboxControls } from './lightbox-controls/lightbox-controls';
 
 type ImageLightboxProps = {
-  /** The open image, or `null` when the lightbox is closed. */
-  image: GalleryImage | null;
+  open: boolean;
+  /** Stays set while closing, so the close transition still shows the image. */
+  image: GalleryImage;
+  /** Identifies the image; zoom resets whenever it changes. */
+  imageId: string;
   index: number;
   total: number;
   onClose: () => void;
@@ -34,7 +40,9 @@ type ImageLightboxProps = {
 };
 
 export const ImageLightbox = ({
+  open,
   image,
+  imageId,
   index,
   total,
   onClose,
@@ -58,51 +66,51 @@ export const ImageLightbox = ({
   return (
     <LightboxDialog
       fullScreen
-      open={!!image}
+      open={open}
       onClose={onClose}
       onKeyDown={handleKeyDown}
-      slotProps={{ paper: { 'aria-label': image?.alt } }}
+      slotProps={{ paper: { 'aria-label': image.alt } }}
     >
-      {image && (
-        // Keyed by src so zoom resets when navigating to another image.
-        <TransformWrapper
-          key={image.src}
-          minScale={LIGHTBOX_MIN_SCALE}
-          maxScale={LIGHTBOX_MAX_SCALE}
-          doubleClick={{ mode: 'toggle' }}
-        >
-          <LightboxToolbar>
-            <LightboxCounter aria-live="polite">
-              {index + 1} / {total}
-            </LightboxCounter>
-            <LightboxControls image={image} />
-            <IconButton aria-label="Close" onClick={onClose}>
-              <CloseIcon />
-            </IconButton>
-          </LightboxToolbar>
-          <LightboxStage>
-            {canNavigate && (
-              <PreviousButton aria-label="Previous image" onClick={onPrevious}>
-                <ChevronLeftIcon />
-              </PreviousButton>
-            )}
-            <TransformComponent>
-              <CardMedia
-                component="img"
-                image={image.src}
-                alt={image.alt}
-                draggable={false}
-              />
-            </TransformComponent>
-            {canNavigate && (
-              <NextButton aria-label="Next image" onClick={onNext}>
-                <ChevronRightIcon />
-              </NextButton>
-            )}
-          </LightboxStage>
-          {image.caption && <LightboxCaption>{image.caption}</LightboxCaption>}
-        </TransformWrapper>
-      )}
+      <TransformWrapper
+        key={imageId}
+        minScale={LIGHTBOX_MIN_SCALE}
+        maxScale={LIGHTBOX_MAX_SCALE}
+        doubleClick={{ mode: 'toggle' }}
+      >
+        <LightboxToolbar>
+          <LightboxCounter aria-live="polite">
+            {index + 1} / {total}
+          </LightboxCounter>
+          <LightboxControls image={image} />
+          <IconButton aria-label={CLOSE_LABEL} onClick={onClose}>
+            <CloseIcon />
+          </IconButton>
+        </LightboxToolbar>
+        <LightboxStage>
+          {canNavigate && (
+            <PreviousButton
+              aria-label={PREVIOUS_IMAGE_LABEL}
+              onClick={onPrevious}
+            >
+              <ChevronLeftIcon />
+            </PreviousButton>
+          )}
+          <TransformComponent>
+            <CardMedia
+              component="img"
+              image={image.src}
+              alt={image.alt}
+              draggable={false}
+            />
+          </TransformComponent>
+          {canNavigate && (
+            <NextButton aria-label={NEXT_IMAGE_LABEL} onClick={onNext}>
+              <ChevronRightIcon />
+            </NextButton>
+          )}
+        </LightboxStage>
+        {image.caption && <LightboxCaption>{image.caption}</LightboxCaption>}
+      </TransformWrapper>
     </LightboxDialog>
   );
 };

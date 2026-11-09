@@ -9,7 +9,10 @@ import { type GalleryImage } from './types';
 export type ImageGalleryProps<T> = {
   items: readonly T[];
   getId: (item: T) => string;
-  /** Maps a domain item to what the gallery needs to render it. */
+  /**
+   * Maps a domain item to what the gallery needs to render it. Called on every
+   * render for each item, so keep it cheap and pure.
+   */
   getImage: (item: T) => GalleryImage;
   /** Called when a tile is activated, before the lightbox opens. */
   onItemClick?: (item: T, index: number) => void;
@@ -32,21 +35,27 @@ export const ImageGallery = <T,>({
   emptyMessage = DEFAULT_EMPTY_MESSAGE,
   label,
 }: ImageGalleryProps<T>) => {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  // Kept separate from `isLightboxOpen` so the last image stays rendered while
+  // the lightbox runs its close transition.
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const activeItem = items.at(activeIndex);
+
+  // Items shrank past the open image: close for real, so the lightbox doesn't
+  // silently re-open on this index if items grow back.
+  if (isLightboxOpen && !activeItem) {
+    setIsLightboxOpen(false);
+  }
 
   if (!items.length) {
     return <EmptyMessage>{emptyMessage}</EmptyMessage>;
   }
 
-  // A stale index (items shrank while open) is treated as closed.
-  const activeItem = openIndex === null ? undefined : items[openIndex];
   const isInteractive = lightbox || !!onItemClick;
 
-  const close = () => setOpenIndex(null);
+  const close = () => setIsLightboxOpen(false);
   const step = (delta: number) =>
-    setOpenIndex((index) =>
-      index === null ? null : (index + delta + items.length) % items.length,
-    );
+    setActiveIndex((index) => (index + delta + items.length) % items.length);
   const showNext = () => step(1);
   const showPrevious = () => step(-1);
 
@@ -54,7 +63,8 @@ export const ImageGallery = <T,>({
     onItemClick?.(item, index);
 
     if (lightbox) {
-      setOpenIndex(index);
+      setActiveIndex(index);
+      setIsLightboxOpen(true);
     }
   };
 
@@ -71,10 +81,12 @@ export const ImageGallery = <T,>({
       <GalleryGrid role="list" aria-label={label} gap={gap}>
         {items.map(renderTile)}
       </GalleryGrid>
-      {lightbox && (
+      {lightbox && activeItem && (
         <ImageLightbox
-          image={activeItem ? getImage(activeItem) : null}
-          index={openIndex ?? 0}
+          open={isLightboxOpen}
+          image={getImage(activeItem)}
+          imageId={getId(activeItem)}
+          index={activeIndex}
           total={items.length}
           onClose={close}
           onNext={showNext}
