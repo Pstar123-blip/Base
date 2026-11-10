@@ -1,8 +1,4 @@
-import { SessionType } from '@/api/generated/model';
-
-export const INFERENCE_PATH = `/${SessionType.inference}` as const;
-
-export const INFERENCE_STEP_LABELS = {
-  upload: 'Upload',
-  selectType: 'Select type',
+export const INFERENCE_STEPS = {
+  upload: { id: 'upload', label: 'Upload' },
+  selectType: { id: 'select-type', label: 'Select type' },
 } as const;

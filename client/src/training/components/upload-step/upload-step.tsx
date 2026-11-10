@@ -2,17 +2,20 @@ import { type DropzoneOptions } from 'react-dropzone';
 
 import { FileDropzone } from '@/shared/components/file-dropzone/file-dropzone';
 import { RemoveButton } from '@/shared/components/remove-button/remove-button';
+import { StepHeader } from '@/shared/components/step-header/step-header';
 import { useObjectUrl } from '@/shared/hooks/use-object-url';
 
-import { IMAGE_ACCEPT, IMAGE_ACCEPT_DESCRIPTION } from './consts';
+import {
+  FIRST_IMAGE_SLOT,
+  SECOND_IMAGE_SLOT,
+  UPLOAD_SUBTITLE,
+  UPLOAD_TITLE,
+} from './consts';
 import {
   DroppedImageTile,
   DropzoneSlot,
   SlotsGrid,
-  UploadHeader,
   UploadStepRoot,
-  UploadSubtitle,
-  UploadTitle,
 } from './upload-step.styles';
 
 type ImageSlotProps = {
@@ -77,24 +80,15 @@ export const UploadStep = ({
   onSecondImageChange,
 }: UploadStepProps) => (
   <UploadStepRoot>
-    <UploadHeader>
-      <UploadTitle variant="h5">Upload files</UploadTitle>
-      <UploadSubtitle variant="body2">
-        Add two images (JPEG or PNG) to continue.
-      </UploadSubtitle>
-    </UploadHeader>
+    <StepHeader title={UPLOAD_TITLE} subtitle={UPLOAD_SUBTITLE} />
     <SlotsGrid>
       <ImageSlot
-        label="First image"
-        description={IMAGE_ACCEPT_DESCRIPTION}
-        accept={IMAGE_ACCEPT}
+        {...FIRST_IMAGE_SLOT}
         file={firstImage}
         onChange={onFirstImageChange}
       />
       <ImageSlot
-        label="Second image"
-        description={IMAGE_ACCEPT_DESCRIPTION}
-        accept={IMAGE_ACCEPT}
+        {...SECOND_IMAGE_SLOT}
         file={secondImage}
         onChange={onSecondImageChange}
       />

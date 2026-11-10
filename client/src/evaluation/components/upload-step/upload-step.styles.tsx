@@ -23,36 +23,6 @@ const uploadStepRootStyles = ({ theme }: { theme: Theme }): CSSObject => ({
 
 export const UploadStepRoot = styled(Box)(uploadStepRootStyles);
 
-const uploadHeaderStyles: CSSObject = {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  textAlign: 'center',
-};
-
-export const UploadHeader = styled(Box)(uploadHeaderStyles);
-
-const uploadTitleStyles = ({ theme }: { theme: Theme }): CSSObject => {
-  const { palette } = theme.vars ?? theme;
-
-  return {
-    width: 'fit-content',
-    fontWeight: theme.typography.fontWeightBold,
-    letterSpacing: '-0.01em',
-    color: 'transparent',
-    backgroundImage: `linear-gradient(135deg, ${palette.primary.main}, ${palette.secondary.main})`,
-    backgroundClip: 'text',
-  };
-};
-
-export const UploadTitle = styled(Typography)(uploadTitleStyles);
-
-const uploadSubtitleStyles = ({ theme }: { theme: Theme }): CSSObject => ({
-  color: (theme.vars ?? theme).palette.text.secondary,
-});
-
-export const UploadSubtitle = styled(Typography)(uploadSubtitleStyles);
-
 // The dropzone fills it. It shrinks once the gallery shows, leaving the
 // gallery the room.
 const dropzoneContainerStyles = ({ theme }: { theme: Theme }): CSSObject => ({

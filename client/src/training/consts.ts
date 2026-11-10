@@ -1,8 +1,4 @@
-import { SessionType } from '@/api/generated/model';
-
-export const TRAINING_PATH = `/${SessionType.training}` as const;
-
-export const TRAINING_STEP_LABELS = {
-  upload: 'Upload files',
-  selectFilters: 'Select filters',
+export const TRAINING_STEPS = {
+  upload: { id: 'upload', label: 'Upload files' },
+  selectFilters: { id: 'select-filters', label: 'Select filters' },
 } as const;

@@ -12,15 +12,13 @@ import { SigningIn } from '@/core/pages/signing-in';
 import { UnauthorizedRoute } from '@/core/pages/unauthorized-route';
 import { Dashboard } from '@/demo/dashboard/dashboard';
 import { Layout } from '@/demo/layout/layout';
-import { EVALUATION_PATH } from '@/evaluation/consts';
-import { EvaluationPage } from '@/evaluation/evaluation-page';
-import { INFERENCE_PATH } from '@/inference/consts';
-import { InferencePage } from '@/inference/inference-page';
+import { EvaluationPage } from '@/evaluation/pages/evaluation-page';
+import { InferencePage } from '@/inference/pages/inference-page';
 import { SESSIONS_PATH } from '@/sessions/consts';
 import { SessionsPage } from '@/sessions/pages/sessions-page';
+import { SESSION_TYPE_PATHS } from '@/shared/session-types/consts';
 import { ErrorState } from '@/shared/ui/states';
-import { TRAINING_PATH } from '@/training/consts';
-import { TrainingPage } from '@/training/training-page';
+import { TrainingPage } from '@/training/pages/training-page';
 
 import { Root } from './root';
 
@@ -71,17 +69,17 @@ const sessions = createRoute({
 });
 const training = createRoute({
   getParentRoute: () => layoutRoute,
-  path: TRAINING_PATH,
+  path: SESSION_TYPE_PATHS.training,
   component: TrainingPage,
 });
 const inference = createRoute({
   getParentRoute: () => layoutRoute,
-  path: INFERENCE_PATH,
+  path: SESSION_TYPE_PATHS.inference,
   component: InferencePage,
 });
 const evaluation = createRoute({
   getParentRoute: () => layoutRoute,
-  path: EVALUATION_PATH,
+  path: SESSION_TYPE_PATHS.evaluation,
   component: EvaluationPage,
 });
 

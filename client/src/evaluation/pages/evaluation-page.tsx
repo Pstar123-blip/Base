@@ -1,15 +1,15 @@
 import { useState } from 'react';
 
-import { SESSION_TYPE_LABELS } from '@/sessions/consts';
 import { Steps } from '@/shared/components/steps/steps';
 import type { StepItem } from '@/shared/components/steps/types';
+import { SESSION_TYPE_LABELS } from '@/shared/session-types/consts';
 
-import { EVALUATION_STEP_LABELS } from './consts';
+import { UploadStep } from '../components/upload-step/upload-step';
+import { EVALUATION_STEPS } from '../consts';
 import {
   EvaluationPageRoot,
   EvaluationPageTitle,
 } from './evaluation-page.styles';
-import { UploadStep } from './steps/upload/upload-step';
 
 export const EvaluationPage = () => {
   // Held here, not in the step, so the files survive moving between steps.
@@ -20,8 +20,7 @@ export const EvaluationPage = () => {
 
   const steps: StepItem[] = [
     {
-      id: 'upload',
-      label: EVALUATION_STEP_LABELS.upload,
+      ...EVALUATION_STEPS.upload,
       content: <UploadStep images={images} onImagesChange={setImages} />,
       isComplete: images.length > 0,
     },

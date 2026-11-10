@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import {
   type CSSObject,
   keyframes,
@@ -12,8 +12,14 @@ import {
 } from '@/shared/components/file-dropzone/consts';
 import { ImageTile } from '@/shared/components/image-tile/image-tile';
 
+import {
+  PREVIEW_BORDER_RADIUS,
+  PREVIEW_ENTER_SCALE,
+  SLOT_MIN_WIDTH,
+} from './consts';
+
 const previewEnter = keyframes`
-  from { opacity: 0; transform: scale(0.96); }
+  from { opacity: 0; transform: scale(${PREVIEW_ENTER_SCALE}); }
   to { opacity: 1; transform: none; }
 `;
 
@@ -25,41 +31,11 @@ const uploadStepRootStyles = ({ theme }: { theme: Theme }): CSSObject => ({
 
 export const UploadStepRoot = styled(Box)(uploadStepRootStyles);
 
-const uploadHeaderStyles: CSSObject = {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  textAlign: 'center',
-};
-
-export const UploadHeader = styled(Box)(uploadHeaderStyles);
-
-const uploadTitleStyles = ({ theme }: { theme: Theme }): CSSObject => {
-  const { palette } = theme.vars ?? theme;
-
-  return {
-    width: 'fit-content',
-    fontWeight: theme.typography.fontWeightBold,
-    letterSpacing: '-0.01em',
-    color: 'transparent',
-    backgroundImage: `linear-gradient(135deg, ${palette.primary.main}, ${palette.secondary.main})`,
-    backgroundClip: 'text',
-  };
-};
-
-export const UploadTitle = styled(Typography)(uploadTitleStyles);
-
-const uploadSubtitleStyles = ({ theme }: { theme: Theme }): CSSObject => ({
-  color: (theme.vars ?? theme).palette.text.secondary,
-});
-
-export const UploadSubtitle = styled(Typography)(uploadSubtitleStyles);
-
 const slotsGridStyles = ({ theme }: { theme: Theme }): CSSObject => ({
   display: 'grid',
   gap: theme.spacing(3),
   // Side by side when there's room, stacked otherwise.
-  gridTemplateColumns: `repeat(auto-fit, minmax(min(${theme.spacing(40)}, 100%), 1fr))`,
+  gridTemplateColumns: `repeat(auto-fit, minmax(min(${theme.spacing(SLOT_MIN_WIDTH)}, 100%), 1fr))`,
 });
 
 export const SlotsGrid = styled(Box)(slotsGridStyles);
@@ -78,7 +54,7 @@ export const DropzoneSlot = styled(Box)(slotStyles);
 
 const droppedImageTileStyles = ({ theme }: { theme: Theme }): CSSObject => ({
   ...slotStyles,
-  borderRadius: theme.spacing(3),
+  borderRadius: theme.spacing(PREVIEW_BORDER_RADIUS),
   animation: `${previewEnter} ${theme.transitions.duration.standard}ms ${theme.transitions.easing.easeOut}`,
   '@media (prefers-reduced-motion: reduce)': { animation: 'none' },
 });

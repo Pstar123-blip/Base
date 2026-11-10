@@ -1,15 +1,15 @@
 import { useState } from 'react';
 
-import { SESSION_TYPE_LABELS } from '@/sessions/consts';
 import { Steps } from '@/shared/components/steps/steps';
 import type { StepItem } from '@/shared/components/steps/types';
+import { SESSION_TYPE_LABELS } from '@/shared/session-types/consts';
 
-import { INFERENCE_STEP_LABELS } from './consts';
-import { InferencePageRoot, InferencePageTitle } from './inference-page.styles';
-import { SelectTypeStep } from './steps/select-type/select-type-step';
-import { UploadStep } from './steps/upload/upload-step';
+import { SelectFiltersStep } from '../components/select-filters-step/select-filters-step';
+import { UploadStep } from '../components/upload-step/upload-step';
+import { TRAINING_STEPS } from '../consts';
+import { TrainingPageRoot, TrainingPageTitle } from './training-page.styles';
 
-export const InferencePage = () => {
+export const TrainingPage = () => {
   // Held here, not in the step, so the files survive moving between steps.
   const [firstImage, setFirstImage] = useState<File | null>(null);
   const [secondImage, setSecondImage] = useState<File | null>(null);
@@ -19,8 +19,7 @@ export const InferencePage = () => {
 
   const steps: StepItem[] = [
     {
-      id: 'upload',
-      label: INFERENCE_STEP_LABELS.upload,
+      ...TRAINING_STEPS.upload,
       content: (
         <UploadStep
           firstImage={firstImage}
@@ -32,18 +31,17 @@ export const InferencePage = () => {
       isComplete: !!firstImage && !!secondImage,
     },
     {
-      id: 'select-type',
-      label: INFERENCE_STEP_LABELS.selectType,
-      content: <SelectTypeStep />,
+      ...TRAINING_STEPS.selectFilters,
+      content: <SelectFiltersStep />,
       // Empty for now: derive from its state once it has content.
       isComplete: true,
     },
   ];
 
   return (
-    <InferencePageRoot>
-      <InferencePageTitle>{SESSION_TYPE_LABELS.inference}</InferencePageTitle>
+    <TrainingPageRoot>
+      <TrainingPageTitle>{SESSION_TYPE_LABELS.training}</TrainingPageTitle>
       <Steps steps={steps} onFinish={finish} />
-    </InferencePageRoot>
+    </TrainingPageRoot>
   );
 };

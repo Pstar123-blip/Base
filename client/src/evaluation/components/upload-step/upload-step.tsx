@@ -5,16 +5,22 @@ import { DeleteIcon } from '@/assets/icons/delete-icon';
 import { FileDropzone } from '@/shared/components/file-dropzone/file-dropzone';
 import { ImageGallery } from '@/shared/components/image-gallery/image-gallery';
 import { RemoveButton } from '@/shared/components/remove-button/remove-button';
+import { StepHeader } from '@/shared/components/step-header/step-header';
+import { IMAGE_ACCEPT } from '@/shared/constants';
 import { useObjectUrls } from '@/shared/hooks/use-object-urls';
 import { ConfirmationDialog } from '@/shared/ui/confirmation-dialog';
 
 import {
+  DROPZONE_DESCRIPTION,
   GALLERY_LABEL,
-  IMAGE_ACCEPT,
-  IMAGE_ACCEPT_DESCRIPTION,
+  getGalleryCountLabel,
+  getRemoveAllDescription,
+  getRemoveImageLabel,
   MAX_IMAGES,
   REMOVE_ALL_LABEL,
   REMOVE_ALL_TITLE,
+  UPLOAD_SUBTITLE,
+  UPLOAD_TITLE,
 } from './consts';
 import {
   DropzoneContainer,
@@ -22,10 +28,7 @@ import {
   GalleryScrollArea,
   GallerySection,
   GalleryToolbar,
-  UploadHeader,
   UploadStepRoot,
-  UploadSubtitle,
-  UploadTitle,
 } from './upload-step.styles';
 
 type UploadedImage = { file: File; src: string };
@@ -70,38 +73,29 @@ export const UploadStep = ({ images, onImagesChange }: UploadStepProps) => {
 
   const registerRemoveButton =
     (file: File) => (node: HTMLButtonElement | null) => {
-      if (!node) {
-        return;
-      }
-
-      removeButtons.current.set(file, node);
-
-      return () => {
+      if (node) {
+        removeButtons.current.set(file, node);
+      } else {
         removeButtons.current.delete(file);
-      };
+      }
     };
 
   const renderRemoveButton = ({ file }: UploadedImage, index: number) => (
     <RemoveButton
       ref={registerRemoveButton(file)}
-      label={`Remove ${file.name}`}
+      label={getRemoveImageLabel(file.name)}
       onClick={() => remove(file, index)}
     />
   );
 
   return (
     <UploadStepRoot>
-      <UploadHeader>
-        <UploadTitle variant="h5">Upload files</UploadTitle>
-        <UploadSubtitle variant="body2">
-          Add up to {MAX_IMAGES} images (JPEG or PNG) to continue.
-        </UploadSubtitle>
-      </UploadHeader>
+      <StepHeader title={UPLOAD_TITLE} subtitle={UPLOAD_SUBTITLE} />
       <DropzoneContainer data-has-gallery={hasGallery}>
         <FileDropzone
           value={images}
           onChange={onImagesChange}
-          description={IMAGE_ACCEPT_DESCRIPTION}
+          description={DROPZONE_DESCRIPTION}
           accept={IMAGE_ACCEPT}
           maxFiles={MAX_IMAGES}
         />
@@ -110,7 +104,7 @@ export const UploadStep = ({ images, onImagesChange }: UploadStepProps) => {
         <GallerySection>
           <GalleryToolbar>
             <GalleryCount aria-live="polite">
-              {images.length} of {MAX_IMAGES} images
+              {getGalleryCountLabel(images.length)}
             </GalleryCount>
             <Button
               color="error"
@@ -139,7 +133,7 @@ export const UploadStep = ({ images, onImagesChange }: UploadStepProps) => {
       <ConfirmationDialog
         open={isConfirmingRemoveAll}
         title={REMOVE_ALL_TITLE}
-        description={`All ${images.length} images will be removed. You'll need to upload them again.`}
+        description={getRemoveAllDescription(images.length)}
         onCancel={cancelRemoveAll}
         onConfirm={confirmRemoveAll}
       />
