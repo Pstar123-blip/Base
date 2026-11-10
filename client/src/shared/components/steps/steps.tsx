@@ -1,4 +1,4 @@
-import { Box, Step, StepButton, Typography } from '@mui/material';
+import { Step, StepButton, Typography } from '@mui/material';
 
 import { useStepNavigation } from './hooks/use-step-navigation';
 import { StepIndicator } from './step-indicator/step-indicator';
@@ -101,17 +101,7 @@ export const Steps = ({
         {steps.map(renderStep)}
       </StepsStepper>
       {/* Keyed so the enter animation replays on every step change. */}
-      <StepPanel key={currentStep.id}>
-        <Box component="header">
-          <Typography variant="overline" color="primary">
-            {resolvedLabels.progress(activeIndex + 1, steps.length)}
-          </Typography>
-          <Typography variant="h5" component="h2">
-            {currentStep.label}
-          </Typography>
-        </Box>
-        {currentStep.content}
-      </StepPanel>
+      <StepPanel key={currentStep.id}>{currentStep.content}</StepPanel>
       <StepsActions
         isFirstStep={navigation.isFirstStep}
         isLastStep={navigation.isLastStep}

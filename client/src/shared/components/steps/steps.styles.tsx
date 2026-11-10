@@ -11,7 +11,6 @@ import {
   styled,
   type Theme,
 } from '@mui/material/styles';
-import { visuallyHidden } from '@mui/utils';
 
 import { CONNECTOR_THICKNESS_PX, STEP_ENTER_DURATION_MS } from './consts';
 
@@ -42,12 +41,6 @@ const stepsStepperStyles = ({ theme }: { theme: Theme }): CSSObject => {
       fontWeight: theme.typography.fontWeightBold,
     },
     [`${label}.${stepLabelClasses.disabled}`]: { color: palette.text.disabled },
-    // Too narrow for labels: show indicators only; the panel heading names
-    // the current step. Hidden visually only, so it still names each button.
-    [theme.breakpoints.down('sm')]: {
-      [`& .${stepLabelClasses.labelContainer}`]: visuallyHidden,
-      [`& .${stepLabelClasses.iconContainer}`]: { paddingRight: 0 },
-    },
   };
 };
 

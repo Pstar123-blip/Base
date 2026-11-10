@@ -5,7 +5,6 @@ export const DEFAULT_STEPS_LABELS: StepsLabels = {
   next: 'Next',
   finish: 'Finish',
   optional: 'Optional',
-  progress: (current, total) => `Step ${current} of ${total}`,
 };
 
 export const STEP_ENTER_DURATION_MS = 280;

@@ -24,6 +24,4 @@ export type StepsLabels = {
   next: string;
   finish: string;
   optional: string;
-  /** Heading above the step content, e.g. "Step 2 of 3". */
-  progress: (current: number, total: number) => string;
 };
