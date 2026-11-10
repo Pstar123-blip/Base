@@ -17,13 +17,13 @@ const previewEnter = keyframes`
   to { opacity: 1; transform: none; }
 `;
 
-const uploadPageRootStyles = ({ theme }: { theme: Theme }): CSSObject => ({
+const uploadStepRootStyles = ({ theme }: { theme: Theme }): CSSObject => ({
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(3),
 });
 
-export const UploadPageRoot = styled(Box)(uploadPageRootStyles);
+export const UploadStepRoot = styled(Box)(uploadStepRootStyles);
 
 const uploadHeaderStyles: CSSObject = {
   display: 'flex',

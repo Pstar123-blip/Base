@@ -10,10 +10,10 @@ import {
   RemoveButton,
   SlotsGrid,
   UploadHeader,
-  UploadPageRoot,
+  UploadStepRoot,
   UploadSubtitle,
   UploadTitle,
-} from './upload-page.styles';
+} from './upload-step.styles';
 
 type ImageSlotProps = {
   label: string;
@@ -65,20 +65,20 @@ const ImageSlot = ({
   );
 };
 
-type UploadPageProps = {
+type UploadStepProps = {
   firstImage: File | null;
   secondImage: File | null;
   onFirstImageChange: (file: File | null) => void;
   onSecondImageChange: (file: File | null) => void;
 };
 
-export const UploadPage = ({
+export const UploadStep = ({
   firstImage,
   secondImage,
   onFirstImageChange,
   onSecondImageChange,
-}: UploadPageProps) => (
-  <UploadPageRoot>
+}: UploadStepProps) => (
+  <UploadStepRoot>
     <UploadHeader>
       <UploadTitle variant="h5">Upload files</UploadTitle>
       <UploadSubtitle variant="body2">
@@ -101,5 +101,5 @@ export const UploadPage = ({
         onChange={onSecondImageChange}
       />
     </SlotsGrid>
-  </UploadPageRoot>
+  </UploadStepRoot>
 );
