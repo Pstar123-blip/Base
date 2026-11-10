@@ -1,13 +1,36 @@
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import ListAltIcon from '@mui/icons-material/ListAlt';
+import type { SvgIconComponent } from '@mui/icons-material';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import ModelTrainingIcon from '@mui/icons-material/ModelTraining';
+import PsychologyIcon from '@mui/icons-material/Psychology';
 
-import { SESSIONS_PATH } from '@/sessions/consts';
+import type { SessionType } from '@/api/generated/model';
+import { EVALUATION_PATH } from '@/evaluation/consts';
+import { INFERENCE_PATH } from '@/inference/consts';
+import { SESSION_TYPE_LABELS, SESSION_TYPES } from '@/sessions/consts';
+import { TRAINING_PATH } from '@/training/consts';
 
 import type { SidebarItemProps } from './sidebar-item';
 
 export const SIDEBAR_WIDTH = 240;
 
-export const SIDEBAR_ENTRIES: SidebarItemProps[] = [
-  { label: 'Dashboard', to: '/', icon: DashboardIcon },
-  { label: 'Sessions', to: SESSIONS_PATH, icon: ListAltIcon },
-];
+const SESSION_TYPE_PATHS: Record<SessionType, SidebarItemProps['to']> = {
+  training: TRAINING_PATH,
+  inference: INFERENCE_PATH,
+  evaluation: EVALUATION_PATH,
+};
+
+const SESSION_TYPE_ICONS: Record<SessionType, SvgIconComponent> = {
+  training: ModelTrainingIcon,
+  inference: PsychologyIcon,
+  evaluation: AssessmentIcon,
+};
+
+// One entry per generated session type, so a new type fails to compile here
+// until it gets a path and an icon.
+export const SIDEBAR_ENTRIES: SidebarItemProps[] = SESSION_TYPES.map(
+  (type) => ({
+    label: SESSION_TYPE_LABELS[type],
+    to: SESSION_TYPE_PATHS[type],
+    icon: SESSION_TYPE_ICONS[type],
+  }),
+);

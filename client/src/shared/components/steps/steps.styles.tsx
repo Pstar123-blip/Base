@@ -21,6 +21,9 @@ const stepEnter = keyframes`
 `;
 
 const stepsRootStyles = ({ theme }: { theme: Theme }): CSSObject => ({
+  // Takes the parent's spare height when it's a flex column, so the panel
+  // can grow and keep the actions at the bottom.
+  flexGrow: 1,
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(4),
@@ -73,6 +76,7 @@ const stepsConnectorStyles = ({ theme }: { theme: Theme }): CSSObject => {
 export const StepsConnector = styled(StepConnector)(stepsConnectorStyles);
 
 const stepPanelStyles = ({ theme }: { theme: Theme }): CSSObject => ({
+  flexGrow: 1,
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(2),
