@@ -12,6 +12,8 @@ import { SigningIn } from '@/core/pages/signing-in';
 import { UnauthorizedRoute } from '@/core/pages/unauthorized-route';
 import { Dashboard } from '@/demo/dashboard/dashboard';
 import { Layout } from '@/demo/layout/layout';
+import { SESSIONS_PATH } from '@/sessions/consts';
+import { SessionsPage } from '@/sessions/pages/sessions-page';
 import { ErrorState } from '@/shared/ui/states';
 
 import { Root } from './root';
@@ -56,11 +58,17 @@ const index = createRoute({
   path: '/',
   component: Dashboard,
 });
+const sessions = createRoute({
+  getParentRoute: () => layoutRoute,
+  path: SESSIONS_PATH,
+  component: SessionsPage,
+});
+
 export const createAppRouter = () =>
   createRouter({
     routeTree: root.addChildren([
       unauthorizedRoute,
-      layoutRoute.addChildren([index]),
+      layoutRoute.addChildren([index, sessions]),
     ]),
     defaultPreload: false,
   });

@@ -4,10 +4,10 @@ import { Outlet, useNavigate, useRouter } from '@tanstack/react-router';
 import { enqueueSnackbar } from 'notistack';
 import { useEffect, useState } from 'react';
 
-import { ConfirmationDialog } from '@/demo/ui/confirmation-dialog';
 import { queryClient } from '@/lib/query';
 import { selectAccessToken, selectSignedOut, useSession } from '@/lib/store';
 import { ColorModeToggle } from '@/shared/ui/color-mode-toggle';
+import { ConfirmationDialog } from '@/shared/ui/confirmation-dialog';
 
 import {
   LayoutBody,
@@ -82,7 +82,7 @@ export const Layout = () => {
       <LayoutBody>
         <Sidebar open={sidebarOpen} onClose={closeSidebar} />
         <LayoutMain>
-          <PageContent>
+          <PageContent maxWidth={false}>
             <Outlet />
           </PageContent>
         </LayoutMain>

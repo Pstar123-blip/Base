@@ -13,6 +13,20 @@ export default defineConfig({
       override: {
         mutator: { path: 'src/api/http.ts', name: 'request' },
         query: { signal: true },
+        // Operations the API marks with `x-query` only read data, so they
+        // should be queries, not mutations, even though they are POSTs.
+        // Keep the name in sync with READ_ONLY_EXTENSION in
+        // api/src/sessions/sessions.constants.ts.
+        transformer: (verb) =>
+          verb.originalOperation['x-query']
+            ? {
+                ...verb,
+                override: {
+                  ...verb.override,
+                  query: { ...verb.override.query, useQuery: true },
+                },
+              }
+            : verb,
       },
     },
   },

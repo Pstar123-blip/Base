@@ -11,6 +11,7 @@ import { Pool } from 'pg';
 
 import { users } from '../auth/users.schema.js';
 import { ENV_KEYS } from '../envKeys.constants.js';
+import { sessions } from '../sessions/sessions.schema.js';
 
 @Injectable()
 export class Database implements OnModuleDestroy {
@@ -28,7 +29,7 @@ export class Database implements OnModuleDestroy {
         error.stack,
       );
     });
-    this.db = drizzle(this.pool, { schema: { users } });
+    this.db = drizzle(this.pool, { schema: { users, sessions } });
   }
 
   async onModuleDestroy() {
