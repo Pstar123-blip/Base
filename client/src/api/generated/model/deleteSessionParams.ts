@@ -6,8 +6,6 @@
  */
 
 export type DeleteSessionParams = {
-/**
- * The session is deleted only when true
- */
-should_delete: boolean;
+  /** The session is deleted only when true */
+  should_delete: boolean;
 };

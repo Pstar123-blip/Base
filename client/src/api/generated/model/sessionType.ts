@@ -5,7 +5,8 @@
  * OpenAPI spec version: 1.0
  */
 
-export type SessionType = (typeof SessionType)[keyof typeof SessionType];
+export type SessionType = typeof SessionType[keyof typeof SessionType];
+
 
 export const SessionType = {
   training: 'training',

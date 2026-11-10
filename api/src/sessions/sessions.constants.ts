@@ -2,7 +2,6 @@ export const SESSION_TYPES = [
   'training',
   'inference',
   'evaluation',
-  'calibration',
 ] as const;
 
 export const SESSION_STATUSES = [
