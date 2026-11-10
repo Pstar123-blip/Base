@@ -2,8 +2,12 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import CloseIcon from '@mui/icons-material/Close';
 import { CardMedia, IconButton } from '@mui/material';
-import { type KeyboardEvent } from 'react';
-import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
+import { type KeyboardEvent, useEffect, useRef } from 'react';
+import {
+  type ReactZoomPanPinchRef,
+  TransformComponent,
+  TransformWrapper,
+} from 'react-zoom-pan-pinch';
 
 import { type GalleryImage } from '../types';
 import {
@@ -30,7 +34,7 @@ type ImageLightboxProps = {
   open: boolean;
   /** Stays set while closing, so the close transition still shows the image. */
   image: GalleryImage;
-  /** Identifies the image; zoom resets whenever it changes. */
+  /** Identifies the image; zoom and pan reset whenever it changes. */
   imageId: string;
   index: number;
   total: number;
@@ -50,6 +54,13 @@ export const ImageLightbox = ({
   onPrevious,
 }: ImageLightboxProps) => {
   const canNavigate = total > 1;
+  const transformRef = useRef<ReactZoomPanPinchRef>(null);
+
+  // Reset instead of remounting the wrapper on a new image: remounting would
+  // also recreate the toolbar and nav buttons and drop keyboard focus.
+  useEffect(() => {
+    void transformRef.current?.resetTransform(0);
+  }, [imageId]);
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (!canNavigate) {
@@ -72,7 +83,7 @@ export const ImageLightbox = ({
       slotProps={{ paper: { 'aria-label': image.alt } }}
     >
       <TransformWrapper
-        key={imageId}
+        ref={transformRef}
         minScale={LIGHTBOX_MIN_SCALE}
         maxScale={LIGHTBOX_MAX_SCALE}
         doubleClick={{ mode: 'toggle' }}

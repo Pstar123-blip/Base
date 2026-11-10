@@ -35,14 +35,16 @@ export const ImageGallery = <T,>({
   emptyMessage = DEFAULT_EMPTY_MESSAGE,
   label,
 }: ImageGalleryProps<T>) => {
-  // Kept separate from `isLightboxOpen` so the last image stays rendered while
-  // the lightbox runs its close transition.
-  const [activeIndex, setActiveIndex] = useState(0);
+  // Tracked by id so the lightbox keeps showing the same image if `items` are
+  // reordered or change around it. Kept separate from `isLightboxOpen` so the
+  // last image stays rendered while the lightbox runs its close transition.
+  const [activeId, setActiveId] = useState<string | null>(null);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-  const activeItem = items.at(activeIndex);
+  const activeIndex = items.findIndex((item) => getId(item) === activeId);
+  const activeItem = activeIndex === -1 ? undefined : items[activeIndex];
 
-  // Items shrank past the open image: close for real, so the lightbox doesn't
-  // silently re-open on this index if items grow back.
+  // The open image was removed: close for real, so the lightbox doesn't
+  // silently re-open if it comes back.
   if (isLightboxOpen && !activeItem) {
     setIsLightboxOpen(false);
   }
@@ -54,8 +56,15 @@ export const ImageGallery = <T,>({
   const isInteractive = lightbox || !!onItemClick;
 
   const close = () => setIsLightboxOpen(false);
-  const step = (delta: number) =>
-    setActiveIndex((index) => (index + delta + items.length) % items.length);
+
+  const step = (delta: number) => {
+    const nextItem = items[(activeIndex + delta + items.length) % items.length];
+
+    if (nextItem) {
+      setActiveId(getId(nextItem));
+    }
+  };
+
   const showNext = () => step(1);
   const showPrevious = () => step(-1);
 
@@ -63,7 +72,7 @@ export const ImageGallery = <T,>({
     onItemClick?.(item, index);
 
     if (lightbox) {
-      setActiveIndex(index);
+      setActiveId(getId(item));
       setIsLightboxOpen(true);
     }
   };

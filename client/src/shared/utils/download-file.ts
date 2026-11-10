@@ -53,29 +53,35 @@ export const downloadBlob = (blob: Blob, fileName: string) => {
   link.href = objectUrl;
   link.download = fileName;
   link.click();
-  URL.revokeObjectURL(objectUrl);
+  // Revoking synchronously can cancel the download in Firefox and Safari.
+  setTimeout(() => URL.revokeObjectURL(objectUrl));
+};
+
+const fetchBlob = async (url: string) => {
+  try {
+    const response = await fetch(url);
+
+    return response.ok ? await response.blob() : null;
+  } catch {
+    return null;
+  }
 };
 
 /**
  * Downloads the file at `url`. Fetches it as a blob because browsers ignore
- * `download` on cross-origin links; if the fetch fails (e.g. the host doesn't
- * allow CORS), opens the URL in a new tab instead.
+ * `download` on cross-origin links; if the file can't be fetched (e.g. the
+ * host doesn't allow CORS), opens the URL in a new tab instead.
  */
 export const downloadFile = async (
   url: string,
   options: DownloadFileOptions = {},
 ) => {
-  try {
-    const response = await fetch(url);
+  const blob = await fetchBlob(url);
 
-    if (!response.ok) {
-      throw new Error(`Download failed with status ${response.status}`);
-    }
-
-    const blob = await response.blob();
-
-    downloadBlob(blob, resolveFileName(url, blob.type, options));
-  } catch {
+  if (!blob) {
     window.open(url, '_blank', 'noopener');
+    return;
   }
+
+  downloadBlob(blob, resolveFileName(url, blob.type, options));
 };
