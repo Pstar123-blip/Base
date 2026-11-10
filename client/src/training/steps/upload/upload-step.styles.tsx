@@ -1,4 +1,4 @@
-import { Box, IconButton, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import {
   type CSSObject,
   keyframes,
@@ -7,8 +7,8 @@ import {
 } from '@mui/material/styles';
 
 import {
-  DROP_AREA_MAX_WIDTH,
-  DROP_AREA_MIN_HEIGHT,
+  DROPZONE_HEIGHT,
+  DROPZONE_MAX_WIDTH,
 } from '@/shared/components/file-dropzone/consts';
 import { ImageTile } from '@/shared/components/image-tile/image-tile';
 
@@ -64,31 +64,23 @@ const slotsGridStyles = ({ theme }: { theme: Theme }): CSSObject => ({
 
 export const SlotsGrid = styled(Box)(slotsGridStyles);
 
-// Takes the dropzone's exact footprint, so the image replaces it in place.
+// A slot's footprint, shared by the dropzone and the image that replaces it,
+// so one takes the other's place exactly.
+const slotStyles: CSSObject = {
+  width: '100%',
+  height: DROPZONE_HEIGHT,
+  maxWidth: DROPZONE_MAX_WIDTH,
+  justifySelf: 'center',
+};
+
+// The dropzone fills it.
+export const DropzoneSlot = styled(Box)(slotStyles);
+
 const droppedImageTileStyles = ({ theme }: { theme: Theme }): CSSObject => ({
-  height: DROP_AREA_MIN_HEIGHT,
-  maxWidth: DROP_AREA_MAX_WIDTH,
-  marginInline: 'auto',
+  ...slotStyles,
   borderRadius: theme.spacing(3),
   animation: `${previewEnter} ${theme.transitions.duration.standard}ms ${theme.transitions.easing.easeOut}`,
   '@media (prefers-reduced-motion: reduce)': { animation: 'none' },
 });
 
 export const DroppedImageTile = styled(ImageTile)(droppedImageTileStyles);
-
-// Frosted, so it stays readable over any image.
-const removeButtonStyles = ({ theme }: { theme: Theme }): CSSObject => {
-  const { palette } = theme.vars ?? theme;
-
-  return {
-    color: palette.text.primary,
-    backgroundColor: theme.alpha(palette.background.paper, 0.8),
-    backdropFilter: 'blur(6px)',
-    '&:hover': {
-      color: palette.error.main,
-      backgroundColor: palette.background.paper,
-    },
-  };
-};
-
-export const RemoveButton = styled(IconButton)(removeButtonStyles);

@@ -1,13 +1,12 @@
-import { Tooltip } from '@mui/material';
 import { type DropzoneOptions } from 'react-dropzone';
 
-import { DeleteIcon } from '@/assets/icons/delete-icon';
 import { FileDropzone } from '@/shared/components/file-dropzone/file-dropzone';
+import { RemoveButton } from '@/shared/components/remove-button/remove-button';
 import { useObjectUrl } from '@/shared/hooks/use-object-url';
 
 import {
   DroppedImageTile,
-  RemoveButton,
+  DropzoneSlot,
   SlotsGrid,
   UploadHeader,
   UploadStepRoot,
@@ -35,14 +34,16 @@ const ImageSlot = ({
   // `src` is created right after a drop, before the browser paints.
   if (!file || !src) {
     return (
-      <FileDropzone
-        value={[]}
-        onChange={([dropped]) => onChange(dropped ?? null)}
-        label={label}
-        description={description}
-        accept={accept}
-        multiple={false}
-      />
+      <DropzoneSlot>
+        <FileDropzone
+          value={[]}
+          onChange={([dropped]) => onChange(dropped ?? null)}
+          label={label}
+          description={description}
+          accept={accept}
+          multiple={false}
+        />
+      </DropzoneSlot>
     );
   }
 
@@ -55,11 +56,7 @@ const ImageSlot = ({
       caption={file.name}
       fit="contain"
       action={
-        <Tooltip title={removeLabel}>
-          <RemoveButton aria-label={removeLabel} onClick={() => onChange(null)}>
-            <DeleteIcon />
-          </RemoveButton>
-        </Tooltip>
+        <RemoveButton label={removeLabel} onClick={() => onChange(null)} />
       }
     />
   );

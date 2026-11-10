@@ -11,6 +11,7 @@ import {
   BrowseHint,
   DropArea,
   DropDescription,
+  DropText,
   DropTitle,
   DropzoneRoot,
   IconBadge,
@@ -79,8 +80,10 @@ export const FileDropzone = ({
         <IconBadge>
           <UploadIcon />
         </IconBadge>
-        <DropTitle>{title}</DropTitle>
-        <BrowseHint>{BROWSE_HINT}</BrowseHint>
+        <DropText>
+          <DropTitle>{title}</DropTitle>
+          <BrowseHint>{BROWSE_HINT}</BrowseHint>
+        </DropText>
         {description && <DropDescription>{description}</DropDescription>}
       </DropArea>
 

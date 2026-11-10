@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { type ReactNode, useState } from 'react';
 
 import { ImageTile } from '../image-tile/image-tile';
 import { DEFAULT_EMPTY_MESSAGE, DEFAULT_GALLERY_GAP } from './consts';
@@ -16,6 +16,11 @@ export type ImageGalleryProps<T> = {
   getImage: (item: T) => GalleryImage;
   /** Called when a tile is activated, before the lightbox opens. */
   onItemClick?: (item: T, index: number) => void;
+  /**
+   * Overlaid on each tile's top-right corner, e.g. a remove button. Rendered
+   * outside the tile's click area, so using it doesn't open the lightbox.
+   */
+  renderAction?: (item: T, index: number) => ReactNode;
   /** Open a full-screen viewer when a tile is clicked. Defaults to `true`. */
   lightbox?: boolean;
   /** Space between tiles, in theme spacing units. Defaults to `1`. */
@@ -30,6 +35,7 @@ export const ImageGallery = <T,>({
   getId,
   getImage,
   onItemClick,
+  renderAction,
   lightbox = true,
   gap = DEFAULT_GALLERY_GAP,
   emptyMessage = DEFAULT_EMPTY_MESSAGE,
@@ -87,6 +93,7 @@ export const ImageGallery = <T,>({
           alt={image.alt}
           caption={image.caption}
           onClick={isInteractive ? () => select(item, index) : undefined}
+          action={renderAction?.(item, index)}
         />
       </GalleryItem>
     );
