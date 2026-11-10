@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
+import { ImageTile } from '../image-tile/image-tile';
 import { DEFAULT_EMPTY_MESSAGE, DEFAULT_GALLERY_GAP } from './consts';
-import { EmptyMessage, GalleryGrid } from './image-gallery.styles';
-import { ImageGalleryTile } from './image-gallery-tile/image-gallery-tile';
+import { EmptyMessage, GalleryGrid, GalleryItem } from './image-gallery.styles';
 import { ImageLightbox } from './image-lightbox/image-lightbox';
 import { type GalleryImage } from './types';
 
@@ -77,13 +77,20 @@ export const ImageGallery = <T,>({
     }
   };
 
-  const renderTile = (item: T, index: number) => (
-    <ImageGalleryTile
-      key={getId(item)}
-      image={getImage(item)}
-      onClick={isInteractive ? () => select(item, index) : undefined}
-    />
-  );
+  const renderTile = (item: T, index: number) => {
+    const image = getImage(item);
+
+    return (
+      <GalleryItem key={getId(item)} role="listitem">
+        <ImageTile
+          src={image.thumbnailSrc ?? image.src}
+          alt={image.alt}
+          caption={image.caption}
+          onClick={isInteractive ? () => select(item, index) : undefined}
+        />
+      </GalleryItem>
+    );
+  };
 
   return (
     <>

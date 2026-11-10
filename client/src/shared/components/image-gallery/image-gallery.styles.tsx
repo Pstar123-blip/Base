@@ -1,7 +1,7 @@
 import { Box, Typography } from '@mui/material';
 import { styled, type Theme } from '@mui/material/styles';
 
-import { GALLERY_TILE_MIN_WIDTH } from './consts';
+import { GALLERY_TILE_ASPECT_RATIO, GALLERY_TILE_MIN_WIDTH } from './consts';
 
 type GalleryGridProps = { gap: number };
 
@@ -16,6 +16,11 @@ const galleryGridStyles = ({
 export const GalleryGrid = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'gap',
 })<GalleryGridProps>(galleryGridStyles);
+
+const galleryItemStyles = {
+  aspectRatio: GALLERY_TILE_ASPECT_RATIO,
+};
+export const GalleryItem = styled(Box)(galleryItemStyles);
 
 const emptyMessageStyles = ({ theme }: { theme: Theme }) => ({
   ...theme.typography.body1,
