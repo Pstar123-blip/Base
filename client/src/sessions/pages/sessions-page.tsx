@@ -3,10 +3,10 @@ import { enqueueSnackbar } from 'notistack';
 import { useState } from 'react';
 
 import { useDeleteSession } from '@/api/generated/api';
+import { ImageLightbox } from '@/shared/components/image-gallery/image-lightbox/image-lightbox';
 import { ConfirmationDialog } from '@/shared/ui/confirmation-dialog';
 import { ErrorState, LoadingState } from '@/shared/ui/states';
 
-import { ImageViewer } from '../components/image-viewer';
 import { SessionsTable } from '../components/sessions-table';
 import { StaleDataNotice } from '../components/stale-data-notice';
 import { useSessionsTable } from '../hooks/use-sessions-table';
@@ -17,8 +17,17 @@ export const SessionsPage = () => {
   // The session stays set while the dialog fades out so its text doesn't blank.
   const [pendingDelete, setPendingDelete] = useState<Session | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  // Held here, not in the row, so polling can't unmount the viewer.
+  // Held here, not in the row, so polling can't unmount the lightbox. The
+  // image stays set while closing so the close transition still shows it.
   const [viewedImage, setViewedImage] = useState<ViewedImage | null>(null);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+
+  const openImage = (image: ViewedImage) => {
+    setViewedImage(image);
+    setLightboxOpen(true);
+  };
+
+  const closeImage = () => setLightboxOpen(false);
 
   const closeDialog = () => setDeleteOpen(false);
 
@@ -78,7 +87,7 @@ export const SessionsPage = () => {
             onPageChange={table.setPage}
             onPageSizeChange={table.changePageSize}
             onDelete={askDelete}
-            onOpenImage={setViewedImage}
+            onOpenImage={openImage}
           />
         )}
       </Box>
@@ -91,10 +100,15 @@ export const SessionsPage = () => {
         onConfirm={confirmDelete}
       />
       {viewedImage && (
-        <ImageViewer
-          src={viewedImage.src}
-          alt={viewedImage.alt}
-          onClose={() => setViewedImage(null)}
+        <ImageLightbox
+          open={lightboxOpen}
+          image={viewedImage}
+          imageId={viewedImage.src}
+          index={0}
+          total={1}
+          onClose={closeImage}
+          onNext={closeImage}
+          onPrevious={closeImage}
         />
       )}
     </Stack>
