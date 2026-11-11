@@ -16,7 +16,7 @@ import { EvaluationPage } from '@/evaluation/pages/evaluation-page';
 import { InferencePage } from '@/inference/pages/inference-page';
 import { SESSIONS_PATH } from '@/sessions/consts';
 import { SessionsPage } from '@/sessions/pages/sessions-page';
-import { SESSION_TYPE_PATHS } from '@/shared/session-types/consts';
+import { SESSION_TYPE_PATHS } from '@/shared/session-type-constants';
 import { ErrorState } from '@/shared/ui/states';
 import { TrainingPage } from '@/training/pages/training-page';
 

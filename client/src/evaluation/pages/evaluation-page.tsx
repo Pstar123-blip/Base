@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { PageLayout } from '@/shared/components/page-layout/page-layout';
 import { Steps } from '@/shared/components/steps/steps';
 import type { StepItem } from '@/shared/components/steps/types';
-import { SESSION_TYPE_LABELS } from '@/shared/session-types/consts';
+import { SESSION_TYPE_LABELS } from '@/shared/session-type-constants';
 
 import { UploadStep } from '../components/upload-step/upload-step';
 import { EVALUATION_STEPS } from '../consts';

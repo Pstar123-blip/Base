@@ -2,7 +2,7 @@ import type { SessionType } from '@/api/generated/model';
 import {
   SESSION_TYPE_COLORS,
   SESSION_TYPE_LABELS,
-} from '@/shared/session-types/consts';
+} from '@/shared/session-type-constants';
 
 import { TypeChip } from './type-tag.styles';
 

@@ -4,7 +4,7 @@ import type { ChangeEvent } from 'react';
 import {
   SESSION_TYPE_LABELS,
   SESSION_TYPES,
-} from '@/shared/session-types/consts';
+} from '@/shared/session-type-constants';
 import { assertNever } from '@/shared/utils/assert-never';
 
 import {

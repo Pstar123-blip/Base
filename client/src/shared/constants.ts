@@ -1,3 +1,5 @@
+// Also loaded by vite.config.ts in Node: keep imports to types and plain
+// packages, no app aliases or UI modules.
 import type { Accept } from 'react-dropzone';
 
 export const REQUEST_TIMEOUT_MS = 15_000;

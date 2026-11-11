@@ -3,13 +3,17 @@ import { type CSSObject, styled, type Theme } from '@mui/material/styles';
 
 import { PICKER_MIN_WIDTH } from './consts';
 
-const uploadStepRootStyles = ({ theme }: { theme: Theme }): CSSObject => ({
+const imagePickersStepRootStyles = ({
+  theme,
+}: {
+  theme: Theme;
+}): CSSObject => ({
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(3),
 });
 
-export const UploadStepRoot = styled(Box)(uploadStepRootStyles);
+export const ImagePickersStepRoot = styled(Box)(imagePickersStepRootStyles);
 
 const pickersGridStyles = ({ theme }: { theme: Theme }): CSSObject => ({
   display: 'grid',

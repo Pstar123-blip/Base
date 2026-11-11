@@ -6,7 +6,7 @@ import {
   SESSION_TYPE_LABELS,
   SESSION_TYPE_PATHS,
   SESSION_TYPES,
-} from '@/shared/session-types/consts';
+} from '@/shared/session-type-constants';
 
 import type { SidebarItemProps } from './sidebar-item';
 
