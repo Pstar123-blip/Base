@@ -15,21 +15,28 @@ export const useObjectUrls = (blobs: readonly Blob[]) => {
   useLayoutEffect(() => {
     const cache = cacheRef.current;
     const current = new Set(blobs);
+    let hasChanged = false;
 
     cache.forEach((url, blob) => {
       if (!current.has(blob)) {
         URL.revokeObjectURL(url);
         cache.delete(blob);
+        hasChanged = true;
       }
     });
 
-    blobs.forEach((blob) => {
+    current.forEach((blob) => {
       if (!cache.has(blob)) {
         cache.set(blob, URL.createObjectURL(blob));
+        hasChanged = true;
       }
     });
 
-    setUrls(new Map(cache));
+    // Only re-render when the set of blobs changed, so a caller passing a new
+    // array with the same blobs on every render doesn't loop.
+    if (hasChanged) {
+      setUrls(new Map(cache));
+    }
   }, [blobs]);
 
   useLayoutEffect(() => {

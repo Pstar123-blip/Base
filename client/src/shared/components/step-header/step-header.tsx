@@ -9,7 +9,7 @@ type StepHeaderProps = {
 /** A centered title and subtitle at the top of a step's content. */
 export const StepHeader = ({ title, subtitle }: StepHeaderProps) => (
   <StepHeaderRoot>
-    <StepTitle variant="h5">{title}</StepTitle>
+    <StepTitle>{title}</StepTitle>
     {subtitle && <StepSubtitle variant="body2">{subtitle}</StepSubtitle>}
   </StepHeaderRoot>
 );

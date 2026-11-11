@@ -33,9 +33,8 @@ export interface FileDropzoneProps extends Omit<
 }
 
 /**
- * A click-or-drop area for picking files. It fills its container, so the
- * parent must give it a height; `DROPZONE_HEIGHT` and `DROPZONE_MAX_WIDTH`
- * are the standard size.
+ * A click-or-drop area for picking files. It fills its container and has no
+ * size of its own, so the parent must give it a height.
  */
 export const FileDropzone = ({
   value,

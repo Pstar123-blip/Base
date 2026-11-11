@@ -1,23 +1,25 @@
+import { type ImagePickerProps } from '@/shared/components/image-picker/image-picker';
 import { IMAGE_ACCEPT, IMAGE_ACCEPT_DESCRIPTION } from '@/shared/constants';
+
+type ImagePickerConfig = Pick<
+  ImagePickerProps,
+  'label' | 'description' | 'accept'
+>;
 
 export const UPLOAD_TITLE = 'Upload files';
 export const UPLOAD_SUBTITLE = `Add two images (${IMAGE_ACCEPT_DESCRIPTION}) to continue.`;
 
-export const FIRST_IMAGE_SLOT = {
+export const FIRST_IMAGE_PICKER: ImagePickerConfig = {
   label: 'First image',
   description: IMAGE_ACCEPT_DESCRIPTION,
   accept: IMAGE_ACCEPT,
 };
 
-export const SECOND_IMAGE_SLOT = {
+export const SECOND_IMAGE_PICKER: ImagePickerConfig = {
   label: 'Second image',
   description: IMAGE_ACCEPT_DESCRIPTION,
   accept: IMAGE_ACCEPT,
 };
 
-/** Narrowest a slot gets before the slots stack, in theme spacing units. */
-export const SLOT_MIN_WIDTH = 40;
-/** How small the preview starts when it replaces the dropzone. */
-export const PREVIEW_ENTER_SCALE = 0.96;
-/** In theme spacing units. */
-export const PREVIEW_BORDER_RADIUS = 3;
+/** Narrowest a picker gets before the pickers stack, in theme spacing units. */
+export const PICKER_MIN_WIDTH = 40;

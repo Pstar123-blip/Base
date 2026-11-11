@@ -3,11 +3,6 @@ export const DEFAULT_DRAG_ACTIVE_LABEL = 'Release to upload';
 export const DEFAULT_DRAG_REJECT_LABEL = "These files aren't supported";
 export const BROWSE_HINT = 'or click to browse';
 
-// The dropzone fills its container; this is the standard container size for
-// it (in px). Things that take its place, like a preview, use it too.
-export const DROPZONE_HEIGHT = 340;
-export const DROPZONE_MAX_WIDTH = 720;
-
 // Relative sizes, so the content scales with the container. The padding is
 // relative to the drop area's width, the gap and the badge's height to its
 // height, and the icon and halo to the badge.

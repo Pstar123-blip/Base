@@ -1,15 +1,12 @@
 import { useState } from 'react';
 
+import { PageLayout } from '@/shared/components/page-layout/page-layout';
 import { Steps } from '@/shared/components/steps/steps';
 import type { StepItem } from '@/shared/components/steps/types';
 import { SESSION_TYPE_LABELS } from '@/shared/session-types/consts';
 
 import { UploadStep } from '../components/upload-step/upload-step';
 import { EVALUATION_STEPS } from '../consts';
-import {
-  EvaluationPageRoot,
-  EvaluationPageTitle,
-} from './evaluation-page.styles';
 
 export const EvaluationPage = () => {
   // Held here, not in the step, so the files survive moving between steps.
@@ -27,11 +24,8 @@ export const EvaluationPage = () => {
   ];
 
   return (
-    <EvaluationPageRoot>
-      <EvaluationPageTitle>
-        {SESSION_TYPE_LABELS.evaluation}
-      </EvaluationPageTitle>
+    <PageLayout title={SESSION_TYPE_LABELS.evaluation}>
       <Steps steps={steps} onFinish={finish} />
-    </EvaluationPageRoot>
+    </PageLayout>
   );
 };

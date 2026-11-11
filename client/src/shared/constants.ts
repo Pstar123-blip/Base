@@ -28,6 +28,13 @@ export const PNG_ACCEPT: Accept = { 'image/png': ['.png'] };
 export const IMAGE_ACCEPT: Accept = { ...JPEG_ACCEPT, ...PNG_ACCEPT };
 export const IMAGE_ACCEPT_DESCRIPTION = 'JPEG or PNG';
 
+/**
+ * The standard footprint of an upload area, in px: a dropzone, or the preview
+ * that takes its place. Shared so every upload control lines up.
+ */
+export const UPLOAD_AREA_HEIGHT = 340;
+export const UPLOAD_AREA_MAX_WIDTH = 720;
+
 export const COLOR_MODE_STORAGE_KEY = 'color-mode';
 export const COLOR_SCHEME_BACKGROUNDS = {
   light: '#f6f7fb',

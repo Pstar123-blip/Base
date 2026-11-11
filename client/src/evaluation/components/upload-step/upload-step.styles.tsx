@@ -1,10 +1,7 @@
 import { Box, Typography } from '@mui/material';
 import { type CSSObject, styled, type Theme } from '@mui/material/styles';
 
-import {
-  DROPZONE_HEIGHT,
-  DROPZONE_MAX_WIDTH,
-} from '@/shared/components/file-dropzone/consts';
+import { UPLOAD_AREA_HEIGHT, UPLOAD_AREA_MAX_WIDTH } from '@/shared/constants';
 
 import {
   GALLERY_DROPZONE_HEIGHT,
@@ -29,8 +26,8 @@ const dropzoneContainerStyles = ({ theme }: { theme: Theme }): CSSObject => ({
   flexShrink: 0,
   alignSelf: 'center',
   width: '100%',
-  height: DROPZONE_HEIGHT,
-  maxWidth: DROPZONE_MAX_WIDTH,
+  height: UPLOAD_AREA_HEIGHT,
+  maxWidth: UPLOAD_AREA_MAX_WIDTH,
   transition: theme.transitions.create(['height', 'max-width']),
   '&[data-has-gallery="true"]': {
     height: theme.spacing(GALLERY_DROPZONE_HEIGHT),

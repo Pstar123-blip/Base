@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { PageLayout } from '@/shared/components/page-layout/page-layout';
 import { Steps } from '@/shared/components/steps/steps';
 import type { StepItem } from '@/shared/components/steps/types';
 import { SESSION_TYPE_LABELS } from '@/shared/session-types/consts';
@@ -7,7 +8,6 @@ import { SESSION_TYPE_LABELS } from '@/shared/session-types/consts';
 import { SelectTypeStep } from '../components/select-type-step/select-type-step';
 import { UploadStep } from '../components/upload-step/upload-step';
 import { INFERENCE_STEPS } from '../consts';
-import { InferencePageRoot, InferencePageTitle } from './inference-page.styles';
 
 export const InferencePage = () => {
   // Held here, not in the step, so the files survive moving between steps.
@@ -39,9 +39,8 @@ export const InferencePage = () => {
   ];
 
   return (
-    <InferencePageRoot>
-      <InferencePageTitle>{SESSION_TYPE_LABELS.inference}</InferencePageTitle>
+    <PageLayout title={SESSION_TYPE_LABELS.inference}>
       <Steps steps={steps} onFinish={finish} />
-    </InferencePageRoot>
+    </PageLayout>
   );
 };

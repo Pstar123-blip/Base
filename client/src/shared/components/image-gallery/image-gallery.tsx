@@ -1,6 +1,7 @@
 import { type ReactNode, useState } from 'react';
 
-import { ImageTile } from '../image-tile/image-tile';
+import { ImageTile } from '@/shared/components/image-tile/image-tile';
+
 import { DEFAULT_EMPTY_MESSAGE, DEFAULT_GALLERY_GAP } from './consts';
 import { EmptyMessage, GalleryGrid, GalleryItem } from './image-gallery.styles';
 import { ImageLightbox } from './image-lightbox/image-lightbox';

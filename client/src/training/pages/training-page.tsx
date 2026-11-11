@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { PageLayout } from '@/shared/components/page-layout/page-layout';
 import { Steps } from '@/shared/components/steps/steps';
 import type { StepItem } from '@/shared/components/steps/types';
 import { SESSION_TYPE_LABELS } from '@/shared/session-types/consts';
@@ -7,7 +8,6 @@ import { SESSION_TYPE_LABELS } from '@/shared/session-types/consts';
 import { SelectFiltersStep } from '../components/select-filters-step/select-filters-step';
 import { UploadStep } from '../components/upload-step/upload-step';
 import { TRAINING_STEPS } from '../consts';
-import { TrainingPageRoot, TrainingPageTitle } from './training-page.styles';
 
 export const TrainingPage = () => {
   // Held here, not in the step, so the files survive moving between steps.
@@ -39,9 +39,8 @@ export const TrainingPage = () => {
   ];
 
   return (
-    <TrainingPageRoot>
-      <TrainingPageTitle>{SESSION_TYPE_LABELS.training}</TrainingPageTitle>
+    <PageLayout title={SESSION_TYPE_LABELS.training}>
       <Steps steps={steps} onFinish={finish} />
-    </TrainingPageRoot>
+    </PageLayout>
   );
 };

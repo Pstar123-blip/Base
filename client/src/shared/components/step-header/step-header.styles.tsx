@@ -16,6 +16,8 @@ const stepTitleStyles = ({ theme }: { theme: Theme }): CSSObject => {
   const { palette } = theme.vars ?? theme;
 
   return {
+    ...theme.typography.h5,
+    margin: 0,
     width: 'fit-content',
     fontWeight: theme.typography.fontWeightBold,
     letterSpacing: STEP_TITLE_LETTER_SPACING,
@@ -25,7 +27,8 @@ const stepTitleStyles = ({ theme }: { theme: Theme }): CSSObject => {
   };
 };
 
-export const StepTitle = styled(Typography)(stepTitleStyles);
+// An h2, under the page's h1, at h5 size.
+export const StepTitle = styled('h2')(stepTitleStyles);
 
 const stepSubtitleStyles = ({ theme }: { theme: Theme }): CSSObject => ({
   color: (theme.vars ?? theme).palette.text.secondary,
