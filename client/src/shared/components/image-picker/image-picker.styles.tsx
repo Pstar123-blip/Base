@@ -16,8 +16,8 @@ const previewEnter = keyframes`
   to { opacity: 1; transform: none; }
 `;
 
-// The picker's footprint. The dropzone and the preview both fill it, so one
-// takes the other's place exactly.
+// The picker's footprint. It matches the dropzone's default size and the
+// preview fills it, so one takes the other's place exactly.
 const imagePickerRootStyles: CSSObject = {
   width: '100%',
   height: UPLOAD_AREA_HEIGHT,

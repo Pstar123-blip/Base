@@ -2,7 +2,6 @@ import { Button } from '@mui/material';
 import { useRef, useState } from 'react';
 
 import { DeleteIcon } from '@/assets/icons/delete-icon';
-import { FileDropzone } from '@/shared/components/file-dropzone/file-dropzone';
 import { ImageGallery } from '@/shared/components/image-gallery/image-gallery';
 import { RemoveButton } from '@/shared/components/remove-button/remove-button';
 import { StepHeader } from '@/shared/components/step-header/step-header';
@@ -23,7 +22,7 @@ import {
   UPLOAD_TITLE,
 } from './consts';
 import {
-  DropzoneContainer,
+  Dropzone,
   GalleryCount,
   GalleryScrollArea,
   GallerySection,
@@ -91,15 +90,14 @@ export const UploadStep = ({ images, onImagesChange }: UploadStepProps) => {
   return (
     <UploadStepRoot>
       <StepHeader title={UPLOAD_TITLE} subtitle={UPLOAD_SUBTITLE} />
-      <DropzoneContainer data-has-gallery={hasGallery}>
-        <FileDropzone
-          value={images}
-          onChange={onImagesChange}
-          description={DROPZONE_DESCRIPTION}
-          accept={IMAGE_ACCEPT}
-          maxFiles={MAX_IMAGES}
-        />
-      </DropzoneContainer>
+      <Dropzone
+        hasGallery={hasGallery}
+        value={images}
+        onChange={onImagesChange}
+        description={DROPZONE_DESCRIPTION}
+        accept={IMAGE_ACCEPT}
+        maxFiles={MAX_IMAGES}
+      />
       {hasGallery && (
         <GallerySection>
           <GalleryToolbar>

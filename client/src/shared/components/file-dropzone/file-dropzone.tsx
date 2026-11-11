@@ -30,13 +30,15 @@ export interface FileDropzoneProps extends Omit<
   dragActiveLabel?: string;
   dragRejectLabel?: string;
   description?: string;
+  className?: string;
 }
 
 /**
- * A click-or-drop area for picking files. It fills its container and has no
- * size of its own, so the parent must give it a height.
+ * A click-or-drop area for picking files. Has a default size; restyle it with
+ * `styled(FileDropzone)` to change it.
  */
 export const FileDropzone = ({
+  className,
   value,
   onChange,
   label = DEFAULT_LABEL,
@@ -73,7 +75,7 @@ export const FileDropzone = ({
       : label;
 
   return (
-    <DropzoneRoot>
+    <DropzoneRoot className={className}>
       <DropArea
         {...getRootProps({ role: 'button' })}
         data-drag-active={isDragActive}

@@ -1,7 +1,8 @@
 import { Box, Typography } from '@mui/material';
 import { type CSSObject, styled, type Theme } from '@mui/material/styles';
 
-import { UPLOAD_AREA_HEIGHT, UPLOAD_AREA_MAX_WIDTH } from '@/shared/constants';
+import { FileDropzone } from '@/shared/components/file-dropzone/file-dropzone';
+import { UPLOAD_AREA_MAX_WIDTH } from '@/shared/constants';
 
 import {
   GALLERY_DROPZONE_HEIGHT,
@@ -20,23 +21,27 @@ const uploadStepRootStyles = ({ theme }: { theme: Theme }): CSSObject => ({
 
 export const UploadStepRoot = styled(Box)(uploadStepRootStyles);
 
-// The dropzone fills it. It shrinks once the gallery shows, leaving the
-// gallery the room.
-const dropzoneContainerStyles = ({ theme }: { theme: Theme }): CSSObject => ({
+type DropzoneProps = { hasGallery: boolean };
+
+// Shrinks once the gallery shows, leaving the gallery the room.
+const dropzoneStyles = ({
+  theme,
+  hasGallery,
+}: DropzoneProps & { theme: Theme }): CSSObject => ({
   flexShrink: 0,
   alignSelf: 'center',
-  width: '100%',
-  height: UPLOAD_AREA_HEIGHT,
   maxWidth: UPLOAD_AREA_MAX_WIDTH,
   transition: theme.transitions.create(['height', 'max-width']),
-  '&[data-has-gallery="true"]': {
+  ...(hasGallery && {
     height: theme.spacing(GALLERY_DROPZONE_HEIGHT),
     maxWidth: theme.spacing(GALLERY_DROPZONE_MAX_WIDTH),
-  },
+  }),
   '@media (prefers-reduced-motion: reduce)': { transition: 'none' },
 });
 
-export const DropzoneContainer = styled(Box)(dropzoneContainerStyles);
+export const Dropzone = styled(FileDropzone, {
+  shouldForwardProp: (prop) => prop !== 'hasGallery',
+})<DropzoneProps>(dropzoneStyles);
 
 // A zero flex basis keeps the gallery's content out of the page's height: it
 // fills the space that's left and scrolls inside it, so the page never does.

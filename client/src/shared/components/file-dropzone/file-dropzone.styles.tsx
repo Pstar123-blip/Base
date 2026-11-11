@@ -2,6 +2,8 @@ import CloudUploadRoundedIcon from '@mui/icons-material/CloudUploadRounded';
 import { Box, Typography } from '@mui/material';
 import { keyframes, styled } from '@mui/material/styles';
 
+import { UPLOAD_AREA_HEIGHT } from '@/shared/constants';
+
 import {
   DOT_GRID_SPACING,
   DOT_SIZE,
@@ -26,14 +28,14 @@ const pulse = keyframes`
   100% { transform: scale(1.35); opacity: 0; }
 `;
 
-// Fills its container: the parent decides the dropzone's size, and must give
-// it a height.
+// The default size. A parent that needs another size overrides it with
+// `styled(FileDropzone)`.
 export const DropzoneRoot = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(2),
   width: '100%',
-  height: '100%',
+  height: UPLOAD_AREA_HEIGHT,
 }));
 
 export const IconBadge = styled(Box)(({ theme }) => {
