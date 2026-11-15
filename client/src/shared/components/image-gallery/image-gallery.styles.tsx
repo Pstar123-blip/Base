@@ -16,9 +16,15 @@ export const GalleryGrid = styled(Box, {
       ? `min(${minWidth}, 100%)`
       : `min(max(${minWidth}, calc((100% - ${columns - 1} * ${theme.spacing(gap)}) / ${columns})), 100%)`;
 
+  // With a column maximum the tracks have a fixed width, so fewer tiles than
+  // columns collapse the empty tracks and sit centered.
   return {
     display: 'grid',
-    gridTemplateColumns: `repeat(auto-fill, minmax(${trackWidth}, 1fr))`,
+    gridTemplateColumns:
+      columns === undefined
+        ? `repeat(auto-fill, minmax(${trackWidth}, 1fr))`
+        : `repeat(auto-fit, ${trackWidth})`,
+    justifyContent: columns === undefined ? undefined : 'center',
     gap: theme.spacing(gap),
   };
 });

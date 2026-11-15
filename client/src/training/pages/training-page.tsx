@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { CompareSummaryStep } from '@/shared/components/compare-summary-step/compare-summary-step';
 import { ImagePickersStep } from '@/shared/components/image-pickers-step/image-pickers-step';
 import { PageLayout } from '@/shared/components/page-layout/page-layout';
 import type { Selection } from '@/shared/components/selection-list/types';
@@ -8,9 +9,9 @@ import type { StepItem } from '@/shared/components/steps/types';
 import { SESSION_TYPE_LABELS } from '@/shared/session-type-constants';
 
 import { SelectFiltersStep } from '../components/select-filters-step/select-filters-step';
-import { TrainingSummaryStep } from '../components/summary-step/summary-step';
 import {
   FIRST_IMAGE_PICKER,
+  REMOVE_LAST_SELECTION_REASON,
   SECOND_IMAGE_PICKER,
   TRAINING_STEPS,
   UPLOAD_SUBTITLE,
@@ -65,11 +66,18 @@ export const TrainingPage = () => {
     {
       ...TRAINING_STEPS.summary,
       content: (
-        <TrainingSummaryStep
+        <CompareSummaryStep
+          firstTitle={FIRST_IMAGE_PICKER.label}
+          secondTitle={SECOND_IMAGE_PICKER.label}
           firstImage={firstImage}
           secondImage={secondImage}
           selections={selections}
           onRemoveSelection={removeSelection}
+          // The last remaining selection can't be removed, so there is never
+          // a way to cancel all of them.
+          removeDisabledReason={
+            selections.length > 1 ? undefined : REMOVE_LAST_SELECTION_REASON
+          }
         />
       ),
       isComplete: true,

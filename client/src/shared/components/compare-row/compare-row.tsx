@@ -12,10 +12,11 @@ import {
   Row,
   TileFrame,
 } from './compare-row.styles';
-import { COMPARE_TITLES } from './consts';
 import type { CompareImage } from './types';
 
 export type CompareRowProps = {
+  firstTitle: string;
+  secondTitle: string;
   imageA?: CompareImage;
   imageB?: CompareImage;
 };
@@ -29,7 +30,7 @@ const renderCaption = ({ name, size }: CompareImage) => (
 
 const renderPanel = (title: string, image?: CompareImage) => (
   <Panel>
-    <Typography variant="h6" component="h2" gutterBottom>
+    <Typography variant="h6" component="h3" gutterBottom>
       {title}
     </Typography>
     {image && (
@@ -45,12 +46,17 @@ const renderPanel = (title: string, image?: CompareImage) => (
   </Panel>
 );
 
-export const CompareRow = ({ imageA, imageB }: CompareRowProps) => (
+export const CompareRow = ({
+  firstTitle,
+  secondTitle,
+  imageA,
+  imageB,
+}: CompareRowProps) => (
   <Row direction={{ xs: 'column', sm: 'row' }}>
-    {renderPanel(COMPARE_TITLES.a, imageA)}
+    {renderPanel(firstTitle, imageA)}
     <IconWrapper>
       <CompareArrowsIcon fontSize="large" />
     </IconWrapper>
-    {renderPanel(COMPARE_TITLES.b, imageB)}
+    {renderPanel(secondTitle, imageB)}
   </Row>
 );

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { CompareSummaryStep } from '@/shared/components/compare-summary-step/compare-summary-step';
 import { ImagePickersStep } from '@/shared/components/image-pickers-step/image-pickers-step';
 import { PageLayout } from '@/shared/components/page-layout/page-layout';
 import type { Selection } from '@/shared/components/selection-list/types';
@@ -8,7 +9,6 @@ import type { StepItem } from '@/shared/components/steps/types';
 import { SESSION_TYPE_LABELS } from '@/shared/session-type-constants';
 
 import { SelectTypeStep } from '../components/select-type-step/select-type-step';
-import { InferenceSummaryStep } from '../components/summary-step/summary-step';
 import {
   FIRST_IMAGE_PICKER,
   INFERENCE_STEPS,
@@ -60,7 +60,9 @@ export const InferencePage = () => {
     {
       ...INFERENCE_STEPS.summary,
       content: (
-        <InferenceSummaryStep
+        <CompareSummaryStep
+          firstTitle={FIRST_IMAGE_PICKER.label}
+          secondTitle={SECOND_IMAGE_PICKER.label}
           firstImage={firstImage}
           secondImage={secondImage}
           selections={selections}

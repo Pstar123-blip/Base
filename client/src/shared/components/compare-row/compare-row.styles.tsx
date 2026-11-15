@@ -39,11 +39,9 @@ export const TileFrame = styled('div')({
   aspectRatio: COMPARE_TILE_ASPECT_RATIO,
 });
 
-// The caption is a flex row so the name can shrink and ellipsize while the
-// size stays visible.
+// The name ellipsizes on one line; the size sits below it.
 export const CaptionName = styled('span')({
   display: 'block',
-  minWidth: 0,
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',

@@ -1,11 +1,14 @@
-import { Stack } from '@mui/material';
-
 import { ImageGallery } from '@/shared/components/image-gallery/image-gallery';
 import { StepHeader } from '@/shared/components/step-header/step-header';
 import { SUMMARY_TITLE } from '@/shared/constants';
 import { useObjectUrls } from '@/shared/hooks/use-object-urls';
 
 import { SUMMARY_GALLERY_COLUMNS, SUMMARY_IMAGES_LABEL } from '../../consts';
+import {
+  GalleryScrollArea,
+  GallerySection,
+  UploadStepRoot,
+} from '../upload-step/upload-step.styles';
 import type { SummaryImage } from './types';
 
 const getId = (image: SummaryImage) => image.id;
@@ -27,15 +30,21 @@ export const EvaluationSummaryStep = ({
   });
 
   return (
-    <Stack spacing={3}>
+    <UploadStepRoot>
       <StepHeader title={SUMMARY_TITLE} />
-      <ImageGallery
-        items={items}
-        getId={getId}
-        getImage={getImage}
-        label={SUMMARY_IMAGES_LABEL}
-        columns={SUMMARY_GALLERY_COLUMNS}
-      />
-    </Stack>
+      {/* Scrolls inside its own area, like the upload step, so up to 50 images
+          don't push the step's buttons off screen. */}
+      <GallerySection>
+        <GalleryScrollArea>
+          <ImageGallery
+            items={items}
+            getId={getId}
+            getImage={getImage}
+            label={SUMMARY_IMAGES_LABEL}
+            columns={SUMMARY_GALLERY_COLUMNS}
+          />
+        </GalleryScrollArea>
+      </GallerySection>
+    </UploadStepRoot>
   );
 };

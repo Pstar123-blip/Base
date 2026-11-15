@@ -1,5 +1,3 @@
-export const COMPARE_TITLES = { a: 'A', b: 'B' } as const;
-
 // In theme spacing units (8px each).
 export const COMPARE_PANEL_MAX_WIDTH = 40;
 export const COMPARE_ROW_GAP = 6;
