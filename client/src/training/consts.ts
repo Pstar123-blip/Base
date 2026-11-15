@@ -4,6 +4,7 @@ import { JPEG_ACCEPT, PNG_ACCEPT } from '@/shared/constants';
 export const TRAINING_STEPS = {
   upload: { id: 'upload', label: 'Upload' },
   selectFilters: { id: 'select-filters', label: 'Select filters' },
+  summary: { id: 'summary', label: 'Summary' },
 } as const;
 
 export const UPLOAD_TITLE = 'Upload files';

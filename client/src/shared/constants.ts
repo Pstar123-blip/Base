@@ -42,3 +42,8 @@ export const COLOR_SCHEME_BACKGROUNDS = {
   light: '#f6f7fb',
   dark: '#0f111a',
 } as const;
+
+export const SUMMARY_TITLE = 'Summary';
+
+export const FILE_SIZE_UNITS = ['B', 'KiB', 'MiB', 'GiB'];
+export const FILE_SIZE_UNIT_STEP = 1024;

@@ -6,7 +6,7 @@ import {
   COMPARE_ROW_GAP,
   COMPARE_ROW_GAP_COMPACT,
   COMPARE_TILE_ASPECT_RATIO,
-} from '../consts';
+} from './consts';
 
 const rowStyles = ({ theme }: { theme: Theme }) => ({
   alignItems: 'center',

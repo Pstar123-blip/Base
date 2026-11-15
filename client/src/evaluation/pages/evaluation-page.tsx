@@ -5,6 +5,7 @@ import { Steps } from '@/shared/components/steps/steps';
 import type { StepItem } from '@/shared/components/steps/types';
 import { SESSION_TYPE_LABELS } from '@/shared/session-type-constants';
 
+import { EvaluationSummaryStep } from '../components/summary-step/summary-step';
 import { UploadStep } from '../components/upload-step/upload-step';
 import { EVALUATION_STEPS } from '../consts';
 
@@ -20,6 +21,11 @@ export const EvaluationPage = () => {
       ...EVALUATION_STEPS.upload,
       content: <UploadStep images={images} onImagesChange={setImages} />,
       isComplete: images.length > 0,
+    },
+    {
+      ...EVALUATION_STEPS.summary,
+      content: <EvaluationSummaryStep images={images} />,
+      isComplete: true,
     },
   ];
 

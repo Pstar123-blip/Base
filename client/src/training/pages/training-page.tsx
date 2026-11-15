@@ -2,11 +2,13 @@ import { useState } from 'react';
 
 import { ImagePickersStep } from '@/shared/components/image-pickers-step/image-pickers-step';
 import { PageLayout } from '@/shared/components/page-layout/page-layout';
+import type { Selection } from '@/shared/components/selection-list/types';
 import { Steps } from '@/shared/components/steps/steps';
 import type { StepItem } from '@/shared/components/steps/types';
 import { SESSION_TYPE_LABELS } from '@/shared/session-type-constants';
 
 import { SelectFiltersStep } from '../components/select-filters-step/select-filters-step';
+import { TrainingSummaryStep } from '../components/summary-step/summary-step';
 import {
   FIRST_IMAGE_PICKER,
   SECOND_IMAGE_PICKER,
@@ -19,6 +21,14 @@ export const TrainingPage = () => {
   // Held here, not in the step, so the files survive moving between steps.
   const [firstImage, setFirstImage] = useState<File | null>(null);
   const [secondImage, setSecondImage] = useState<File | null>(null);
+
+  // TODO: derive from the select step once it has content.
+  const selections: Selection[] = [];
+
+  // TODO: dispatch the removal to the selections state.
+  const removeSelection = (id: string) => {
+    void id;
+  };
 
   // Not wired to the API yet.
   const finish = () => {};
@@ -50,6 +60,18 @@ export const TrainingPage = () => {
       ...TRAINING_STEPS.selectFilters,
       content: <SelectFiltersStep />,
       // Empty for now: derive from its state once it has content.
+      isComplete: true,
+    },
+    {
+      ...TRAINING_STEPS.summary,
+      content: (
+        <TrainingSummaryStep
+          firstImage={firstImage}
+          secondImage={secondImage}
+          selections={selections}
+          onRemoveSelection={removeSelection}
+        />
+      ),
       isComplete: true,
     },
   ];

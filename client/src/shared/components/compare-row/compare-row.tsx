@@ -2,10 +2,8 @@ import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import { Typography } from '@mui/material';
 
 import { ImageTile } from '@/shared/components/image-tile/image-tile';
+import { formatFileSize } from '@/shared/utils/format-file-size';
 
-import { COMPARE_TITLES } from '../consts';
-import type { CompareImage } from '../types';
-import { formatFileSize } from '../utils/format-file-size';
 import {
   CaptionName,
   CaptionSize,
@@ -14,6 +12,8 @@ import {
   Row,
   TileFrame,
 } from './compare-row.styles';
+import { COMPARE_TITLES } from './consts';
+import type { CompareImage } from './types';
 
 export type CompareRowProps = {
   imageA?: CompareImage;

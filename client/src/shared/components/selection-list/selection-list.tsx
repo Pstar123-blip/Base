@@ -1,8 +1,8 @@
 import { Typography } from '@mui/material';
 
-import { SELECTIONS_TITLE } from '../consts';
-import type { Selection } from '../types';
+import { SELECTIONS_TITLE } from './consts';
 import { Chips, Section, SelectionChip } from './selection-list.styles';
+import type { Selection } from './types';
 
 export type SelectionListProps = {
   selections: readonly Selection[];
