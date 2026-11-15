@@ -3,16 +3,14 @@ import { StepHeader } from '@/shared/components/step-header/step-header';
 import { SUMMARY_TITLE } from '@/shared/constants';
 import { useObjectUrls } from '@/shared/hooks/use-object-urls';
 
-import { SUMMARY_GALLERY_COLUMNS, SUMMARY_IMAGES_LABEL } from '../../consts';
 import {
   GalleryScrollArea,
   GallerySection,
   UploadStepRoot,
 } from '../upload-step/upload-step.styles';
-import type { SummaryImage } from './types';
+import { SUMMARY_GALLERY_COLUMNS, SUMMARY_IMAGES_LABEL } from './consts';
 
-const getId = (image: SummaryImage) => image.id;
-const getImage = (image: SummaryImage) => image;
+type SummaryImage = { file: File; src: string };
 
 type EvaluationSummaryStepProps = {
   images: File[];
@@ -26,7 +24,7 @@ export const EvaluationSummaryStep = ({
   const items = images.flatMap((file): SummaryImage[] => {
     const src = urls.get(file);
 
-    return src ? [{ id: src, src, alt: file.name }] : [];
+    return src ? [{ file, src }] : [];
   });
 
   return (
@@ -38,8 +36,8 @@ export const EvaluationSummaryStep = ({
         <GalleryScrollArea>
           <ImageGallery
             items={items}
-            getId={getId}
-            getImage={getImage}
+            getId={({ src }) => src}
+            getImage={({ file, src }) => ({ src, alt: file.name })}
             label={SUMMARY_IMAGES_LABEL}
             columns={SUMMARY_GALLERY_COLUMNS}
           />

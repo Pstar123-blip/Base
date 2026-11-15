@@ -21,6 +21,11 @@ export const Row = styled(Stack)(rowStyles);
 const iconWrapperStyles = ({ theme }: { theme: Theme }) => ({
   display: 'flex',
   color: (theme.vars ?? theme).palette.text.secondary,
+  // Points along the row: up and down while the panels are stacked.
+  transform: 'rotate(90deg)',
+  [theme.breakpoints.up('sm')]: {
+    transform: 'none',
+  },
 });
 export const IconWrapper = styled('div')(iconWrapperStyles);
 

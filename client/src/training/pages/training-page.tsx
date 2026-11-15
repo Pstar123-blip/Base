@@ -27,9 +27,7 @@ export const TrainingPage = () => {
   const selections: Selection[] = [];
 
   // TODO: dispatch the removal to the selections state.
-  const removeSelection = (id: string) => {
-    void id;
-  };
+  const removeSelection = () => {};
 
   // Not wired to the API yet.
   const finish = () => {};
