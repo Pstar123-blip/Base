@@ -6,13 +6,11 @@
  */
 
 export type GroupSessionsParams = {
-/**
- * @minimum 0
- */
-first_session_index?: number;
-/**
- * @minimum 1
- * @maximum 100
- */
-number_of_sessions?: number;
+  /** @minimum 0 */
+  first_session_index?: number;
+  /**
+   * @minimum 1
+   * @maximum 100
+   */
+  number_of_sessions?: number;
 };

@@ -1,6 +1,9 @@
 import type { SessionType } from '@/api/generated/model';
+import {
+  SESSION_TYPE_COLORS,
+  SESSION_TYPE_LABELS,
+} from '@/shared/session-type-constants';
 
-import { SESSION_TYPE_COLORS, SESSION_TYPE_LABELS } from '../consts';
 import { TypeChip } from './type-tag.styles';
 
 export const TypeTag = ({ type }: { type: SessionType }) => (

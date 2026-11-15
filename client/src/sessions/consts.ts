@@ -1,4 +1,4 @@
-import { SessionStatus, SessionType } from '@/api/generated/model';
+import { SessionStatus } from '@/api/generated/model';
 
 import type {
   ColumnFilter,
@@ -11,23 +11,7 @@ export const getResultsPath = (id: string) => `${SESSIONS_PATH}/${id}/results`;
 
 export const TAG_FONT_SIZE = '1rem';
 
-export const SESSION_TYPES = Object.values(SessionType);
 export const SESSION_STATUSES = Object.values(SessionStatus);
-
-export const SESSION_TYPE_LABELS: Record<SessionType, string> = {
-  training: 'Training',
-  inference: 'Inference',
-  evaluation: 'Evaluation',
-  calibration: 'Calibration',
-};
-
-// Each type's signature color.
-export const SESSION_TYPE_COLORS: Record<SessionType, string> = {
-  training: '#7c4dff',
-  inference: '#0288d1',
-  evaluation: '#2e7d32',
-  calibration: '#ed6c02',
-};
 
 export const SESSION_STATUS_LABELS: Record<SessionStatus, string> = {
   pending: 'Pending',

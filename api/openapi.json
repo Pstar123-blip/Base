@@ -410,8 +410,7 @@
         "enum": [
           "training",
           "inference",
-          "evaluation",
-          "calibration"
+          "evaluation"
         ]
       },
       "SessionStatus": {

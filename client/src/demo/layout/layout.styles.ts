@@ -3,7 +3,11 @@ import { styled, type Theme } from '@mui/material/styles';
 
 export const PageTitle = styled(Typography)({ flexGrow: 1 });
 
+// A full-height flex column so pages can stretch to the bottom of the view.
 const pageContentStyles = ({ theme }: { theme: Theme }) => ({
+  flexGrow: 1,
+  display: 'flex',
+  flexDirection: 'column' as const,
   paddingTop: theme.spacing(4),
   paddingBottom: theme.spacing(4),
 });
@@ -16,6 +20,8 @@ export const LayoutBody = styled(Box)({
   overflow: 'hidden',
 });
 export const LayoutMain = styled('main')({
+  display: 'flex',
+  flexDirection: 'column',
   flexGrow: 1,
   minWidth: 0,
   overflowY: 'auto',

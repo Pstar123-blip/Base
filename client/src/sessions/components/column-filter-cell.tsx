@@ -1,14 +1,16 @@
 import { TableCell } from '@mui/material';
 import type { ChangeEvent } from 'react';
 
+import {
+  SESSION_TYPE_LABELS,
+  SESSION_TYPES,
+} from '@/shared/session-type-constants';
 import { assertNever } from '@/shared/utils/assert-never';
 
 import {
   COLUMN_FILTERS,
   SESSION_STATUS_LABELS,
   SESSION_STATUSES,
-  SESSION_TYPE_LABELS,
-  SESSION_TYPES,
 } from '../consts';
 import type { SessionColumnId, SessionFilters } from '../types';
 import {
