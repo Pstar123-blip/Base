@@ -100,7 +100,8 @@ export const Steps = ({
       >
         {steps.map(renderStep)}
       </StepsStepper>
-      {/* Keyed so the enter animation replays on every step change. */}
+      {/* Keyed so each step's content mounts fresh, even when two steps
+          render the same component. */}
       <StepPanel key={currentStep.id}>{currentStep.content}</StepPanel>
       <StepsActions
         isFirstStep={navigation.isFirstStep}

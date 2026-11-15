@@ -7,5 +7,4 @@ export const DEFAULT_STEPS_LABELS: StepsLabels = {
   optional: 'Optional',
 };
 
-export const STEP_ENTER_DURATION_MS = 280;
 export const CONNECTOR_THICKNESS_PX = 3;

@@ -1,32 +1,18 @@
 import CloudUploadRoundedIcon from '@mui/icons-material/CloudUploadRounded';
 import { Box, Typography } from '@mui/material';
-import { keyframes, styled } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 
 import { UPLOAD_AREA_HEIGHT } from '@/shared/constants';
 
 import {
   DOT_GRID_SPACING,
   DOT_SIZE,
-  DRAG_ACTIVE_SCALE,
   DROP_AREA_GAP,
   DROP_AREA_PADDING,
   HALO_INSET,
-  HALO_PULSE_DURATION,
   ICON_BADGE_HEIGHT,
-  ICON_FLOAT_DISTANCE,
-  ICON_FLOAT_DURATION,
   ICON_SIZE,
 } from './consts';
-
-const float = keyframes`
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-${ICON_FLOAT_DISTANCE}px); }
-`;
-
-const pulse = keyframes`
-  0% { transform: scale(0.9); opacity: 0.9; }
-  100% { transform: scale(1.35); opacity: 0; }
-`;
 
 // The default size. A parent that needs another size overrides it with
 // `styled(FileDropzone)`.
@@ -55,10 +41,9 @@ export const IconBadge = styled(Box)(({ theme }) => {
     color: palette.primary.contrastText,
     backgroundImage: `linear-gradient(135deg, ${palette.primary.main}, ${palette.secondary.main})`,
     boxShadow: `0 12px 32px -8px ${theme.alpha(palette.primary.main, 0.55)}`,
-    animation: `${float} ${ICON_FLOAT_DURATION}ms ease-in-out infinite`,
-    transition: theme.transitions.create(['box-shadow', 'background-image']),
+    transition: theme.transitions.create('box-shadow'),
 
-    // Soft halo behind the badge; pulses while files are dragged over.
+    // Soft halo behind the badge.
     '&::before': {
       content: '""',
       position: 'absolute',
@@ -151,7 +136,6 @@ export const DropArea = styled(Box)(({ theme }) => {
       'border-color',
       'background-color',
       'box-shadow',
-      'transform',
     ]),
 
     '&:hover': {
@@ -169,13 +153,8 @@ export const DropArea = styled(Box)(({ theme }) => {
       borderColor: palette.primary.main,
       backgroundColor: theme.alpha(palette.primary.main, 0.06),
       boxShadow: `0 0 0 6px ${theme.alpha(palette.primary.main, 0.15)}`,
-      transform: `scale(${DRAG_ACTIVE_SCALE})`,
       [`& ${IconBadge}`]: {
-        animationPlayState: 'paused',
         boxShadow: `0 16px 40px -6px ${theme.alpha(palette.primary.main, 0.7)}`,
-        '&::before': {
-          animation: `${pulse} ${HALO_PULSE_DURATION}ms ease-out infinite`,
-        },
       },
     },
 
@@ -196,17 +175,6 @@ export const DropArea = styled(Box)(({ theme }) => {
       cursor: 'default',
       opacity: palette.action.disabledOpacity,
       pointerEvents: 'none',
-      [`& ${IconBadge}`]: {
-        animation: 'none',
-      },
-    },
-
-    '@media (prefers-reduced-motion: reduce)': {
-      transition: 'none',
-      '&[data-drag-active="true"]': { transform: 'none' },
-      [`& ${IconBadge}, & ${IconBadge}::before`]: {
-        animation: 'none !important',
-      },
     },
   };
 });
