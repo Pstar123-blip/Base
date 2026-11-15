@@ -2,7 +2,7 @@ import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import { Typography } from '@mui/material';
 
 import { ImageTile } from '@/shared/components/image-tile/image-tile';
-import { formatFileSize } from '@/shared/utils/format-file-size';
+import { formatFileSize } from '@/shared/utils/format-file-size/format-file-size';
 
 import {
   CaptionName,

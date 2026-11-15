@@ -1,4 +1,4 @@
-import { FILE_SIZE_UNIT_STEP, FILE_SIZE_UNITS } from '@/shared/constants';
+import { FILE_SIZE_UNIT_STEP, FILE_SIZE_UNITS } from './consts';
 
 export const formatFileSize = (bytes: number) => {
   let value = bytes;
