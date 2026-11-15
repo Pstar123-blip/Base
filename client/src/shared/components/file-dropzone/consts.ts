@@ -13,14 +13,7 @@ export const ICON_SIZE = '46%';
 export const HALO_INSET = '-15%';
 
 // Layout values with no theme equivalent (in px).
-export const ICON_FLOAT_DISTANCE = 6;
 export const DOT_SIZE = 1;
 
 // Gap between background dots (in theme spacing units).
 export const DOT_GRID_SPACING = 2.5;
-
-export const DRAG_ACTIVE_SCALE = 1.01;
-
-// Animation durations (in ms).
-export const ICON_FLOAT_DURATION = 3200;
-export const HALO_PULSE_DURATION = 1200;

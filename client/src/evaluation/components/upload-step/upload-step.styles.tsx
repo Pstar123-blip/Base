@@ -28,12 +28,10 @@ export const Dropzone = styled(FileDropzone, {
   flexShrink: 0,
   alignSelf: 'center',
   maxWidth: UPLOAD_AREA_MAX_WIDTH,
-  transition: theme.transitions.create(['height', 'max-width']),
   ...(hasGallery && {
     height: theme.spacing(GALLERY_DROPZONE_HEIGHT),
     maxWidth: theme.spacing(GALLERY_DROPZONE_MAX_WIDTH),
   }),
-  '@media (prefers-reduced-motion: reduce)': { transition: 'none' },
 }));
 
 // A zero flex basis keeps the gallery's content out of the page's height: it
@@ -59,7 +57,7 @@ export const GalleryCount = styled(Typography)(({ theme }) => ({
 }));
 
 // The inset is padded back in, so tiles line up with the toolbar while their
-// hover lift and shadow aren't clipped by the scroll area.
+// hover shadow isn't clipped by the scroll area.
 export const GalleryScrollArea = styled(Box)(({ theme }) => ({
   flex: '1 1 0',
   minHeight: 0,

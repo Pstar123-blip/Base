@@ -5,14 +5,9 @@ import {
   stepLabelClasses,
   Stepper,
 } from '@mui/material';
-import { keyframes, styled } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 
-import { CONNECTOR_THICKNESS_PX, STEP_ENTER_DURATION_MS } from './consts';
-
-const stepEnter = keyframes`
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: none; }
-`;
+import { CONNECTOR_THICKNESS_PX } from './consts';
 
 export const StepsRoot = styled(Box)(({ theme }) => ({
   // Takes the parent's spare height when it's a flex column, so the panel
@@ -63,6 +58,4 @@ export const StepPanel = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   gap: theme.spacing(2),
   minHeight: theme.spacing(16),
-  animation: `${stepEnter} ${STEP_ENTER_DURATION_MS}ms ${theme.transitions.easing.easeOut}`,
-  '@media (prefers-reduced-motion: reduce)': { animation: 'none' },
 }));
