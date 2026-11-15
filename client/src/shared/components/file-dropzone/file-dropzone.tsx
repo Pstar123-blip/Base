@@ -1,11 +1,15 @@
-import { Alert } from '@mui/material';
+import { Alert, Box } from '@mui/material';
+import { type MouseEvent, useRef } from 'react';
 import { type DropzoneOptions, useDropzone } from 'react-dropzone';
 
 import {
   BROWSE_HINT,
+  CHOOSE_FOLDER_LABEL,
   DEFAULT_DRAG_ACTIVE_LABEL,
   DEFAULT_DRAG_REJECT_LABEL,
   DEFAULT_LABEL,
+  FOLDER_HINT_JOINER,
+  FOLDER_INPUT_ATTRIBUTES,
 } from './consts';
 import {
   BrowseHint,
@@ -14,6 +18,7 @@ import {
   DropText,
   DropTitle,
   DropzoneRoot,
+  FolderLink,
   IconBadge,
   RejectionLine,
   UploadIcon,
@@ -38,8 +43,9 @@ export interface FileDropzoneProps extends Omit<
 }
 
 /**
- * A click-or-drop area for picking files. Has a default size; restyle it with
- * `styled(FileDropzone)` to change it.
+ * A click-or-drop area for picking files. A dropped folder adds every file
+ * inside it, and when `multiple`, a link in the area picks a folder.
+ * Has a default size; restyle it with `styled(FileDropzone)` to change it.
  */
 export const FileDropzone = ({
   className,
@@ -55,6 +61,8 @@ export const FileDropzone = ({
   ...options
 }: FileDropzoneProps) => {
   const isFull = multiple && maxFiles > 0 && value.length >= maxFiles;
+  const isDisabled = disabled || isFull;
+  const folderInputRef = useRef<HTMLInputElement>(null);
 
   const {
     getRootProps,
@@ -67,10 +75,23 @@ export const FileDropzone = ({
     multiple,
     // react-dropzone counts per drop, so only offer the slots that are left.
     maxFiles: maxFiles > 0 ? maxFiles - value.length : 0,
-    disabled: disabled || isFull,
+    disabled: isDisabled,
     onDropAccepted: (files) =>
       onChange(multiple ? mergeFiles(value, files) : files),
   });
+
+  const chooseFolder = (event: MouseEvent) => {
+    // Otherwise the area's click opens the file picker as well.
+    event.stopPropagation();
+
+    const input = folderInputRef.current;
+
+    if (input) {
+      // Lets the same folder be picked again.
+      input.value = '';
+      input.click();
+    }
+  };
 
   const title = isDragReject
     ? dragRejectLabel
@@ -85,14 +106,41 @@ export const FileDropzone = ({
         data-drag-active={isDragActive}
         data-drag-reject={isDragReject}
       >
-        {/* react-dropzone hides the native input itself. */}
-        <input {...getInputProps()} />
+        {/* react-dropzone hides the native inputs itself. Wrapped, so they
+            take a single gap in the area. */}
+        <Box>
+          <input {...getInputProps()} />
+          {/* One picker can't offer files and folders both, so folders get
+              their own input. Its picks go through the same checks. */}
+          {multiple && (
+            <input
+              {...getInputProps()}
+              {...FOLDER_INPUT_ATTRIBUTES}
+              ref={folderInputRef}
+            />
+          )}
+        </Box>
         <IconBadge>
           <UploadIcon />
         </IconBadge>
         <DropText>
           <DropTitle>{title}</DropTitle>
-          <BrowseHint>{BROWSE_HINT}</BrowseHint>
+          <BrowseHint>
+            {BROWSE_HINT}
+            {multiple && (
+              <>
+                {FOLDER_HINT_JOINER}
+                <FolderLink
+                  component="button"
+                  type="button"
+                  disabled={isDisabled}
+                  onClick={chooseFolder}
+                >
+                  {CHOOSE_FOLDER_LABEL}
+                </FolderLink>
+              </>
+            )}
+          </BrowseHint>
         </DropText>
         {description && <DropDescription>{description}</DropDescription>}
       </DropArea>

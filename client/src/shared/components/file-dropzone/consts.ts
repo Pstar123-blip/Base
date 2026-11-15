@@ -1,7 +1,14 @@
-export const DEFAULT_LABEL = 'Drop your files here';
+export const DEFAULT_LABEL = 'Drop your files or folders here';
 export const DEFAULT_DRAG_ACTIVE_LABEL = 'Release to upload';
 export const DEFAULT_DRAG_REJECT_LABEL = "These files aren't supported";
-export const BROWSE_HINT = 'or click to browse';
+// Reads "or click to browse or choose a folder", the last part a link.
+export const BROWSE_HINT = 'click to browse';
+export const FOLDER_HINT_JOINER = ' or ';
+export const CHOOSE_FOLDER_LABEL = 'choose a folder';
+
+// Makes the native picker choose a folder, and everything inside it, instead
+// of files. Spread onto the input, since React's types don't include it.
+export const FOLDER_INPUT_ATTRIBUTES = { webkitdirectory: '' };
 
 // Relative sizes, so the content scales with the container. The padding is
 // relative to the drop area's width, the gap and the badge's height to its

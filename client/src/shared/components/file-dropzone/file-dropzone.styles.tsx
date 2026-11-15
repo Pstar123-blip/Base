@@ -1,5 +1,5 @@
 import CloudUploadRoundedIcon from '@mui/icons-material/CloudUploadRounded';
-import { Box, Typography } from '@mui/material';
+import { Box, Link, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import { UPLOAD_AREA_HEIGHT } from '@/shared/constants';
@@ -104,6 +104,14 @@ export const DropDescription = styled(Typography)(({ theme }) => {
 export const RejectionLine = styled(Typography)(({ theme }) => ({
   ...theme.typography.body2,
 }));
+
+// The folder link, inline in the hint. MUI middle-aligns link buttons, which
+// lifts it off the hint's baseline. Cast back, as `styled` drops the
+// `component` prop from Link's types.
+export const FolderLink = styled(Link)(({ theme }) => ({
+  verticalAlign: 'baseline',
+  fontWeight: theme.typography.fontWeightMedium,
+})) as typeof Link;
 
 export const DropArea = styled(Box)(({ theme }) => {
   const { palette } = theme.vars ?? theme;
