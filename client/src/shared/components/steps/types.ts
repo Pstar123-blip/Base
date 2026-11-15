@@ -4,7 +4,10 @@ export type StepItem = {
   /** Stable identifier, used as the React key. */
   id: string;
   label: ReactNode;
-  /** Rendered while this step is active. */
+  /**
+   * Rendered while this step is active. `Steps` adds no heading of its own,
+   * so content should start with a `StepHeader` that names the step.
+   */
   content: ReactNode;
   /**
    * Whether the step's requirements are met. Derive it from your own state

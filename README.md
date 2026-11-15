@@ -69,7 +69,7 @@ client/src/
   app/                  Root providers and route registration
   core/auth/            Popup login, session checks, and token exchange
   core/pages/           Sign-in, Unauthorized, and Not Found pages
-  demo/                 Replaceable example layout, dashboard, and UI components
+  demo/                 Replaceable example layout and UI components
   shared/ui/            Loading and error states used by core screens
   shared/constants.ts   Shared client constants
   lib/                  Theme, environment, query client, and session store
@@ -79,12 +79,12 @@ mock-adfs/              Separate local mock identity provider
 
 Keep `app/`, `core/`, `lib/`, and `api/` as the starting infrastructure. Customize the theme in `client/src/lib/theme.ts` and adjust the core page appearance as needed.
 
-Everything under `client/src/demo/` is example UI. It includes the dashboard, navigation layout, table, empty state, and logout confirmation dialog. No core page imports from this folder.
+Everything under `client/src/demo/` is example UI. It includes the navigation layout, empty state, and logout confirmation dialog. No core page imports from this folder.
 
 ## Replace the demo with your project
 
 1. Create your own pages and, if needed, a layout outside `demo/`.
-2. Open `client/src/app/router.tsx`. Replace the `Dashboard` and `Layout` imports and the clearly marked demo route definitions with your own components and routes.
+2. Open `client/src/app/router.tsx`. Replace the `Layout` import and the clearly marked demo route definitions with your own components and routes.
 3. Update `root.addChildren(...)` to register your replacement routes. Keep `unauthorizedRoute` registered.
 4. Delete `client/src/demo/` once nothing imports it.
 5. Rename the project metadata in the package files, update application text and theme, and set `LOG_SERVICE_NAME` in `api/.env`.
@@ -138,7 +138,7 @@ Never put the signing secret in `client/.env` or a `VITE_` variable. `VITE_` val
 
 Popup or token-exchange failures restart the entire flow: one initial attempt and two retries. After three failed attempts, the app shows Unauthorized. **Relogin** starts another sign-in flow.
 
-An interrupted provider-token exchange is marked in storage so refreshing restarts login. A `401` clears the session only if the failed request used the current token. Logout removes the local token; it does not revoke already issued JWTs. The demo dashboard calls `/auth/me` for display data, separately from session authentication.
+An interrupted provider-token exchange is marked in storage so refreshing restarts login. A `401` clears the session only if the failed request used the current token. Logout removes the local token; it does not revoke already issued JWTs.
 
 For the relevant files, see [the authentication guide](client/src/core/auth/README.md) and [the mock service guide](mock-adfs/README.md).
 

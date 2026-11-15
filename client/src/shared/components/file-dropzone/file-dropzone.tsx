@@ -24,7 +24,11 @@ export interface FileDropzoneProps extends Omit<
   DropzoneOptions,
   'onDropAccepted'
 > {
-  value: File[];
+  /**
+   * The files picked so far, which new drops are merged into and counted
+   * against `maxFiles`. Only used when `multiple`.
+   */
+  value?: File[];
   onChange: (files: File[]) => void;
   label?: string;
   dragActiveLabel?: string;
@@ -39,7 +43,7 @@ export interface FileDropzoneProps extends Omit<
  */
 export const FileDropzone = ({
   className,
-  value,
+  value = [],
   onChange,
   label = DEFAULT_LABEL,
   dragActiveLabel = DEFAULT_DRAG_ACTIVE_LABEL,
