@@ -12,5 +12,4 @@ export const SessionType = {
   training: 'training',
   inference: 'inference',
   evaluation: 'evaluation',
-  calibration: 'calibration',
 } as const;

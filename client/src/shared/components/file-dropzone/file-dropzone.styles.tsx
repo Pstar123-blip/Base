@@ -1,36 +1,27 @@
 import CloudUploadRoundedIcon from '@mui/icons-material/CloudUploadRounded';
 import { Box, Typography } from '@mui/material';
-import { keyframes, styled } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
+
+import { UPLOAD_AREA_HEIGHT } from '@/shared/constants';
 
 import {
   DOT_GRID_SPACING,
   DOT_SIZE,
-  DRAG_ACTIVE_SCALE,
-  DROP_AREA_MAX_WIDTH,
-  DROP_AREA_MIN_HEIGHT,
-  HALO_PULSE_DURATION,
-  ICON_FLOAT_DISTANCE,
-  ICON_FLOAT_DURATION,
+  DROP_AREA_GAP,
+  DROP_AREA_PADDING,
+  HALO_INSET,
+  ICON_BADGE_HEIGHT,
   ICON_SIZE,
 } from './consts';
 
-const float = keyframes`
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-${ICON_FLOAT_DISTANCE}px); }
-`;
-
-const pulse = keyframes`
-  0% { transform: scale(0.9); opacity: 0.9; }
-  100% { transform: scale(1.35); opacity: 0; }
-`;
-
+// The default size. A parent that needs another size overrides it with
+// `styled(FileDropzone)`.
 export const DropzoneRoot = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(2),
   width: '100%',
-  maxWidth: DROP_AREA_MAX_WIDTH,
-  marginInline: 'auto',
+  height: UPLOAD_AREA_HEIGHT,
 }));
 
 export const IconBadge = styled(Box)(({ theme }) => {
@@ -40,21 +31,23 @@ export const IconBadge = styled(Box)(({ theme }) => {
     position: 'relative',
     display: 'grid',
     placeItems: 'center',
-    width: theme.spacing(12),
-    height: theme.spacing(12),
-    marginBottom: theme.spacing(3),
+    // Sized by the drop area's height, and the first to give way when the
+    // text needs the room.
+    height: ICON_BADGE_HEIGHT,
+    aspectRatio: '1',
+    minHeight: 0,
+    flexShrink: 1,
     borderRadius: '50%',
     color: palette.primary.contrastText,
     backgroundImage: `linear-gradient(135deg, ${palette.primary.main}, ${palette.secondary.main})`,
     boxShadow: `0 12px 32px -8px ${theme.alpha(palette.primary.main, 0.55)}`,
-    animation: `${float} ${ICON_FLOAT_DURATION}ms ease-in-out infinite`,
-    transition: theme.transitions.create(['box-shadow', 'background-image']),
+    transition: theme.transitions.create('box-shadow'),
 
-    // Soft halo behind the badge; pulses while files are dragged over.
+    // Soft halo behind the badge.
     '&::before': {
       content: '""',
       position: 'absolute',
-      inset: theme.spacing(-1.75),
+      inset: HALO_INSET,
       zIndex: -1,
       borderRadius: '50%',
       backgroundColor: theme.alpha(palette.primary.main, 0.16),
@@ -63,8 +56,17 @@ export const IconBadge = styled(Box)(({ theme }) => {
 });
 
 export const UploadIcon = styled(CloudUploadRoundedIcon)({
-  fontSize: ICON_SIZE,
+  width: ICON_SIZE,
+  height: ICON_SIZE,
 });
+
+// Keeps the title and hint together, closer than the drop area's own gap.
+export const DropText = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  gap: theme.spacing(0.5),
+}));
 
 export const DropTitle = styled(Typography)(({ theme }) => {
   const { palette } = theme.vars ?? theme;
@@ -91,7 +93,6 @@ export const DropDescription = styled(Typography)(({ theme }) => {
 
   return {
     ...theme.typography.caption,
-    marginTop: theme.spacing(2.5),
     padding: theme.spacing(0.75, 1.75),
     borderRadius: theme.spacing(2),
     fontWeight: theme.typography.fontWeightMedium,
@@ -114,9 +115,11 @@ export const DropArea = styled(Box)(({ theme }) => {
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: theme.spacing(0.5),
-    minHeight: DROP_AREA_MIN_HEIGHT,
-    padding: theme.spacing(6, 4),
+    gap: DROP_AREA_GAP,
+    // Takes the height the rejection alert leaves.
+    flex: '1 1 0',
+    minHeight: 0,
+    padding: DROP_AREA_PADDING,
     textAlign: 'center',
     cursor: 'pointer',
     outline: 'none',
@@ -133,7 +136,6 @@ export const DropArea = styled(Box)(({ theme }) => {
       'border-color',
       'background-color',
       'box-shadow',
-      'transform',
     ]),
 
     '&:hover': {
@@ -151,13 +153,8 @@ export const DropArea = styled(Box)(({ theme }) => {
       borderColor: palette.primary.main,
       backgroundColor: theme.alpha(palette.primary.main, 0.06),
       boxShadow: `0 0 0 6px ${theme.alpha(palette.primary.main, 0.15)}`,
-      transform: `scale(${DRAG_ACTIVE_SCALE})`,
       [`& ${IconBadge}`]: {
-        animationPlayState: 'paused',
         boxShadow: `0 16px 40px -6px ${theme.alpha(palette.primary.main, 0.7)}`,
-        '&::before': {
-          animation: `${pulse} ${HALO_PULSE_DURATION}ms ease-out infinite`,
-        },
       },
     },
 
@@ -178,17 +175,6 @@ export const DropArea = styled(Box)(({ theme }) => {
       cursor: 'default',
       opacity: palette.action.disabledOpacity,
       pointerEvents: 'none',
-      [`& ${IconBadge}`]: {
-        animation: 'none',
-      },
-    },
-
-    '@media (prefers-reduced-motion: reduce)': {
-      transition: 'none',
-      '&[data-drag-active="true"]': { transform: 'none' },
-      [`& ${IconBadge}, & ${IconBadge}::before`]: {
-        animation: 'none !important',
-      },
     },
   };
 });

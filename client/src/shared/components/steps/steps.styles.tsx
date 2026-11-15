@@ -5,30 +5,20 @@ import {
   stepLabelClasses,
   Stepper,
 } from '@mui/material';
-import {
-  type CSSObject,
-  keyframes,
-  styled,
-  type Theme,
-} from '@mui/material/styles';
-import { visuallyHidden } from '@mui/utils';
+import { styled } from '@mui/material/styles';
 
-import { CONNECTOR_THICKNESS_PX, STEP_ENTER_DURATION_MS } from './consts';
+import { CONNECTOR_THICKNESS_PX } from './consts';
 
-const stepEnter = keyframes`
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: none; }
-`;
-
-const stepsRootStyles = ({ theme }: { theme: Theme }): CSSObject => ({
+export const StepsRoot = styled(Box)(({ theme }) => ({
+  // Takes the parent's spare height when it's a flex column, so the panel
+  // can grow and keep the actions at the bottom.
+  flexGrow: 1,
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(4),
-});
+}));
 
-export const StepsRoot = styled(Box)(stepsRootStyles);
-
-const stepsStepperStyles = ({ theme }: { theme: Theme }): CSSObject => {
+export const StepsStepper = styled(Stepper)(({ theme }) => {
   const { palette } = theme.vars ?? theme;
   const label = `& .${stepLabelClasses.label}`;
 
@@ -39,18 +29,10 @@ const stepsStepperStyles = ({ theme }: { theme: Theme }): CSSObject => {
       fontWeight: theme.typography.fontWeightBold,
     },
     [`${label}.${stepLabelClasses.disabled}`]: { color: palette.text.disabled },
-    // Too narrow for labels: show indicators only; the panel heading names
-    // the current step. Hidden visually only, so it still names each button.
-    [theme.breakpoints.down('sm')]: {
-      [`& .${stepLabelClasses.labelContainer}`]: visuallyHidden,
-      [`& .${stepLabelClasses.iconContainer}`]: { paddingRight: 0 },
-    },
   };
-};
+});
 
-export const StepsStepper = styled(Stepper)(stepsStepperStyles);
-
-const stepsConnectorStyles = ({ theme }: { theme: Theme }): CSSObject => {
+export const StepsConnector = styled(StepConnector)(({ theme }) => {
   const { palette } = theme.vars ?? theme;
 
   return {
@@ -68,17 +50,12 @@ const stepsConnectorStyles = ({ theme }: { theme: Theme }): CSSObject => {
         backgroundImage: `linear-gradient(90deg, ${palette.primary.main}, ${palette.secondary.main})`,
       },
   };
-};
+});
 
-export const StepsConnector = styled(StepConnector)(stepsConnectorStyles);
-
-const stepPanelStyles = ({ theme }: { theme: Theme }): CSSObject => ({
+export const StepPanel = styled(Box)(({ theme }) => ({
+  flexGrow: 1,
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(2),
   minHeight: theme.spacing(16),
-  animation: `${stepEnter} ${STEP_ENTER_DURATION_MS}ms ${theme.transitions.easing.easeOut}`,
-  '@media (prefers-reduced-motion: reduce)': { animation: 'none' },
-});
-
-export const StepPanel = styled(Box)(stepPanelStyles);
+}));

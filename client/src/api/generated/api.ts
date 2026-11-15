@@ -185,7 +185,6 @@ export function useMe<TData = Awaited<ReturnType<typeof me>>, TError = unknown>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof me>>, TError, TData>>, request?: SecondParameter<typeof request>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-
 export function useMe<TData = Awaited<ReturnType<typeof me>>, TError = unknown>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof me>>, TError, TData>>, request?: SecondParameter<typeof request>}
  , queryClient?: QueryClient
@@ -257,6 +256,7 @@ export type GroupSessionsQueryResult = NonNullable<Awaited<ReturnType<typeof gro
 export type GroupSessionsQueryError = unknown
 
 
+/** @summary Get a group of sessions of any type */
 export function useGroupSessions<TData = Awaited<ReturnType<typeof groupSessions>>, TError = unknown>(
  groupSessionsBodyDto: GroupSessionsBodyDto,
     params: undefined |  GroupSessionsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessions>>, TError, TData>> & Pick<
@@ -268,6 +268,7 @@ export function useGroupSessions<TData = Awaited<ReturnType<typeof groupSessions
       >, request?: SecondParameter<typeof request>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/** @summary Get a group of sessions of any type */
 export function useGroupSessions<TData = Awaited<ReturnType<typeof groupSessions>>, TError = unknown>(
  groupSessionsBodyDto: GroupSessionsBodyDto,
     params?: GroupSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessions>>, TError, TData>> & Pick<
@@ -279,15 +280,13 @@ export function useGroupSessions<TData = Awaited<ReturnType<typeof groupSessions
       >, request?: SecondParameter<typeof request>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/** @summary Get a group of sessions of any type */
 export function useGroupSessions<TData = Awaited<ReturnType<typeof groupSessions>>, TError = unknown>(
  groupSessionsBodyDto: GroupSessionsBodyDto,
     params?: GroupSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessions>>, TError, TData>>, request?: SecondParameter<typeof request>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary Get a group of sessions of any type
- */
-
+/** @summary Get a group of sessions of any type */
 export function useGroupSessions<TData = Awaited<ReturnType<typeof groupSessions>>, TError = unknown>(
  groupSessionsBodyDto: GroupSessionsBodyDto,
     params?: GroupSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessions>>, TError, TData>>, request?: SecondParameter<typeof request>}
@@ -363,6 +362,7 @@ export type GroupSessionsByTypeQueryResult = NonNullable<Awaited<ReturnType<type
 export type GroupSessionsByTypeQueryError = unknown
 
 
+/** @summary Get a group of sessions of a single type */
 export function useGroupSessionsByType<TData = Awaited<ReturnType<typeof groupSessionsByType>>, TError = unknown>(
  type: SessionType,
     groupSessionsBodyDto: GroupSessionsBodyDto,
@@ -375,6 +375,7 @@ export function useGroupSessionsByType<TData = Awaited<ReturnType<typeof groupSe
       >, request?: SecondParameter<typeof request>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/** @summary Get a group of sessions of a single type */
 export function useGroupSessionsByType<TData = Awaited<ReturnType<typeof groupSessionsByType>>, TError = unknown>(
  type: SessionType,
     groupSessionsBodyDto: GroupSessionsBodyDto,
@@ -387,16 +388,14 @@ export function useGroupSessionsByType<TData = Awaited<ReturnType<typeof groupSe
       >, request?: SecondParameter<typeof request>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/** @summary Get a group of sessions of a single type */
 export function useGroupSessionsByType<TData = Awaited<ReturnType<typeof groupSessionsByType>>, TError = unknown>(
  type: SessionType,
     groupSessionsBodyDto: GroupSessionsBodyDto,
     params?: GroupSessionsByTypeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupSessionsByType>>, TError, TData>>, request?: SecondParameter<typeof request>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary Get a group of sessions of a single type
- */
-
+/** @summary Get a group of sessions of a single type */
 export function useGroupSessionsByType<TData = Awaited<ReturnType<typeof groupSessionsByType>>, TError = unknown>(
  type: SessionType,
     groupSessionsBodyDto: GroupSessionsBodyDto,
@@ -466,6 +465,7 @@ export type CountSessionsQueryResult = NonNullable<Awaited<ReturnType<typeof cou
 export type CountSessionsQueryError = unknown
 
 
+/** @summary Count sessions of any type */
 export function useCountSessions<TData = Awaited<ReturnType<typeof countSessions>>, TError = unknown>(
  sessionSearchValuesDto: SessionSearchValuesDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof countSessions>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
@@ -476,6 +476,7 @@ export function useCountSessions<TData = Awaited<ReturnType<typeof countSessions
       >, request?: SecondParameter<typeof request>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/** @summary Count sessions of any type */
 export function useCountSessions<TData = Awaited<ReturnType<typeof countSessions>>, TError = unknown>(
  sessionSearchValuesDto: SessionSearchValuesDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof countSessions>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
@@ -486,14 +487,12 @@ export function useCountSessions<TData = Awaited<ReturnType<typeof countSessions
       >, request?: SecondParameter<typeof request>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/** @summary Count sessions of any type */
 export function useCountSessions<TData = Awaited<ReturnType<typeof countSessions>>, TError = unknown>(
  sessionSearchValuesDto: SessionSearchValuesDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof countSessions>>, TError, TData>>, request?: SecondParameter<typeof request>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary Count sessions of any type
- */
-
+/** @summary Count sessions of any type */
 export function useCountSessions<TData = Awaited<ReturnType<typeof countSessions>>, TError = unknown>(
  sessionSearchValuesDto: SessionSearchValuesDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof countSessions>>, TError, TData>>, request?: SecondParameter<typeof request>}
  , queryClient?: QueryClient
@@ -564,6 +563,7 @@ export type CountSessionsByTypeQueryResult = NonNullable<Awaited<ReturnType<type
 export type CountSessionsByTypeQueryError = unknown
 
 
+/** @summary Count sessions of a single type */
 export function useCountSessionsByType<TData = Awaited<ReturnType<typeof countSessionsByType>>, TError = unknown>(
  type: SessionType,
     sessionSearchValuesDto: SessionSearchValuesDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof countSessionsByType>>, TError, TData>> & Pick<
@@ -575,6 +575,7 @@ export function useCountSessionsByType<TData = Awaited<ReturnType<typeof countSe
       >, request?: SecondParameter<typeof request>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/** @summary Count sessions of a single type */
 export function useCountSessionsByType<TData = Awaited<ReturnType<typeof countSessionsByType>>, TError = unknown>(
  type: SessionType,
     sessionSearchValuesDto: SessionSearchValuesDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof countSessionsByType>>, TError, TData>> & Pick<
@@ -586,15 +587,13 @@ export function useCountSessionsByType<TData = Awaited<ReturnType<typeof countSe
       >, request?: SecondParameter<typeof request>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/** @summary Count sessions of a single type */
 export function useCountSessionsByType<TData = Awaited<ReturnType<typeof countSessionsByType>>, TError = unknown>(
  type: SessionType,
     sessionSearchValuesDto: SessionSearchValuesDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof countSessionsByType>>, TError, TData>>, request?: SecondParameter<typeof request>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary Count sessions of a single type
- */
-
+/** @summary Count sessions of a single type */
 export function useCountSessionsByType<TData = Awaited<ReturnType<typeof countSessionsByType>>, TError = unknown>(
  type: SessionType,
     sessionSearchValuesDto: SessionSearchValuesDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof countSessionsByType>>, TError, TData>>, request?: SecondParameter<typeof request>}
@@ -669,9 +668,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type DeleteSessionMutationError = void
     export type DeleteSessionMutationVariables = {type: SessionType;sessionId: string;params: DeleteSessionParams}
 
-    /**
- * @summary Delete a session
- */
+    /** @summary Delete a session */
 export const useDeleteSession = <TError = void,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteSession>>, TError,DeleteSessionMutationVariables, TContext>, request?: SecondParameter<typeof request>}
  , queryClient?: QueryClient): UseMutationResult<

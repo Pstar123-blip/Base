@@ -1,3 +1,7 @@
+// Also loaded by vite.config.ts in Node: keep imports to types and plain
+// packages, no app aliases or UI modules.
+import type { Accept } from 'react-dropzone';
+
 export const REQUEST_TIMEOUT_MS = 15_000;
 
 export const QUERY_STALE_TIME_MS = 30_000;
@@ -19,6 +23,19 @@ export const AUTH_POPUP_REOPEN_MS = 1000;
 
 /** Used when a download has no file name from the caller or the URL. */
 export const DEFAULT_DOWNLOAD_FILE_NAME = 'download';
+
+/** The image types the app accepts for upload. */
+export const JPEG_ACCEPT: Accept = { 'image/jpeg': ['.jpg', '.jpeg'] };
+export const PNG_ACCEPT: Accept = { 'image/png': ['.png'] };
+export const IMAGE_ACCEPT: Accept = { ...JPEG_ACCEPT, ...PNG_ACCEPT };
+export const IMAGE_ACCEPT_DESCRIPTION = 'JPEG or PNG';
+
+/**
+ * The standard footprint of an upload area, in px: a dropzone, or the preview
+ * that takes its place. Shared so every upload control lines up.
+ */
+export const UPLOAD_AREA_HEIGHT = 340;
+export const UPLOAD_AREA_MAX_WIDTH = 720;
 
 export const COLOR_MODE_STORAGE_KEY = 'color-mode';
 export const COLOR_SCHEME_BACKGROUNDS = {

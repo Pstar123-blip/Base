@@ -1,6 +1,6 @@
 # Example UI
 
-This folder contains the replaceable layout, dashboard, and their UI components.
+This folder contains the replaceable layout and its UI components.
 Authentication and the essential sign-in, unauthorized, and not-found pages live in `core/`.
 
 When starting a project:

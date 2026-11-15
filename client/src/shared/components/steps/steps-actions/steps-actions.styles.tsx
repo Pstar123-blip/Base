@@ -17,13 +17,12 @@ const primaryActionStyles = ({ theme }: { theme: Theme }): CSSObject => {
 
   return {
     paddingInline: theme.spacing(3),
-    transition: theme.transitions.create(['box-shadow', 'transform']),
+    transition: theme.transitions.create('box-shadow'),
     [enabled]: {
       backgroundImage: `linear-gradient(135deg, ${palette.primary.main}, ${palette.secondary.main})`,
     },
     [`${enabled}:hover`]: {
       boxShadow: `0 6px 20px ${theme.alpha(palette.primary.main, 0.45)}`,
-      transform: 'translateY(-1px)',
     },
   };
 };
