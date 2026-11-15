@@ -18,7 +18,9 @@ export const EvaluationSummaryPage = () => {
 
   return (
     <Stack spacing={3}>
-      <Typography variant="h4">{SUMMARY_TITLE}</Typography>
+      <Typography variant="h4" component="h1">
+        {SUMMARY_TITLE}
+      </Typography>
       <ImageGallery
         items={images}
         getId={getId}

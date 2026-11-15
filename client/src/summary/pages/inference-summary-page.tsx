@@ -15,7 +15,9 @@ export const InferenceSummaryPage = () => {
 
   return (
     <Stack spacing={3}>
-      <Typography variant="h4">{SUMMARY_TITLE}</Typography>
+      <Typography variant="h4" component="h1">
+        {SUMMARY_TITLE}
+      </Typography>
       <CompareRow imageA={imageA} imageB={imageB} />
       <SelectionList selections={selections} />
     </Stack>

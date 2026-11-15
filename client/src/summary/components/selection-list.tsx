@@ -25,7 +25,9 @@ export const SelectionList = ({ selections, onRemove }: SelectionListProps) => {
 
   return (
     <Section spacing={1}>
-      <Typography variant="h6">{SELECTIONS_TITLE}</Typography>
+      <Typography variant="h6" component="h2">
+        {SELECTIONS_TITLE}
+      </Typography>
       <Chips direction="row">{selections.map(renderChip)}</Chips>
     </Section>
   );
