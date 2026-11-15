@@ -1,18 +1,17 @@
 import { Box, Typography } from '@mui/material';
-import { type CSSObject, styled, type Theme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 
 import { STEP_TITLE_LETTER_SPACING } from './consts';
 
-const stepHeaderRootStyles: CSSObject = {
+export const StepHeaderRoot = styled(Box)({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
   textAlign: 'center',
-};
+});
 
-export const StepHeaderRoot = styled(Box)(stepHeaderRootStyles);
-
-const stepTitleStyles = ({ theme }: { theme: Theme }): CSSObject => {
+// An h2, under the page's h1, at h5 size.
+export const StepTitle = styled('h2')(({ theme }) => {
   const { palette } = theme.vars ?? theme;
 
   return {
@@ -25,13 +24,8 @@ const stepTitleStyles = ({ theme }: { theme: Theme }): CSSObject => {
     backgroundImage: `linear-gradient(135deg, ${palette.primary.main}, ${palette.secondary.main})`,
     backgroundClip: 'text',
   };
-};
-
-// An h2, under the page's h1, at h5 size.
-export const StepTitle = styled('h2')(stepTitleStyles);
-
-const stepSubtitleStyles = ({ theme }: { theme: Theme }): CSSObject => ({
-  color: (theme.vars ?? theme).palette.text.secondary,
 });
 
-export const StepSubtitle = styled(Typography)(stepSubtitleStyles);
+export const StepSubtitle = styled(Typography)(({ theme }) => ({
+  color: (theme.vars ?? theme).palette.text.secondary,
+}));

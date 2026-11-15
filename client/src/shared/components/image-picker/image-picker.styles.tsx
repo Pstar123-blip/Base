@@ -1,10 +1,5 @@
 import { Box } from '@mui/material';
-import {
-  type CSSObject,
-  keyframes,
-  styled,
-  type Theme,
-} from '@mui/material/styles';
+import { keyframes, styled } from '@mui/material/styles';
 
 import { ImageTile } from '@/shared/components/image-tile/image-tile';
 import { UPLOAD_AREA_HEIGHT, UPLOAD_AREA_MAX_WIDTH } from '@/shared/constants';
@@ -18,18 +13,14 @@ const previewEnter = keyframes`
 
 // The picker's footprint. It matches the dropzone's default size and the
 // preview fills it, so one takes the other's place exactly.
-const imagePickerRootStyles: CSSObject = {
+export const ImagePickerRoot = styled(Box)({
   width: '100%',
   height: UPLOAD_AREA_HEIGHT,
   maxWidth: UPLOAD_AREA_MAX_WIDTH,
-};
+});
 
-export const ImagePickerRoot = styled(Box)(imagePickerRootStyles);
-
-const previewStyles = ({ theme }: { theme: Theme }): CSSObject => ({
+export const Preview = styled(ImageTile)(({ theme }) => ({
   borderRadius: theme.spacing(PREVIEW_BORDER_RADIUS),
   animation: `${previewEnter} ${theme.transitions.duration.standard}ms ${theme.transitions.easing.easeOut}`,
   '@media (prefers-reduced-motion: reduce)': { animation: 'none' },
-});
-
-export const Preview = styled(ImageTile)(previewStyles);
+}));

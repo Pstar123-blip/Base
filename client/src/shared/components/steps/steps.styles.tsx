@@ -5,12 +5,7 @@ import {
   stepLabelClasses,
   Stepper,
 } from '@mui/material';
-import {
-  type CSSObject,
-  keyframes,
-  styled,
-  type Theme,
-} from '@mui/material/styles';
+import { keyframes, styled } from '@mui/material/styles';
 
 import { CONNECTOR_THICKNESS_PX, STEP_ENTER_DURATION_MS } from './consts';
 
@@ -19,18 +14,16 @@ const stepEnter = keyframes`
   to { opacity: 1; transform: none; }
 `;
 
-const stepsRootStyles = ({ theme }: { theme: Theme }): CSSObject => ({
+export const StepsRoot = styled(Box)(({ theme }) => ({
   // Takes the parent's spare height when it's a flex column, so the panel
   // can grow and keep the actions at the bottom.
   flexGrow: 1,
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(4),
-});
+}));
 
-export const StepsRoot = styled(Box)(stepsRootStyles);
-
-const stepsStepperStyles = ({ theme }: { theme: Theme }): CSSObject => {
+export const StepsStepper = styled(Stepper)(({ theme }) => {
   const { palette } = theme.vars ?? theme;
   const label = `& .${stepLabelClasses.label}`;
 
@@ -42,11 +35,9 @@ const stepsStepperStyles = ({ theme }: { theme: Theme }): CSSObject => {
     },
     [`${label}.${stepLabelClasses.disabled}`]: { color: palette.text.disabled },
   };
-};
+});
 
-export const StepsStepper = styled(Stepper)(stepsStepperStyles);
-
-const stepsConnectorStyles = ({ theme }: { theme: Theme }): CSSObject => {
+export const StepsConnector = styled(StepConnector)(({ theme }) => {
   const { palette } = theme.vars ?? theme;
 
   return {
@@ -64,11 +55,9 @@ const stepsConnectorStyles = ({ theme }: { theme: Theme }): CSSObject => {
         backgroundImage: `linear-gradient(90deg, ${palette.primary.main}, ${palette.secondary.main})`,
       },
   };
-};
+});
 
-export const StepsConnector = styled(StepConnector)(stepsConnectorStyles);
-
-const stepPanelStyles = ({ theme }: { theme: Theme }): CSSObject => ({
+export const StepPanel = styled(Box)(({ theme }) => ({
   flexGrow: 1,
   display: 'flex',
   flexDirection: 'column',
@@ -76,6 +65,4 @@ const stepPanelStyles = ({ theme }: { theme: Theme }): CSSObject => ({
   minHeight: theme.spacing(16),
   animation: `${stepEnter} ${STEP_ENTER_DURATION_MS}ms ${theme.transitions.easing.easeOut}`,
   '@media (prefers-reduced-motion: reduce)': { animation: 'none' },
-});
-
-export const StepPanel = styled(Box)(stepPanelStyles);
+}));

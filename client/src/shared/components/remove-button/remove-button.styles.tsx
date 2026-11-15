@@ -1,10 +1,10 @@
 import { IconButton } from '@mui/material';
-import { type CSSObject, styled, type Theme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 
 import { FROSTED_BACKGROUND_OPACITY, FROSTED_BLUR } from './consts';
 
 // Frosted, so it stays readable over any image.
-const frostedIconButtonStyles = ({ theme }: { theme: Theme }): CSSObject => {
+export const FrostedIconButton = styled(IconButton)(({ theme }) => {
   const { palette } = theme.vars ?? theme;
 
   return {
@@ -19,6 +19,4 @@ const frostedIconButtonStyles = ({ theme }: { theme: Theme }): CSSObject => {
       backgroundColor: palette.background.paper,
     },
   };
-};
-
-export const FrostedIconButton = styled(IconButton)(frostedIconButtonStyles);
+});

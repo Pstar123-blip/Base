@@ -19,8 +19,9 @@ import { type ImageTileFit } from './types';
 const actionArea = `.${cardActionAreaClasses.root}`;
 const media = `.${cardMediaClasses.root}`;
 
-// The image takes whatever height the caption leaves.
-const tileMediaStyles = ({ theme }: { theme: Theme }): CSSObject => ({
+// Shared by the image and its fallback: takes whatever height the caption
+// leaves.
+const tileMediaStyles = (theme: Theme): CSSObject => ({
   flex: 1,
   minHeight: 0,
   width: '100%',
@@ -30,10 +31,9 @@ const tileMediaStyles = ({ theme }: { theme: Theme }): CSSObject => ({
 type TileCardProps = { fit: ImageTileFit };
 
 // Fills its container: the parent decides the tile's size and shape.
-const tileCardStyles = ({
-  theme,
-  fit,
-}: TileCardProps & { theme: Theme }): CSSObject => ({
+export const TileCard = styled(Card, {
+  shouldForwardProp: (prop) => prop !== 'fit',
+})<TileCardProps>(({ theme, fit }) => ({
   position: 'relative',
   display: 'flex',
   flexDirection: 'column',
@@ -43,7 +43,7 @@ const tileCardStyles = ({
     duration: theme.transitions.duration.short,
   }),
   [`& ${media}`]: {
-    ...tileMediaStyles({ theme }),
+    ...tileMediaStyles(theme),
     objectFit: fit,
     transition: theme.transitions.create('transform', {
       duration: theme.transitions.duration.standard,
@@ -69,42 +69,30 @@ const tileCardStyles = ({
         },
       },
   },
-});
+}));
 
-export const TileCard = styled(Card, {
-  shouldForwardProp: (prop) => prop !== 'fit',
-})<TileCardProps>(tileCardStyles);
-
-const tileFallbackStyles = ({ theme }: { theme: Theme }): CSSObject => ({
-  ...tileMediaStyles({ theme }),
+export const TileFallback = styled(Box)(({ theme }) => ({
+  ...tileMediaStyles(theme),
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
   color: (theme.vars ?? theme).palette.text.disabled,
-});
+}));
 
-export const TileFallback = styled(Box)(tileFallbackStyles);
-
-const tileActionStyles = ({ theme }: { theme: Theme }): CSSObject => ({
+export const TileAction = styled(Box)(({ theme }) => ({
   position: 'absolute',
   top: theme.spacing(TILE_ACTION_INSET),
   right: theme.spacing(TILE_ACTION_INSET),
   zIndex: 1,
-});
+}));
 
-export const TileAction = styled(Box)(tileActionStyles);
-
-const tileCaptionStyles = ({ theme }: { theme: Theme }): CSSObject => ({
+export const TileCaption = styled(CardContent)(({ theme }) => ({
   flexShrink: 0,
   padding: theme.spacing(1, 1.5),
   '&:last-child': { paddingBottom: theme.spacing(1) },
-});
+}));
 
-export const TileCaption = styled(CardContent)(tileCaptionStyles);
-
-const tileCaptionTextStyles = ({ theme }: { theme: Theme }): CSSObject => ({
+export const TileCaptionText = styled(Typography)(({ theme }) => ({
   ...theme.typography.body2,
   color: (theme.vars ?? theme).palette.text.secondary,
-});
-
-export const TileCaptionText = styled(Typography)(tileCaptionTextStyles);
+}));

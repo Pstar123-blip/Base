@@ -3,6 +3,7 @@ import {
   createRoute,
   createRouter,
   type ErrorComponentProps,
+  redirect,
 } from '@tanstack/react-router';
 
 import { requireSession } from '@/core/auth/require-session';
@@ -10,7 +11,6 @@ import { SessionGate } from '@/core/auth/session-gate';
 import { NotFoundPage } from '@/core/pages/not-found-page';
 import { SigningIn } from '@/core/pages/signing-in';
 import { UnauthorizedRoute } from '@/core/pages/unauthorized-route';
-import { Dashboard } from '@/demo/dashboard/dashboard';
 import { Layout } from '@/demo/layout/layout';
 import { EvaluationPage } from '@/evaluation/pages/evaluation-page';
 import { InferencePage } from '@/inference/pages/inference-page';
@@ -57,10 +57,13 @@ const layoutRoute = createRoute({
   component: ProtectedLayout,
 });
 
+// There's no home page: land on the first session type.
 const index = createRoute({
   getParentRoute: () => layoutRoute,
   path: '/',
-  component: Dashboard,
+  beforeLoad: () => {
+    throw redirect({ to: SESSION_TYPE_PATHS.training });
+  },
 });
 const sessions = createRoute({
   getParentRoute: () => layoutRoute,

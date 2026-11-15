@@ -51,7 +51,6 @@ export const ImagePicker = ({
         />
       ) : (
         <FileDropzone
-          value={[]}
           onChange={pick}
           label={label}
           description={description}
