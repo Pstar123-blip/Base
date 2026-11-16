@@ -16,13 +16,12 @@ import {
 
 // The default size. A parent that needs another size overrides it with
 // `styled(FileDropzone)`.
-export const DropzoneRoot = styled(Box)(({ theme }) => ({
+export const DropzoneRoot = styled(Box)({
   display: 'flex',
   flexDirection: 'column',
-  gap: theme.spacing(2),
   width: '100%',
   height: UPLOAD_AREA_HEIGHT,
-}));
+});
 
 export const IconBadge = styled(Box)(({ theme }) => {
   const { palette } = theme.vars ?? theme;
@@ -101,6 +100,12 @@ export const DropDescription = styled(Typography)(({ theme }) => {
   };
 });
 
+// Stacks the lines, as the snackbar lays its message out in a row.
+export const RejectionList = styled(Box)({
+  display: 'flex',
+  flexDirection: 'column',
+});
+
 export const RejectionLine = styled(Typography)(({ theme }) => ({
   ...theme.typography.body2,
 }));
@@ -124,7 +129,7 @@ export const DropArea = styled(Box)(({ theme }) => {
     alignItems: 'center',
     justifyContent: 'center',
     gap: DROP_AREA_GAP,
-    // Takes the height the rejection alert leaves.
+    // Fills the root's height.
     flex: '1 1 0',
     minHeight: 0,
     padding: DROP_AREA_PADDING,
