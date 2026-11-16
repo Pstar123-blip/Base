@@ -2,7 +2,7 @@ export const DEFAULT_LABEL = 'Drop your files or folders here';
 export const DEFAULT_DRAG_ACTIVE_LABEL = 'Release to upload';
 export const DEFAULT_DRAG_REJECT_LABEL = "These files aren't supported";
 // Reads "or click to browse or choose a folder", the last part a link.
-export const BROWSE_HINT = 'click to browse';
+export const BROWSE_HINT = 'click to browse files';
 export const FOLDER_HINT_JOINER = ' or ';
 export const CHOOSE_FOLDER_LABEL = 'choose a folder';
 
