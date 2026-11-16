@@ -8,7 +8,8 @@ import { Steps } from '@/shared/components/steps/steps';
 import type { StepItem } from '@/shared/components/steps/types';
 import { SESSION_TYPE_LABELS } from '@/shared/session-type-constants';
 
-import { SelectTypeStep } from '../components/select-type-step/select-type-step';
+import { type Algorithm } from '../components/select-algorithms-step/consts';
+import { SelectAlgorithmsStep } from '../components/select-algorithms-step/select-algorithms-step';
 import {
   FIRST_IMAGE_PICKER,
   INFERENCE_STEPS,
@@ -21,6 +22,7 @@ export const InferencePage = () => {
   // Held here, not in the step, so the files survive moving between steps.
   const [firstImage, setFirstImage] = useState<File | null>(null);
   const [secondImage, setSecondImage] = useState<File | null>(null);
+  const [algorithms, setAlgorithms] = useState<Algorithm[]>([]);
 
   // TODO: derive from the select step once it has content.
   const selections: Selection[] = [];
@@ -52,10 +54,14 @@ export const InferencePage = () => {
       isComplete: !!firstImage && !!secondImage,
     },
     {
-      ...INFERENCE_STEPS.selectType,
-      content: <SelectTypeStep />,
-      // Empty for now: derive from its state once it has content.
-      isComplete: true,
+      ...INFERENCE_STEPS.selectAlgorithms,
+      content: (
+        <SelectAlgorithmsStep
+          algorithms={algorithms}
+          onAlgorithmsChange={setAlgorithms}
+        />
+      ),
+      isComplete: algorithms.length > 0,
     },
     {
       ...INFERENCE_STEPS.summary,

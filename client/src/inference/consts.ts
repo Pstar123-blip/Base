@@ -3,7 +3,7 @@ import { IMAGE_ACCEPT, IMAGE_ACCEPT_DESCRIPTION } from '@/shared/constants';
 
 export const INFERENCE_STEPS = {
   upload: { id: 'upload', label: 'Upload' },
-  selectType: { id: 'select-type', label: 'Select type' },
+  selectAlgorithms: { id: 'select-algorithms', label: 'Select algorithms' },
   summary: { id: 'summary', label: 'Summary' },
 } as const;
 
