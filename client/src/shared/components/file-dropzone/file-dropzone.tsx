@@ -9,8 +9,11 @@ import {
   DEFAULT_DRAG_ACTIVE_LABEL,
   DEFAULT_DRAG_REJECT_LABEL,
   DEFAULT_LABEL,
+  DEFAULT_SINGLE_LABEL,
   FOLDER_HINT_JOINER,
   FOLDER_INPUT_ATTRIBUTES,
+  getMoreRejectionsLabel,
+  MAX_REJECTION_LINES,
 } from './consts';
 import {
   BrowseHint,
@@ -53,7 +56,7 @@ export const FileDropzone = ({
   className,
   value = [],
   onChange,
-  label = DEFAULT_LABEL,
+  label,
   dragActiveLabel = DEFAULT_DRAG_ACTIVE_LABEL,
   dragRejectLabel = DEFAULT_DRAG_REJECT_LABEL,
   description,
@@ -67,19 +70,26 @@ export const FileDropzone = ({
   const isDisabled = disabled || isFull;
   const folderInputRef = useRef<HTMLInputElement>(null);
 
-  // One snackbar per drop, so a folder full of rejected files doesn't flood
-  // the screen.
+  // One short snackbar per drop, so a folder full of rejected files doesn't
+  // flood the screen.
   const notifyRejections: DropzoneOptions['onDropRejected'] = (
     rejections,
     event,
   ) => {
+    const hiddenCount = rejections.length - MAX_REJECTION_LINES;
+
     enqueueSnackbar(
       <RejectionList>
-        {rejections.map(({ file, errors }, index) => (
-          <RejectionLine key={`${file.name}-${index}`}>
-            {file.name}: {errors.map(({ message }) => message).join(', ')}
-          </RejectionLine>
-        ))}
+        {rejections
+          .slice(0, MAX_REJECTION_LINES)
+          .map(({ file, errors }, index) => (
+            <RejectionLine key={`${file.name}-${index}`}>
+              {file.name}: {errors.map(({ message }) => message).join(', ')}
+            </RejectionLine>
+          ))}
+        {hiddenCount > 0 && (
+          <RejectionLine>{getMoreRejectionsLabel(hiddenCount)}</RejectionLine>
+        )}
       </RejectionList>,
       { variant: 'error' },
     );
@@ -115,7 +125,7 @@ export const FileDropzone = ({
     ? dragRejectLabel
     : isDragActive
       ? dragActiveLabel
-      : label;
+      : (label ?? (multiple ? DEFAULT_LABEL : DEFAULT_SINGLE_LABEL));
 
   return (
     <DropzoneRoot className={className}>
@@ -129,7 +139,10 @@ export const FileDropzone = ({
         <Box>
           <input {...getInputProps()} />
           {/* One picker can't offer files and folders both, so folders get
-              their own input. Its picks go through the same checks. */}
+              their own input. It reuses the file input's props, so its picks
+              go through the same `onChange`, `accept` and `multiple`; only
+              its `ref` is replaced, so react-dropzone's `open()` and the
+              area's click still use the file input. */}
           {multiple && (
             <input
               {...getInputProps()}
