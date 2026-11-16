@@ -2,11 +2,11 @@ import { Link, TableCell, TableRow } from '@mui/material';
 import { Link as RouterLink, type LinkProps } from '@tanstack/react-router';
 
 import { getResultsPath } from '../consts';
-import type { Session } from '../types';
+import type { ImageOpener, Session } from '../types';
 import { formatDateTime } from '../utils/format';
 import { ProgressCell } from './progress-cell';
 import { RowOptions } from './row-options';
-import { type ImageOpener, SessionImage } from './session-image';
+import { SessionImage } from './session-image';
 import { IdText } from './session-row.styles';
 import { StatusTag } from './status-tag';
 import { TypeTag } from './type-tag';

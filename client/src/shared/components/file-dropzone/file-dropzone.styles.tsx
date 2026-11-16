@@ -1,5 +1,5 @@
 import CloudUploadRoundedIcon from '@mui/icons-material/CloudUploadRounded';
-import { Box, Typography } from '@mui/material';
+import { Box, Link, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import { UPLOAD_AREA_HEIGHT } from '@/shared/constants';
@@ -16,13 +16,12 @@ import {
 
 // The default size. A parent that needs another size overrides it with
 // `styled(FileDropzone)`.
-export const DropzoneRoot = styled(Box)(({ theme }) => ({
+export const DropzoneRoot = styled(Box)({
   display: 'flex',
   flexDirection: 'column',
-  gap: theme.spacing(2),
   width: '100%',
   height: UPLOAD_AREA_HEIGHT,
-}));
+});
 
 export const IconBadge = styled(Box)(({ theme }) => {
   const { palette } = theme.vars ?? theme;
@@ -101,9 +100,23 @@ export const DropDescription = styled(Typography)(({ theme }) => {
   };
 });
 
+// Stacks the lines, as the snackbar lays its message out in a row.
+export const RejectionList = styled(Box)({
+  display: 'flex',
+  flexDirection: 'column',
+});
+
 export const RejectionLine = styled(Typography)(({ theme }) => ({
   ...theme.typography.body2,
 }));
+
+// The folder link, inline in the hint. MUI middle-aligns link buttons, which
+// lifts it off the hint's baseline. Cast back, as `styled` drops the
+// `component` prop from Link's types.
+export const FolderLink = styled(Link)(({ theme }) => ({
+  verticalAlign: 'baseline',
+  fontWeight: theme.typography.fontWeightMedium,
+})) as typeof Link;
 
 export const DropArea = styled(Box)(({ theme }) => {
   const { palette } = theme.vars ?? theme;
@@ -116,7 +129,7 @@ export const DropArea = styled(Box)(({ theme }) => {
     alignItems: 'center',
     justifyContent: 'center',
     gap: DROP_AREA_GAP,
-    // Takes the height the rejection alert leaves.
+    // Fills the root's height.
     flex: '1 1 0',
     minHeight: 0,
     padding: DROP_AREA_PADDING,

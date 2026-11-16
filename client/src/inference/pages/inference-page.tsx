@@ -1,7 +1,9 @@
 import { useState } from 'react';
 
+import { CompareSummaryStep } from '@/shared/components/compare-summary-step/compare-summary-step';
 import { ImagePickersStep } from '@/shared/components/image-pickers-step/image-pickers-step';
 import { PageLayout } from '@/shared/components/page-layout/page-layout';
+import type { Selection } from '@/shared/components/selection-list/types';
 import { Steps } from '@/shared/components/steps/steps';
 import type { StepItem } from '@/shared/components/steps/types';
 import { SESSION_TYPE_LABELS } from '@/shared/session-type-constants';
@@ -21,6 +23,9 @@ export const InferencePage = () => {
   const [firstImage, setFirstImage] = useState<File | null>(null);
   const [secondImage, setSecondImage] = useState<File | null>(null);
   const [algorithms, setAlgorithms] = useState<Algorithm[]>([]);
+
+  // TODO: derive from the select step once it has content.
+  const selections: Selection[] = [];
 
   // Not wired to the API yet.
   const finish = () => {};
@@ -57,6 +62,19 @@ export const InferencePage = () => {
         />
       ),
       isComplete: algorithms.length > 0,
+    },
+    {
+      ...INFERENCE_STEPS.summary,
+      content: (
+        <CompareSummaryStep
+          firstTitle={FIRST_IMAGE_PICKER.label}
+          secondTitle={SECOND_IMAGE_PICKER.label}
+          firstImage={firstImage}
+          secondImage={secondImage}
+          selections={selections}
+        />
+      ),
+      isComplete: true,
     },
   ];
 

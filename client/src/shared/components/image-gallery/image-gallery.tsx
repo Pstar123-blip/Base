@@ -26,6 +26,11 @@ export type ImageGalleryProps<T> = {
   lightbox?: boolean;
   /** Space between tiles, in theme spacing units. Defaults to `1`. */
   gap?: number;
+  /**
+   * Maximum number of columns. Fewer are used when tiles would get narrower
+   * than the minimum width. Defaults to as many as fit.
+   */
+  columns?: number;
   emptyMessage?: string;
   /** Accessible name for the gallery list. */
   label?: string;
@@ -39,6 +44,7 @@ export const ImageGallery = <T,>({
   renderAction,
   lightbox = true,
   gap = DEFAULT_GALLERY_GAP,
+  columns,
   emptyMessage = DEFAULT_EMPTY_MESSAGE,
   label,
 }: ImageGalleryProps<T>) => {
@@ -102,7 +108,7 @@ export const ImageGallery = <T,>({
 
   return (
     <>
-      <GalleryGrid role="list" aria-label={label} gap={gap}>
+      <GalleryGrid role="list" aria-label={label} gap={gap} columns={columns}>
         {items.map(renderTile)}
       </GalleryGrid>
       {lightbox && activeItem && (
