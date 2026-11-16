@@ -42,3 +42,5 @@ export const COLOR_SCHEME_BACKGROUNDS = {
   light: '#f6f7fb',
   dark: '#0f111a',
 } as const;
+
+export const SUMMARY_TITLE = 'Summary';

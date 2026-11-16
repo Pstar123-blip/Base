@@ -4,6 +4,7 @@ import { JPEG_ACCEPT, PNG_ACCEPT } from '@/shared/constants';
 export const TRAINING_STEPS = {
   upload: { id: 'upload', label: 'Upload' },
   selectFilters: { id: 'select-filters', label: 'Select filters' },
+  summary: { id: 'summary', label: 'Summary' },
 } as const;
 
 export const UPLOAD_TITLE = 'Upload files';
@@ -20,3 +21,6 @@ export const SECOND_IMAGE_PICKER: ImagePickerConfig = {
   description: 'PNG only',
   accept: PNG_ACCEPT,
 };
+
+export const REMOVE_LAST_SELECTION_REASON =
+  'At least one selection is required.';
