@@ -33,7 +33,7 @@ const optionTileStyles = ({
       '&:hover': {
         borderColor: accent.main,
         transform: 'translateY(-1px)',
-        boxShadow: `0 4px 12px ${theme.alpha(accent.main, 0.15)}`,
+        boxShadow: `${theme.spacing(0, 0.5, 1.5)} ${theme.alpha(accent.main, 0.15)}`,
       },
       '&:active': { transform: 'translateY(0)' },
     }),

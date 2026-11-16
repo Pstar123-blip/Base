@@ -4,6 +4,9 @@ import { type ChoiceGroupProps, type ChoiceValue } from '../types';
 export const getSelectedValues = <TValue extends ChoiceValue>(
   props: ChoiceGroupProps<TValue>,
 ): readonly TValue[] => {
+  // `ChoiceGroupProps` is a union discriminated by `multiple`: only
+  // `multiple: false` is single mode, so `true` or omitted both narrow
+  // `props.value` to an array here.
   if (props.multiple !== false) {
     return props.value;
   }
