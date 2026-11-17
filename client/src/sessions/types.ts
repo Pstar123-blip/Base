@@ -19,6 +19,9 @@ export interface Session {
   status: SessionStatus;
 }
 
+// What the row's options menu asks the page to do with a session.
+export type SessionAction = 'delete' | 'cancel';
+
 export interface ViewedImage {
   src: string;
   alt: string;

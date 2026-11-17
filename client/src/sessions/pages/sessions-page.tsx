@@ -10,13 +10,16 @@ import { ErrorState, LoadingState } from '@/shared/ui/states';
 import { SessionsTable } from '../components/sessions-table';
 import { StaleDataNotice } from '../components/stale-data-notice';
 import { useSessionsTable } from '../hooks/use-sessions-table';
-import type { Session, ViewedImage } from '../types';
+import type { Session, SessionAction, ViewedImage } from '../types';
+import { SESSION_ACTIONS } from './sessions-page.consts';
 
 export const SessionsPage = () => {
   const table = useSessionsTable();
   // The session stays set while the dialog fades out so its text doesn't blank.
-  const [pendingDelete, setPendingDelete] = useState<Session | null>(null);
-  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [pendingSession, setPendingSession] = useState<Session | null>(null);
+  const [pendingAction, setPendingAction] = useState<SessionAction>('delete');
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const currentAction = SESSION_ACTIONS[pendingAction];
   // Held here, not in the row, so polling can't unmount the lightbox. The
   // image stays set while closing so the close transition still shows it.
   const [viewedImage, setViewedImage] = useState<ViewedImage | null>(null);
@@ -29,31 +32,32 @@ export const SessionsPage = () => {
 
   const closeImage = () => setLightboxOpen(false);
 
-  const closeDialog = () => setDeleteOpen(false);
+  const closeDialog = () => setDialogOpen(false);
 
-  const askDelete = (session: Session) => {
-    setPendingDelete(session);
-    setDeleteOpen(true);
+  const askAction = (action: SessionAction) => (session: Session) => {
+    setPendingSession(session);
+    setPendingAction(action);
+    setDialogOpen(true);
   };
 
-  const reportDeleted = () => {
-    enqueueSnackbar('Session deleted', { variant: 'success' });
+  const reportDone = () => {
+    enqueueSnackbar(currentAction.successMessage, { variant: 'success' });
     table.refetch();
   };
 
-  const deletion = useDeleteSession({
+  const removal = useDeleteSession({
     mutation: {
-      onSuccess: reportDeleted,
+      onSuccess: reportDone,
       onSettled: closeDialog,
     },
   });
 
-  const confirmDelete = () => {
-    if (pendingDelete) {
-      deletion.mutate({
-        type: pendingDelete.type,
-        sessionId: pendingDelete.id,
-        params: { should_delete: true },
+  const confirmAction = () => {
+    if (pendingSession) {
+      removal.mutate({
+        type: pendingSession.type,
+        sessionId: pendingSession.id,
+        params: { should_delete: currentAction.shouldDelete },
       });
     }
   };
@@ -86,18 +90,19 @@ export const SessionsPage = () => {
             onFilterChange={table.changeFilters}
             onPageChange={table.setPage}
             onPageSizeChange={table.changePageSize}
-            onDelete={askDelete}
+            onDelete={askAction('delete')}
+            onCancel={askAction('cancel')}
             onOpenImage={openImage}
           />
         )}
       </Box>
       <ConfirmationDialog
-        open={deleteOpen}
-        busy={deletion.isPending}
-        title="Delete session?"
-        description={`Session ${pendingDelete?.id ?? ''} will be permanently deleted.`}
+        open={dialogOpen}
+        busy={removal.isPending}
+        title={currentAction.title}
+        description={currentAction.getDescription(pendingSession?.id ?? '')}
         onCancel={closeDialog}
-        onConfirm={confirmDelete}
+        onConfirm={confirmAction}
       />
       {viewedImage && (
         <ImageLightbox

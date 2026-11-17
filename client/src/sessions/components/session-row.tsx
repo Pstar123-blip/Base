@@ -1,7 +1,7 @@
 import { Link, TableCell, TableRow } from '@mui/material';
 import { Link as RouterLink, type LinkProps } from '@tanstack/react-router';
 
-import { getResultsPath } from '../consts';
+import { FINISHED_SESSION_STATUSES, getResultsPath } from '../consts';
 import type { ImageOpener, Session } from '../types';
 import { formatDateTime } from '../utils/format';
 import { ProgressCell } from './progress-cell';
@@ -14,13 +14,16 @@ import { TypeTag } from './type-tag';
 export const SessionRow = ({
   session,
   onDelete,
+  onCancel,
   onOpenImage,
 }: {
   session: Session;
   onDelete: (session: Session) => void;
+  onCancel: (session: Session) => void;
   onOpenImage: ImageOpener;
 }) => {
   const deleteSession = () => onDelete(session);
+  const cancelSession = () => onCancel(session);
 
   return (
     <TableRow hover>
@@ -62,7 +65,12 @@ export const SessionRow = ({
         </Link>
       </TableCell>
       <TableCell align="right">
-        <RowOptions sessionId={session.id} onDelete={deleteSession} />
+        <RowOptions
+          sessionId={session.id}
+          isFinished={FINISHED_SESSION_STATUSES.has(session.status)}
+          onDelete={deleteSession}
+          onCancel={cancelSession}
+        />
       </TableCell>
     </TableRow>
   );

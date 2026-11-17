@@ -29,6 +29,7 @@ export const SessionsTable = ({
   onPageChange,
   onPageSizeChange,
   onDelete,
+  onCancel,
   onOpenImage,
 }: {
   sessions: Session[];
@@ -40,6 +41,7 @@ export const SessionsTable = ({
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: number) => void;
   onDelete: (session: Session) => void;
+  onCancel: (session: Session) => void;
   onOpenImage: ImageOpener;
 }) => {
   const changePage = (
@@ -68,6 +70,7 @@ export const SessionsTable = ({
       key={session.id}
       session={session}
       onDelete={onDelete}
+      onCancel={onCancel}
       onOpenImage={onOpenImage}
     />
   );

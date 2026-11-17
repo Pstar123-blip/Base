@@ -1,3 +1,4 @@
+import CancelIcon from '@mui/icons-material/Cancel';
 import DeleteIcon from '@mui/icons-material/Delete';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {
@@ -11,10 +12,14 @@ import { type MouseEvent, useState } from 'react';
 
 export const RowOptions = ({
   sessionId,
+  isFinished,
   onDelete,
+  onCancel,
 }: {
   sessionId: string;
+  isFinished: boolean;
   onDelete: () => void;
+  onCancel: () => void;
 }) => {
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
 
@@ -25,6 +30,11 @@ export const RowOptions = ({
   const deleteSession = () => {
     closeMenu();
     onDelete();
+  };
+
+  const cancelSession = () => {
+    closeMenu();
+    onCancel();
   };
 
   return (
@@ -38,12 +48,21 @@ export const RowOptions = ({
         <MoreVertIcon />
       </IconButton>
       <Menu anchorEl={anchor} open={Boolean(anchor)} onClose={closeMenu}>
-        <MenuItem onClick={deleteSession}>
-          <ListItemIcon>
-            <DeleteIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Delete</ListItemText>
-        </MenuItem>
+        {isFinished ? (
+          <MenuItem onClick={deleteSession}>
+            <ListItemIcon>
+              <DeleteIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Delete</ListItemText>
+          </MenuItem>
+        ) : (
+          <MenuItem onClick={cancelSession}>
+            <ListItemIcon>
+              <CancelIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Cancel</ListItemText>
+          </MenuItem>
+        )}
       </Menu>
     </>
   );
