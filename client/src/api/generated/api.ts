@@ -680,3 +680,96 @@ export const useDeleteSession = <TError = void,
       return useMutation(getDeleteSessionMutationOptions(options), queryClient);
     }
 
+/**
+ * @summary List the statistics an inference can compute
+ */
+export const listStatistics = (
+
+ options?: SecondParameter<typeof request>,signal?: AbortSignal
+) => {
+
+
+      return request<string[]>(
+      {url: `/api/inference/statistics`, method: 'GET', signal
+    },
+      options);
+    }
+
+
+
+
+export const getListStatisticsQueryKey = () => {
+    return [
+    `/api/inference/statistics`
+    ] as const;
+    }
+
+
+export const getListStatisticsQueryOptions = <TData = Awaited<ReturnType<typeof listStatistics>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listStatistics>>, TError, TData>>, request?: SecondParameter<typeof request>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListStatisticsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listStatistics>>> = ({ signal }) => listStatistics(requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listStatistics>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListStatisticsQueryResult = NonNullable<Awaited<ReturnType<typeof listStatistics>>>
+export type ListStatisticsQueryError = unknown
+
+
+/** @summary List the statistics an inference can compute */
+export function useListStatistics<TData = Awaited<ReturnType<typeof listStatistics>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listStatistics>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listStatistics>>,
+          TError,
+          Awaited<ReturnType<typeof listStatistics>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof request>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/** @summary List the statistics an inference can compute */
+export function useListStatistics<TData = Awaited<ReturnType<typeof listStatistics>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listStatistics>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listStatistics>>,
+          TError,
+          Awaited<ReturnType<typeof listStatistics>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof request>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/** @summary List the statistics an inference can compute */
+export function useListStatistics<TData = Awaited<ReturnType<typeof listStatistics>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listStatistics>>, TError, TData>>, request?: SecondParameter<typeof request>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/** @summary List the statistics an inference can compute */
+export function useListStatistics<TData = Awaited<ReturnType<typeof listStatistics>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listStatistics>>, TError, TData>>, request?: SecondParameter<typeof request>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListStatisticsQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+

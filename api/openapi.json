@@ -323,6 +323,36 @@
           "sessions"
         ]
       }
+    },
+    "/api/inference/statistics": {
+      "get": {
+        "operationId": "listStatistics",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List the statistics an inference can compute",
+        "tags": [
+          "inference"
+        ]
+      }
     }
   },
   "info": {
