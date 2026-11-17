@@ -1,0 +1,556 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/auth/create-token": {
+      "post": {
+        "operationId": "createToken",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "operationId": "me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/sessions/group": {
+      "post": {
+        "operationId": "groupSessions",
+        "parameters": [
+          {
+            "name": "first_session_index",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "number_of_sessions",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GroupSessionsBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SessionDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get a group of sessions of any type",
+        "tags": [
+          "sessions"
+        ],
+        "x-query": true
+      }
+    },
+    "/api/{type}/sessions/group": {
+      "post": {
+        "operationId": "groupSessionsByType",
+        "parameters": [
+          {
+            "name": "type",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "$ref": "#/components/schemas/SessionType"
+            }
+          },
+          {
+            "name": "first_session_index",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "number_of_sessions",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GroupSessionsBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SessionDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get a group of sessions of a single type",
+        "tags": [
+          "sessions"
+        ],
+        "x-query": true
+      }
+    },
+    "/api/sessions/count": {
+      "post": {
+        "operationId": "countSessions",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionSearchValuesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Count sessions of any type",
+        "tags": [
+          "sessions"
+        ],
+        "x-query": true
+      }
+    },
+    "/api/{type}/sessions/count": {
+      "post": {
+        "operationId": "countSessionsByType",
+        "parameters": [
+          {
+            "name": "type",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "$ref": "#/components/schemas/SessionType"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionSearchValuesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Count sessions of a single type",
+        "tags": [
+          "sessions"
+        ],
+        "x-query": true
+      }
+    },
+    "/api/{type}/{sessionId}": {
+      "delete": {
+        "operationId": "deleteSession",
+        "parameters": [
+          {
+            "name": "type",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "$ref": "#/components/schemas/SessionType"
+            }
+          },
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "should_delete",
+            "required": true,
+            "in": "query",
+            "description": "The session is deleted only when true",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a session",
+        "tags": [
+          "sessions"
+        ]
+      }
+    },
+    "/api/inference/statistics": {
+      "get": {
+        "operationId": "listStatistics",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List the statistics an inference can compute",
+        "tags": [
+          "inference"
+        ]
+      }
+    },
+    "/api/training/types": {
+      "get": {
+        "operationId": "listTypes",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List the types a training can be run with",
+        "tags": [
+          "training"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "API",
+    "description": "",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "UserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "username"
+        ]
+      },
+      "LoginResponseDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserDto"
+          }
+        },
+        "required": [
+          "accessToken",
+          "user"
+        ]
+      },
+      "SessionSearchValuesDto": {
+        "type": "object",
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "description": "Case-insensitive text to look for in the session id",
+            "maxLength": 200
+          },
+          "session_owner": {
+            "type": "string",
+            "description": "Case-insensitive text to look for in the session owner",
+            "maxLength": 200
+          },
+          "status": {
+            "type": "string",
+            "description": "Case-insensitive text to look for in the session status",
+            "maxLength": 200
+          }
+        }
+      },
+      "GroupSessionsBodyDto": {
+        "type": "object",
+        "properties": {
+          "search_values": {
+            "description": "Sessions must match every provided value",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SessionSearchValuesDto"
+              }
+            ]
+          }
+        }
+      },
+      "SessionType": {
+        "type": "string",
+        "enum": [
+          "training",
+          "inference",
+          "evaluation"
+        ]
+      },
+      "SessionStatus": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "in_progress",
+          "running",
+          "completed",
+          "failed",
+          "canceled"
+        ]
+      },
+      "SessionDto": {
+        "type": "object",
+        "properties": {
+          "session_id": {
+            "type": "string"
+          },
+          "type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SessionType"
+              }
+            ]
+          },
+          "session_owner": {
+            "type": "string"
+          },
+          "image_a_url": {
+            "type": "string"
+          },
+          "image_b_url": {
+            "type": "string"
+          },
+          "creation_time": {
+            "type": "string",
+            "description": "Naive ISO-8601 timestamp in UTC (no timezone designator)",
+            "example": "2026-11-09T12:00:00.000"
+          },
+          "last_update": {
+            "type": "string",
+            "description": "Naive ISO-8601 timestamp in UTC (no timezone designator)",
+            "example": "2026-11-09T12:00:00.000"
+          },
+          "progress": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 0,
+            "maximum": 100
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SessionStatus"
+              }
+            ]
+          },
+          "notes": {
+            "type": "string"
+          },
+          "logs": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "session_id",
+          "type",
+          "session_owner",
+          "image_a_url",
+          "image_b_url",
+          "creation_time",
+          "last_update",
+          "progress",
+          "status",
+          "notes",
+          "logs"
+        ]
+      }
+    }
+  }
+}
