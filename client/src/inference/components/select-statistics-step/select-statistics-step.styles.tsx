@@ -3,7 +3,7 @@ import { type CSSObject, styled, type Theme } from '@mui/material/styles';
 
 import { CHOICES_MAX_WIDTH } from './consts';
 
-const selectAlgorithmsStepRootStyles = ({
+const selectStatisticsStepRootStyles = ({
   theme,
 }: {
   theme: Theme;
@@ -13,8 +13,8 @@ const selectAlgorithmsStepRootStyles = ({
   gap: theme.spacing(3),
 });
 
-export const SelectAlgorithmsStepRoot = styled(Box)(
-  selectAlgorithmsStepRootStyles,
+export const SelectStatisticsStepRoot = styled(Box)(
+  selectStatisticsStepRootStyles,
 );
 
 // Caps the tiles' width and centers them, instead of spanning the whole page.
