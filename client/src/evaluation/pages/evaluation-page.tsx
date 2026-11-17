@@ -7,7 +7,7 @@ import { SESSION_TYPE_LABELS } from '@/shared/session-type-constants';
 
 import { EvaluationSummaryStep } from '../components/summary-step/summary-step';
 import { UploadStep } from '../components/upload-step/upload-step';
-import { EVALUATION_STEPS } from '../consts';
+import { EVALUATION_STEPS, EVALUATION_STEPS_LABELS } from '../consts';
 
 export const EvaluationPage = () => {
   // Held here, not in the step, so the files survive moving between steps.
@@ -31,7 +31,7 @@ export const EvaluationPage = () => {
 
   return (
     <PageLayout title={SESSION_TYPE_LABELS.evaluation}>
-      <Steps steps={steps} onFinish={finish} />
+      <Steps steps={steps} onFinish={finish} labels={EVALUATION_STEPS_LABELS} />
     </PageLayout>
   );
 };

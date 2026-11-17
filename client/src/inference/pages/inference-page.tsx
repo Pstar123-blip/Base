@@ -13,6 +13,7 @@ import { SelectAlgorithmsStep } from '../components/select-algorithms-step/selec
 import {
   FIRST_IMAGE_PICKER,
   INFERENCE_STEPS,
+  INFERENCE_STEPS_LABELS,
   SECOND_IMAGE_PICKER,
   UPLOAD_SUBTITLE,
   UPLOAD_TITLE,
@@ -80,7 +81,7 @@ export const InferencePage = () => {
 
   return (
     <PageLayout title={SESSION_TYPE_LABELS.inference}>
-      <Steps steps={steps} onFinish={finish} />
+      <Steps steps={steps} onFinish={finish} labels={INFERENCE_STEPS_LABELS} />
     </PageLayout>
   );
 };
