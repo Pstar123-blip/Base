@@ -773,3 +773,96 @@ export function useListStatistics<TData = Awaited<ReturnType<typeof listStatisti
 
 
 
+/**
+ * @summary List the types a training can be run with
+ */
+export const listTypes = (
+
+ options?: SecondParameter<typeof request>,signal?: AbortSignal
+) => {
+
+
+      return request<string[]>(
+      {url: `/api/training/types`, method: 'GET', signal
+    },
+      options);
+    }
+
+
+
+
+export const getListTypesQueryKey = () => {
+    return [
+    `/api/training/types`
+    ] as const;
+    }
+
+
+export const getListTypesQueryOptions = <TData = Awaited<ReturnType<typeof listTypes>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listTypes>>, TError, TData>>, request?: SecondParameter<typeof request>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListTypesQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listTypes>>> = ({ signal }) => listTypes(requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listTypes>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListTypesQueryResult = NonNullable<Awaited<ReturnType<typeof listTypes>>>
+export type ListTypesQueryError = unknown
+
+
+/** @summary List the types a training can be run with */
+export function useListTypes<TData = Awaited<ReturnType<typeof listTypes>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listTypes>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listTypes>>,
+          TError,
+          Awaited<ReturnType<typeof listTypes>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof request>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/** @summary List the types a training can be run with */
+export function useListTypes<TData = Awaited<ReturnType<typeof listTypes>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listTypes>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listTypes>>,
+          TError,
+          Awaited<ReturnType<typeof listTypes>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof request>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/** @summary List the types a training can be run with */
+export function useListTypes<TData = Awaited<ReturnType<typeof listTypes>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listTypes>>, TError, TData>>, request?: SecondParameter<typeof request>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/** @summary List the types a training can be run with */
+export function useListTypes<TData = Awaited<ReturnType<typeof listTypes>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listTypes>>, TError, TData>>, request?: SecondParameter<typeof request>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListTypesQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+

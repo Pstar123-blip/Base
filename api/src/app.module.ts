@@ -7,6 +7,7 @@ import { validateEnv } from './config.js';
 import { DatabaseModule } from './database/database.module.js';
 import { InferenceModule } from './inference/inference.module.js';
 import { SessionsModule } from './sessions/sessions.module.js';
+import { TrainingModule } from './training/training.module.js';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { SessionsModule } from './sessions/sessions.module.js';
     AuthModule,
     SessionsModule,
     InferenceModule,
+    TrainingModule,
   ],
 })
 export class AppModule {}

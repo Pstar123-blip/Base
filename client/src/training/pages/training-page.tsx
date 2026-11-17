@@ -8,7 +8,6 @@ import { Steps } from '@/shared/components/steps/steps';
 import type { StepItem } from '@/shared/components/steps/types';
 import { SESSION_TYPE_LABELS } from '@/shared/session-type-constants';
 
-import { type RequiredType } from '../components/select-type-step/consts';
 import { SelectTypeStep } from '../components/select-type-step/select-type-step';
 import {
   FIRST_IMAGE_PICKER,
@@ -23,7 +22,7 @@ export const TrainingPage = () => {
   // Held here, not in the step, so the files survive moving between steps.
   const [firstImage, setFirstImage] = useState<File | null>(null);
   const [secondImage, setSecondImage] = useState<File | null>(null);
-  const [requiredType, setRequiredType] = useState<RequiredType | null>(null);
+  const [requiredType, setRequiredType] = useState<string | null>(null);
 
   // TODO: derive from the select step once it has content.
   const selections: Selection[] = [];

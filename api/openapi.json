@@ -353,6 +353,36 @@
           "inference"
         ]
       }
+    },
+    "/api/training/types": {
+      "get": {
+        "operationId": "listTypes",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List the types a training can be run with",
+        "tags": [
+          "training"
+        ]
+      }
     }
   },
   "info": {
